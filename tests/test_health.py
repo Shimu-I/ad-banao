@@ -4,6 +4,10 @@ pytest.importorskip("fastapi")
 pytest.importorskip("sqlalchemy")
 pytest.importorskip("pydantic_settings")
 pytest.importorskip("httpx")
+try:  # the upload routes need python-multipart (module name differs between versions)
+    import python_multipart  # noqa: F401
+except ImportError:
+    pytest.importorskip("multipart")
 
 from fastapi.testclient import TestClient  # noqa: E402
 
