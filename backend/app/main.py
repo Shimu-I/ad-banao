@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app import models  # noqa: F401  (importing registers the tables on Base)
 from app.config import get_settings
 from app.database import Base, engine
-from app.routers import health
+from app.routers import brands, health, products
 
 
 @asynccontextmanager
@@ -26,6 +26,8 @@ def create_app() -> FastAPI:
         allow_headers=["*"],
     )
     app.include_router(health.router)
+    app.include_router(brands.router)
+    app.include_router(products.router)
     return app
 
 
