@@ -21,7 +21,7 @@ def test_explicit_driver_is_left_alone():
 
 
 def test_sqlite_url_is_left_alone():
-    assert normalize_database_url("sqlite:///./adguard.db") == "sqlite:///./adguard.db"
+    assert normalize_database_url("sqlite:///./adbanao.db") == "sqlite:///./adbanao.db"
 
 
 def test_surrounding_whitespace_is_stripped():

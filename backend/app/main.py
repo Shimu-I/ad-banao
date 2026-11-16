@@ -18,7 +18,7 @@ async def lifespan(app: FastAPI):
 
 def create_app() -> FastAPI:
     settings = get_settings()
-    app = FastAPI(title="AdGuard AI", version="0.1.0", lifespan=lifespan)
+    app = FastAPI(title="AdBanao", version="0.1.0", lifespan=lifespan)
     app.add_middleware(
         CORSMiddleware,
         allow_origins=[settings.frontend_origin],

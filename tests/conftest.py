@@ -6,4 +6,4 @@ import tempfile
 # engine are created at import time.
 os.environ["DATABASE_URL"] = "sqlite://"
 os.environ["APP_ENV"] = "test"
-os.environ["UPLOAD_DIR"] = tempfile.mkdtemp(prefix="adguard-test-uploads-")
+os.environ["UPLOAD_DIR"] = tempfile.mkdtemp(prefix="adbanao-test-uploads-")
