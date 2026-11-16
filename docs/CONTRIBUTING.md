@@ -1,12 +1,12 @@
 # Contributing and workflow
 
-This project is built one step at a time. Each step gets its own branch, is reviewed, then merged.
+This project is built one step at a time. Each step gets its own branch, is checked as far as possible, then merged.
 
 ## Branches
 
-- `main` always holds reviewed, working code.
-- One branch per step, named `step-NN-short-name`, for example `step-02-backend-skeleton`.
-- Small fixes use `fix/short-name`.
+- The default branch always holds reviewed, working code.
+- One branch per step, named `step-NN-short-name`, for example `step-04-generation`.
+- Small fixes and documentation use `fix/short-name`, `docs/short-name` or `chore/short-name`.
 
 ## Commits
 
@@ -22,26 +22,28 @@ Example: `feat: add price normalization for BDT and USD formats`
 
 ## Pull requests
 
-1. Open a pull request from the step branch into `main`.
+1. Open a pull request from the step branch into the default branch.
 2. Describe what the step adds and what was tested.
 3. State anything that could not be tested, for example parts that need packages or models not available in the build environment.
-4. Merge after review.
+4. Update [PROGRESS.md](PROGRESS.md) in the same pull request: step status, tests run, and anything the project owner tested personally.
+5. Merge after the checks pass, then pull the merged branch before starting the next step.
 
 ## Build steps
 
 1. Repo setup
 2. Backend skeleton and database models
 3. Product and brand profiles
-4. Grounded text generation
-5. Template ad rendering
-6. Verification: prices and details
-7. Verification: OCR
-8. Verification: unsupported claims
-9. Verification: brand and image integrity
-10. Reports and approval
-11. Frontend
-12. Test set and evaluation
-13. Deployment and docs
+4. One-form brief and grounded generation (product description and ad text)
+5. Ad design and image renderer (layers, templates, sizes)
+6. Ad editing API (versions, undo, resize, change template)
+7. Verification: prices and details
+8. Verification: OCR
+9. Verification: unsupported claims
+10. Verification: brand and image integrity
+11. Reports, one-click fixes, approval and export
+12. Frontend: (a) guided form and generate, (b) ad editor, (c) check panel and export
+13. Test set and evaluation
+14. Deployment and docs
 
 ## Secrets
 
