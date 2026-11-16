@@ -14,7 +14,7 @@ class Settings(BaseSettings):
 
     app_env: str = "development"
     # SQLite fallback lets the app start without PostgreSQL during early development.
-    database_url: str = "sqlite:///./adguard.db"
+    database_url: str = "sqlite:///./adbanao.db"
     frontend_origin: str = "http://localhost:5173"
     upload_dir: str = "./uploads"
     gemini_api_key: str = ""

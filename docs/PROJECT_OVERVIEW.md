@@ -1,10 +1,10 @@
-# AdGuard AI: Project Overview, Features, Corner Cases and Value
+# AdBanao: Project Overview, Features, Corner Cases and Value
 
 Written 2026-11-13.
 
 ## 1. Project summary
 
-AdGuard AI is a platform that helps businesses create ads with AI, then independently checks them for accuracy, quality and brand consistency before publishing. It is feasible to build as an MVP on free resources, provided the scope stays tight.
+AdBanao is a platform that helps businesses create ads with AI, then independently checks them for accuracy, quality and brand consistency before publishing. It is feasible to build as an MVP on free resources, provided the scope stays tight.
 
 **Core value proposition:** Create smarter. Verify better. Advertise confidently.
 
@@ -36,7 +36,7 @@ Existing AI ad makers produce attractive content but cannot be trusted to publis
 
 ## 3. Proposed solution
 
-AdGuard AI pairs ad generation with an independent verification step, and both work from one source of truth: the product and brand profile.
+AdBanao pairs ad generation with an independent verification step, and both work from one source of truth: the product and brand profile.
 
 1. The business uploads product images, details, prices, claims and brand guidelines.
 2. The AI writes ad text using only that profile.
@@ -71,9 +71,9 @@ The MVP has nine features, all buildable on free resources. Later features need 
 
 ## 5. What problems this solves
 
-AdGuard AI fully solves wrong prices and typos, mostly solves photo changes and invented claims, and cannot solve sales prediction.
+AdBanao fully solves wrong prices and typos, mostly solves photo changes and invented claims, and cannot solve sales prediction.
 
-| Existing limitation | Can AdGuard AI solve it? | How |
+| Existing limitation | Can AdBanao solve it? | How |
 | --- | --- | --- |
 | Wrong prices or product details | Yes | Ads are generated from structured data, then checked against it. This is the strongest feature. |
 | Typos and wrong text in the final image | Yes | OCR on the rendered ad, compared with the known text. |
@@ -88,7 +88,7 @@ AdGuard AI fully solves wrong prices and typos, mostly solves photo changes and 
 
 ## 6. Competitors and differentiation
 
-AdGuard AI competes on verification, not on content generation.
+AdBanao competes on verification, not on content generation.
 
 | Competitor | Main limitation or opportunity |
 | --- | --- |

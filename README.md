@@ -1,8 +1,8 @@
-# AdGuard AI
+# AdBanao
 
 **Create smarter. Verify better. Advertise confidently.**
 
-AdGuard AI helps businesses create ads with AI, then independently checks them for accuracy, quality and brand consistency before publishing.
+AdBanao helps businesses create ads with AI, then independently checks them for accuracy, quality and brand consistency before publishing.
 
 > Status: early development. Built step by step; see [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md) for the workflow.
 >

@@ -1,6 +1,6 @@
 # Backend
 
-FastAPI app and PostgreSQL models for AdGuard AI.
+FastAPI app and PostgreSQL models for AdBanao.
 
 ## Run locally
 
