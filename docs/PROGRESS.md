@@ -1,17 +1,17 @@
 # Progress log
 
-Last updated: 2026-11-16 (Asia/Dhaka). This file is updated in every step's pull request.
+Last updated: 2026-11-18 (Asia/Dhaka). This file is updated in every step's pull request.
 
 ## How far are we
 
-**3 of 14 build steps are done and merged (about 21%).** The steps still ahead include the largest pieces (ad generation, the editor, verification and the screens), so the real share finished is smaller than the step count suggests.
+**4 of 14 build steps are done and merged (about 29%).** The steps still ahead include the largest pieces (ad generation, the editor, verification and the screens), so the real share finished is smaller than the step count suggests.
 
 | Part of the product | State |
 | --- | --- |
 | Project structure and docs | Done |
 | Backend foundation (app, settings, database models) | Done, never run against a real server (see testing below) |
 | Product and brand profiles (input, photo upload, price and unit cleanup, readiness report) | Done in code, API never run |
-| Product description and ad text generation | Not started |
+| Product description and ad text generation | Done in code: key features, AI writing behind a swappable layer, fact checking, basic-text fallback. Never tried with a real Gemini or Groq key |
 | Image ad creation | Not started |
 | Editing the ad | Not started |
 | Verification (prices, OCR, claims, brand, photo) | Not started |
@@ -28,7 +28,7 @@ Last updated: 2026-11-16 (Asia/Dhaka). This file is updated in every step's pull
 | 1 | Repo setup | Done | Pushed as the default branch | Files only; no code to test | Not reported |
 | 2 | Backend skeleton and database models | Done | PR #2 | Code compiles; 6 database-URL tests pass; model and health tests written but never run | Not reported |
 | 3 | Product and brand profiles | Done | PR #3 | 213 tests pass for the logic; API and model tests written but never run | Not reported |
-| 4 | One-form brief and grounded generation | Not started | | | |
+| 4 | One-form brief and grounded generation | Done | This step's pull request | 28 new tests pass (fact checking, prompt, reply parsing, provider fallback, basic text); the new API route and its 6 tests were never run; no real AI service was called | Not reported |
 | 5 | Ad design and image renderer | Not started | | | |
 | 6 | Ad editing API | Not started | | | |
 | 7 | Verification: prices and details | Not started | | | |
@@ -40,22 +40,26 @@ Last updated: 2026-11-16 (Asia/Dhaka). This file is updated in every step's pull
 | 13 | Test set and evaluation | Not started | | | |
 | 14 | Deployment and docs | Not started | | | |
 
+Existing databases need the new `key_features` column: delete the local `adbanao.db` file and let the app recreate it (there is no data worth keeping yet), or add the column by hand.
+
 Other work merged: project overview document (PR #1), rename to AdBanao (PR #4), faculty changes and this log (the pull request that added this file).
 
 ## Testing
 
 ### Run by Claude, in Claude's own environment (2026-11-16)
 
-213 tests pass. They cover logic that does not need a web server or database.
+245 tests pass. They cover logic that does not need a web server or database.
 
 | Area | Tests | Result |
 | --- | --- | --- |
 | Database URL helper | 6 | Pass |
 | Price, discount and unit parsing | 119 | Pass |
 | Photo validation and storage | 19 | Pass |
-| Readiness checks | 26 | Pass |
-| Request and response schemas | 43 | Pass |
-| **Total** | **213** | **Pass** |
+| Readiness checks | 28 | Pass |
+| Request and response schemas | 45 | Pass |
+| Fact checking of generated text | 12 | Pass |
+| Text generation logic (with fake AI providers) | 16 | Pass |
+| **Total** | **245** | **Pass** |
 
 ### Written but never run by anyone, as far as has been reported
 
@@ -65,7 +69,7 @@ These 3 files need packages that Claude's environment cannot install (FastAPI, S
 | --- | --- | --- |
 | Database models | 8 | Checks the archive rule, approval expiry and the three-state result against a real database |
 | Health endpoints | 2 | Checks the server starts and reaches the database |
-| Brand and product API | 25 | Checks every route: create, edit, archive, photo upload, readiness |
+| Brand and product API (includes the new generate-copy route) | 31 | Checks every route: create, edit, archive, photo upload, readiness |
 
 Counted by test function; tests with several cases count once. **The API routes and the database models have been compiled and cross-checked but never executed.** A failure on your machine is possible and would be fixed in the next step.
 
@@ -73,7 +77,7 @@ Counted by test function; tests with several cases count once. **The API routes 
 
 - Real PostgreSQL (Supabase or Neon)
 - Photo upload through a browser or the API
-- Gemini and Groq (not built yet)
+- Gemini and Groq with a real key (the code is written, but only fake providers were used in tests)
 - Any screen or browser behavior (not built yet)
 - Bangla text rendering and OCR (not built yet)
 
@@ -91,6 +95,7 @@ Tick what you have run yourself, and write the result next to it. Tell Claude, o
 - [ ] Upload a product photo. Check it is accepted and any warnings make sense
 - [ ] Open `GET /products/{id}/readiness` and check it lists what is missing
 - [ ] Try bad input: price `12,99` and a PDF as the photo. Check the error messages are clear
+- [ ] (Optional, step 4) Put a free Gemini or Groq key in `.env`, create a product with key features, and call `POST /products/{id}/generate-copy`. Check the text uses only your facts and `source` is `gemini` or `groq`
 - [ ] (Optional) Connect a free Supabase or Neon database through `.env`
 
 ## Approvals
@@ -122,7 +127,7 @@ Earlier instructions from the owner: merge pull requests #1 and #2 (2026-11-13);
 - The name AdBanao has not been checked for existing companies, trademarks or domain availability.
 - The API routes and database models have never been run (see Testing).
 - Claude's environment cannot install packages, so the React frontend and editor cannot be built or run there. They will need testing on your machine.
-- Free AI services have rate limits, and Bangla output will be weaker. Step 4 includes a basic-text fallback.
+- Free AI services have rate limits, and Bangla output will be weaker. Step 4's basic-text fallback is in place.
 - The editor preview in the browser may differ slightly from the exported image. The exported image is final and is the one that gets verified.
 - Not handled yet: two people editing the same record at once, cleaning up unused photo files, and serving uploaded images over HTTP.
 
@@ -136,3 +141,4 @@ Earlier instructions from the owner: merge pull requests #1 and #2 (2026-11-13);
 | 2026-11-16 | Step 3 built and merged (PR #3). |
 | 2026-11-16 | Project renamed to AdBanao (PR #4). Repository renamed to `ad-banao` by the owner. |
 | 2026-11-16 | Faculty feedback applied to the plan, the overview, the README and the contributing guide. This progress log added. |
+| 2026-11-18 | Step 4 built: key features field, fact checking of generated text, Gemini and Groq providers with basic-text fallback, and the generate-copy route. |

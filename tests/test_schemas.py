@@ -6,6 +6,7 @@ from pydantic import ValidationError
 from app.schemas import (
     BrandCreate,
     BrandUpdate,
+    GenerateCopyRequest,
     ProductCreate,
     ProductUpdate,
     normalize_hex_color,
@@ -155,6 +156,21 @@ def test_blank_unit_becomes_none():
 def test_claims_are_cleaned():
     product = make(allowed_claims=["Hand picked", " hand picked ", "", "Organic"])
     assert product.allowed_claims == ["Hand picked", "Organic"]
+
+
+def test_key_features_are_cleaned_and_limited():
+    product = make(key_features=["Loose leaf", " loose leaf ", "", "From Sylhet"])
+    assert product.key_features == ["Loose leaf", "From Sylhet"]
+    assert make().key_features == []
+    with pytest.raises(ValidationError):
+        make(key_features=[f"feature {i}" for i in range(21)])
+
+
+def test_generate_request_accepts_only_known_languages():
+    assert GenerateCopyRequest().language == "en"
+    assert GenerateCopyRequest(language="bn").language == "bn"
+    with pytest.raises(ValidationError):
+        GenerateCopyRequest(language="fr")
 
 
 def test_name_and_description_are_trimmed():

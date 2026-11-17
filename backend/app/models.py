@@ -95,6 +95,7 @@ class Product(Base):
     unit: Mapped[str | None] = mapped_column(String(50))  # e.g. "500g", "1L"
     specs: Mapped[dict] = mapped_column(JSON, default=dict)
     allowed_claims: Mapped[list] = mapped_column(JSON, default=list)
+    key_features: Mapped[list] = mapped_column(JSON, default=list)  # selling points typed by the user
     image_path: Mapped[str | None] = mapped_column(String(500))
     image_sha256: Mapped[str | None] = mapped_column(String(64))  # original photo fingerprint
     is_archived: Mapped[bool] = mapped_column(default=False)

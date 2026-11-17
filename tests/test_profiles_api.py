@@ -284,3 +284,71 @@ def test_readiness_blocks_when_brand_is_archived(client):
 
 def test_readiness_for_unknown_product_is_404(client):
     assert client.get("/products/999/readiness").status_code == 404
+
+
+# ------------------------------------------------------------ generate copy
+
+
+class _FakeProvider:
+    name = "fake"
+
+    def __init__(self, reply):
+        self.reply = reply
+
+    def complete(self, prompt):
+        return self.reply
+
+
+def ready_product(client, **extra):
+    brand = make_brand(client)
+    return make_product(client, brand["id"], price="450", key_features=["Loose leaf", "From Sylhet"], **extra)
+
+
+def test_key_features_round_trip(client):
+    product = ready_product(client)
+    assert product["key_features"] == ["Loose leaf", "From Sylhet"]
+    updated = client.patch(f"/products/{product['id']}", json={"key_features": ["Organic leaves"]}).json()
+    assert updated["key_features"] == ["Organic leaves"]
+
+
+def test_generate_copy_falls_back_to_basic_text_without_api_keys(client, monkeypatch):
+    monkeypatch.setattr("app.routers.products.providers_from_settings", lambda settings: [])
+    product = ready_product(client)
+    response = client.post(f"/products/{product['id']}/generate-copy", json={})
+    assert response.status_code == 200, response.text
+    body = response.json()
+    assert body["source"] == "basic"
+    assert "Green Tea" in body["headline"]
+    assert any("Basic template" in w for w in body["warnings"])
+
+
+def test_generate_copy_uses_a_provider_when_the_text_is_grounded(client, monkeypatch):
+    reply = '{"description": "Loose leaf tea from Sylhet for \u09f3450.", "headline": "Green Tea", "tagline": "From Sylhet", "cta": "Shop now"}'
+    monkeypatch.setattr("app.routers.products.providers_from_settings", lambda settings: [_FakeProvider(reply)])
+    product = ready_product(client)
+    body = client.post(f"/products/{product['id']}/generate-copy", json={"language": "en"}).json()
+    assert body["source"] == "fake"
+    assert body["issues"] == []
+
+
+def test_generate_copy_rejects_invented_price_and_falls_back(client, monkeypatch):
+    reply = '{"description": "Best tea, only \u09f3199.", "headline": "Green Tea", "tagline": "Cheapest tea", "cta": "Buy"}'
+    monkeypatch.setattr("app.routers.products.providers_from_settings", lambda settings: [_FakeProvider(reply)])
+    product = ready_product(client)
+    body = client.post(f"/products/{product['id']}/generate-copy", json={}).json()
+    assert body["source"] == "basic"
+    assert {i["code"] for i in body["issues"]} >= {"invented_number", "risky_claim"}
+
+
+def test_generate_copy_is_blocked_when_the_product_is_not_ready(client):
+    brand = make_brand(client)
+    product = make_product(client, brand["id"])  # no price
+    response = client.post(f"/products/{product['id']}/generate-copy", json={})
+    assert response.status_code == 422
+    assert response.json()["detail"]["issues"][0]["code"] == "missing_price"
+
+
+def test_generate_copy_rejects_unknown_language_and_unknown_product(client):
+    assert client.post("/products/999/generate-copy", json={}).status_code == 404
+    product = ready_product(client)
+    assert client.post(f"/products/{product['id']}/generate-copy", json={"language": "fr"}).status_code == 422

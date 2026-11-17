@@ -174,6 +174,7 @@ class _ProductFields(BaseModel):
     unit: str | None = None
     specs: dict[str, str | int | float | bool] | None = None
     allowed_claims: list[str] | None = None
+    key_features: list[str] | None = None
 
     @field_validator("name")
     @classmethod
@@ -238,6 +239,13 @@ class _ProductFields(BaseModel):
             raise ValueError("cannot be null; send an empty list to clear")
         return _clean_texts(value, max_items=50, max_length=300, label="claim")
 
+    @field_validator("key_features")
+    @classmethod
+    def _features(cls, value: list[str] | None) -> list[str]:
+        if value is None:
+            raise ValueError("cannot be null; send an empty list to clear")
+        return _clean_texts(value, max_items=20, max_length=200, label="feature")
+
 
 class ProductCreate(_ProductFields):
     brand_id: int
@@ -245,6 +253,7 @@ class ProductCreate(_ProductFields):
     currency: str = DEFAULT_CURRENCY
     specs: dict[str, str | int | float | bool] = Field(default_factory=dict)
     allowed_claims: list[str] = Field(default_factory=list)
+    key_features: list[str] = Field(default_factory=list)
 
     @model_validator(mode="before")
     @classmethod
@@ -275,6 +284,7 @@ class ProductRead(BaseModel):
     unit: str | None
     specs: dict
     allowed_claims: list[str]
+    key_features: list[str]
     image_path: str | None
     image_sha256: str | None
     is_archived: bool
@@ -312,3 +322,34 @@ class Readiness(BaseModel):
     can_generate: bool
     can_render: bool
     issues: list[ReadinessIssue]
+
+
+class GroundingIssueRead(BaseModel):
+    code: str
+    field: str
+    message: str
+    found: str
+
+
+class GeneratedCopyRead(BaseModel):
+    description: str
+    headline: str
+    tagline: str
+    cta: str
+    source: str  # "gemini", "groq" or "basic"
+    language: str
+    warnings: list[str]
+    issues: list[GroundingIssueRead]  # problems found in attempts that were rejected
+
+
+class GenerateCopyRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    language: str = "en"
+
+    @field_validator("language")
+    @classmethod
+    def _language(cls, value: str) -> str:
+        if value not in ("en", "bn"):
+            raise ValueError("language must be en or bn")
+        return value

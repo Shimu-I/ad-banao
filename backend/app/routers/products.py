@@ -5,12 +5,17 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from app.config import get_settings
+from app.generation import generate_copy, providers_from_settings
+from app.grounding import facts_from_product
 from app.database import get_db
 from app.images import MIN_SIDE_PRODUCT, ImageRejected, inspect_image, save_image
 from app.models import Brand, Product
 from app.profile_checks import blocked_for, check_product
 from app.routers._common import image_error, read_upload
 from app.schemas import (
+    GenerateCopyRequest,
+    GeneratedCopyRead,
+    GroundingIssueRead,
     ImageWarningRead,
     ProductCreate,
     ProductImageResult,
@@ -167,4 +172,35 @@ def product_readiness(product_id: int, db: Session = Depends(get_db)):
         can_generate=not blocked_for(issues, "generation"),
         can_render=not blocked_for(issues, "rendering"),
         issues=[ReadinessIssue(**asdict(issue)) for issue in issues],
+    )
+
+
+@router.post("/{product_id}/generate-copy", response_model=GeneratedCopyRead)
+def generate_product_copy(product_id: int, payload: GenerateCopyRequest | None = None, db: Session = Depends(get_db)):
+    """Write the description, headline, tagline and button text from the entered facts.
+
+    Nothing is saved: the user reviews the text first. If AI writing is unavailable
+    or invents facts, plain template text is returned and labelled source "basic"."""
+    product = _get_product(db, product_id)
+    issues = check_product(product, product.brand)
+    if blocked_for(issues, "generation"):
+        raise HTTPException(
+            status_code=422,
+            detail={
+                "message": "The product is not ready for text generation.",
+                "issues": [asdict(i) for i in issues if i.blocks == "generation"],
+            },
+        )
+    language = (payload or GenerateCopyRequest()).language
+    facts = facts_from_product(product, product.brand)
+    copy = generate_copy(facts, providers_from_settings(get_settings()), language)
+    return GeneratedCopyRead(
+        description=copy.description,
+        headline=copy.headline,
+        tagline=copy.tagline,
+        cta=copy.cta,
+        source=copy.source,
+        language=copy.language,
+        warnings=copy.warnings,
+        issues=[GroundingIssueRead(**asdict(i)) for i in copy.issues],
     )
