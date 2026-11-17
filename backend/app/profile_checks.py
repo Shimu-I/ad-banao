@@ -68,6 +68,8 @@ def check_product(product, brand) -> list[ProfileIssue]:
         add("missing_image", "image_path", "No product photo: a visual ad cannot be created.", "critical", "rendering")
     if not product.allowed_claims:
         add("no_allowed_claims", "allowed_claims", "No allowed claims: any benefit claim in an ad will be flagged as unsupported.", "suggestion")
+    if not getattr(product, "key_features", None):
+        add("no_key_features", "key_features", "No key features: generated text will be generic. Add two or three selling points.", "warning")
     if not product.unit:
         add("missing_unit", "unit", "No unit or pack size: size mentions in ads cannot be checked.", "suggestion")
     if product.is_archived:
@@ -76,7 +78,7 @@ def check_product(product, brand) -> list[ProfileIssue]:
     description = product.description or ""
     if len(description) > LONG_DESCRIPTION:
         add("long_description", "description", f"The description is over {LONG_DESCRIPTION} characters; the generator may ignore parts of it.", "warning")
-    for field, text in (("name", product.name), ("description", description), ("allowed_claims", " ".join(product.allowed_claims or []))):
+    for field, text in (("name", product.name), ("description", description), ("allowed_claims", " ".join(product.allowed_claims or [])), ("key_features", " ".join(getattr(product, "key_features", None) or []))):
         phrase = find_prompt_injection(text)
         if phrase:
             add("possible_prompt_injection", field, f"The {field} contains text that looks like an instruction to the AI ({phrase!r}). Please review it.", "warning")
