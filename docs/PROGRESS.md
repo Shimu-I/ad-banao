@@ -28,7 +28,7 @@ Last updated: 2026-11-18 (Asia/Dhaka). This file is updated in every step's pull
 | 1 | Repo setup | Done | Pushed as the default branch | Files only; no code to test | Not reported |
 | 2 | Backend skeleton and database models | Done | PR #2 | Code compiles; 6 database-URL tests pass; model and health tests written but never run | Not reported |
 | 3 | Product and brand profiles | Done | PR #3 | 213 tests pass for the logic; API and model tests written but never run | Not reported |
-| 4 | One-form brief and grounded generation | Done | This step's pull request | 28 new tests pass (fact checking, prompt, reply parsing, provider fallback, basic text); the new API route and its 6 tests were never run; no real AI service was called | Not reported |
+| 4 | One-form brief and grounded generation | Done | PR #6 | 28 new tests pass (fact checking, prompt, reply parsing, provider fallback, basic text); the new API route and its 6 tests were never run; no real AI service was called | Not reported |
 | 5 | Ad design and image renderer | Not started | | | |
 | 6 | Ad editing API | Not started | | | |
 | 7 | Verification: prices and details | Not started | | | |
