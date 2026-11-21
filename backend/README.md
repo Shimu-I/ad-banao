@@ -29,7 +29,7 @@ From the repository root:
 pytest
 ```
 
-Tests that need FastAPI, SQLAlchemy or httpx skip themselves if those are not installed.
+Tests in `tests/integration` that need FastAPI, SQLAlchemy or httpx skip themselves if those are not installed.
 
 ## API
 
@@ -47,6 +47,7 @@ Tests that need FastAPI, SQLAlchemy or httpx skip themselves if those are not in
 | `POST /products/{id}/archive`, `/restore` | Archive or restore (there is no delete) |
 | `POST /products/{id}/image` | Upload the product photo; stored untouched with its SHA-256 |
 | `GET /products/{id}/readiness` | What is missing, and whether generation and rendering are blocked |
+| `POST /products/{id}/generate-copy` | Write description, headline, tagline and button text from the entered facts (nothing is saved) |
 
 ## Input handling
 
@@ -59,16 +60,24 @@ Tests that need FastAPI, SQLAlchemy or httpx skip themselves if those are not in
 ## Layout
 
 ```
-app/config.py          settings from environment and .env
-app/database.py        engine, session, declarative base
-app/db_url.py          database URL helpers
-app/models.py          Brand, Product, Ad, VerificationReport, VerificationCheck
-app/normalize.py       price, discount and unit parsing (no dependencies)
-app/images.py          upload validation and storage
-app/profile_checks.py  readiness checks for products and brands
-app/schemas.py         request and response schemas
-app/main.py            FastAPI app factory
-app/routers/           health, brands, products
+app/main.py                 FastAPI app: wires routers, creates tables
+app/core/config.py          settings from environment and .env
+app/db/                     session.py (engine, session), url.py (URL helpers), models.py (tables)
+app/domain/                 pure logic, no web or database imports
+    normalize.py            price, discount and unit parsing
+    images.py               upload validation and storage
+    profile_checks.py       readiness checks for products and brands
+    grounding.py            fact checker for generated text
+    generation.py           prompt, reply parsing, basic-text fallback
+app/providers/llm.py        Gemini and Groq adapters (the only code that uses the network)
+app/api/v1/                 routers: health, brands, products
+app/schemas/profiles.py     request and response schemas
+app/services/               use cases (from goal A5)
+app/rendering/              ad renderer (goals A2 to A4)
+app/verification/           verification modules (goals V1 to V5)
+tests/unit/                 fast tests for the pure logic
+tests/integration/          API and database tests
+tests/evaluation/           test ads with injected errors (goal S1)
 ```
 
 ## Notes

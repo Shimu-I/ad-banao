@@ -3,10 +3,10 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app import models  # noqa: F401  (importing registers the tables on Base)
-from app.config import get_settings
-from app.database import Base, engine
-from app.routers import brands, health, products
+from app.api.v1 import brands, health, products
+from app.core.config import get_settings
+from app.db import models  # noqa: F401  (importing registers the tables on Base)
+from app.db.session import Base, engine
 
 
 @asynccontextmanager

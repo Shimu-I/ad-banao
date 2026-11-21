@@ -1,6 +1,6 @@
 # Progress log
 
-Last updated: 2026-11-18 (Asia/Dhaka). This file is updated in every step's pull request.
+Last updated: 2026-11-21 (Asia/Dhaka). This file is updated in every step's pull request.
 
 ## How far are we
 
@@ -9,9 +9,9 @@ Last updated: 2026-11-18 (Asia/Dhaka). This file is updated in every step's pull
 | Part of the product | State |
 | --- | --- |
 | Project structure and docs | Done |
-| Backend foundation (app, settings, database models) | Done, never run against a real server (see testing below) |
-| Product and brand profiles (input, photo upload, price and unit cleanup, readiness report) | Done in code, API never run |
-| Product description and ad text generation | Done in code: key features, AI writing behind a swappable layer, fact checking, basic-text fallback. Never tried with a real Gemini or Groq key |
+| Backend foundation (app, settings, database models) | Done. Tests pass in GitHub Actions (SQLite). Not yet run on your machine or a real PostgreSQL |
+| Product and brand profiles (input, photo upload, price and unit cleanup, readiness report) | Done. API tests pass in GitHub Actions. Not yet tried by you |
+| Product description and ad text generation | Done in code: key features, AI writing behind a swappable layer, fact checking, basic-text fallback. API tests pass in GitHub Actions with fake AI providers. Never tried with a real Gemini or Groq key |
 | Image ad creation | Not started |
 | Editing the ad | Not started |
 | Verification (prices, OCR, claims, brand, photo) | Not started |
@@ -26,9 +26,9 @@ Last updated: 2026-11-18 (Asia/Dhaka). This file is updated in every step's pull
 | # | Step | Status | Merged in | Tested by Claude | Tested by you |
 | --- | --- | --- | --- | --- | --- |
 | 1 | Repo setup | Done | Pushed as the default branch | Files only; no code to test | Not reported |
-| 2 | Backend skeleton and database models | Done | PR #2 | Code compiles; 6 database-URL tests pass; model and health tests written but never run | Not reported |
-| 3 | Product and brand profiles | Done | PR #3 | 213 tests pass for the logic; API and model tests written but never run | Not reported |
-| 4 | One-form brief and grounded generation | Done | PR #6 | 28 new tests pass (fact checking, prompt, reply parsing, provider fallback, basic text); the new API route and its 6 tests were never run; no real AI service was called | Not reported |
+| 2 | Backend skeleton and database models | Done | PR #2 | Code compiles; 6 database-URL tests pass; model and health tests first ran in GitHub Actions on 2026-11-21 and passed | Not reported |
+| 3 | Product and brand profiles | Done | PR #3 | 213 tests pass for the logic; API and model tests first ran in GitHub Actions on 2026-11-21 and passed | Not reported |
+| 4 | One-form brief and grounded generation | Done | PR #6 | 28 new tests pass (fact checking, prompt, reply parsing, provider fallback, basic text); the new API route and its tests passed in GitHub Actions on 2026-11-21; no real AI service was called | Not reported |
 | 5 | Ad design and image renderer | Not started | | | |
 | 6 | Ad editing API | Not started | | | |
 | 7 | Verification: prices and details | Not started | | | |
@@ -61,9 +61,11 @@ Other work merged: project overview document (PR #1), rename to AdBanao (PR #4),
 | Text generation logic (with fake AI providers) | 16 | Pass |
 | **Total** | **245** | **Pass** |
 
-### Written but never run by anyone, as far as has been reported
+### Run in GitHub Actions (2026-11-21, first real run)
 
-These 3 files need packages that Claude's environment cannot install (FastAPI, SQLAlchemy and similar), so they were skipped there.
+**289 tests passed, 0 skipped** on Python 3.12 in the `backend-ci` workflow (pull request #8). That includes the 44 tests that Claude's environment cannot run because it cannot install FastAPI and SQLAlchemy. The tests use SQLite, not PostgreSQL, and fake AI providers.
+
+What those 44 tests cover:
 
 | Area | Test functions | Why it matters |
 | --- | --- | --- |
@@ -71,7 +73,7 @@ These 3 files need packages that Claude's environment cannot install (FastAPI, S
 | Health endpoints | 2 | Checks the server starts and reaches the database |
 | Brand and product API (includes the new generate-copy route) | 31 | Checks every route: create, edit, archive, photo upload, readiness |
 
-Counted by test function; tests with several cases count once. **The API routes and the database models have been compiled and cross-checked but never executed.** A failure on your machine is possible and would be fixed in the next step.
+Counted by test function; tests with several cases count once. The lint step passed. The type check (mypy) reported one finding, which is fixed. One deprecation warning appears: Starlette's test client prefers the `httpx2` package. It is harmless today and worth fixing later.
 
 ### Not tested at all yet
 
@@ -121,11 +123,28 @@ Earlier instructions from the owner: merge pull requests #1 and #2 (2026-11-13);
 | 2026-11-16 | Faculty feedback adopted: the ad is an image generated from the user's details, product information and photo. One form also writes the product description. The ad can be edited after it is made. The interface must be user friendly. |
 | 2026-11-16 | No AI-generated product imagery for now. It could change how the product looks. It stays on the "later" list as optional backgrounds. |
 
+## Known gaps before this counts as a professional product
+
+Each gap names the roadmap goal that closes it. Goal IDs are in the [roadmap](07-roadmap.md).
+
+These are the honest gaps a senior reviewer would raise, each with the goal that closes it.
+
+| Gap | Closed by |
+| --- | --- |
+| Code only tested in CI, not yet run end to end on your machine or a real PostgreSQL | F6 |
+| No automated checks on every pull request (lint, types, tests) | F5 (workflow file added, first real run pending) |
+| No database migrations. Adding the `key_features` column already requires deleting the local database | F7 |
+| No user accounts, so every brand and product is visible to everyone | F9 |
+| No consistent error format, request IDs or API versioning | F8 |
+| Default Gemini model name in code was written from memory and is not verified against today's list | F8 (make it a setting) |
+| Default branch is still named `step-01-repo-setup` | F5 (rename to `main`) |
+| Product name AdBanao not checked for trademark or domain | S5 |
+
 ## Open items and risks
 
 - The default branch is still named `step-01-repo-setup`. Rename it to `main` in the repository settings.
 - The name AdBanao has not been checked for existing companies, trademarks or domain availability.
-- The API routes and database models have never been run (see Testing).
+- The API and models pass in GitHub Actions on SQLite only. They have not been run on a real PostgreSQL or on your machine (see Testing).
 - Claude's environment cannot install packages, so the React frontend and editor cannot be built or run there. They will need testing on your machine.
 - Free AI services have rate limits, and Bangla output will be weaker. Step 4's basic-text fallback is in place.
 - The editor preview in the browser may differ slightly from the exported image. The exported image is final and is the one that gets verified.
@@ -141,4 +160,7 @@ Earlier instructions from the owner: merge pull requests #1 and #2 (2026-11-13);
 | 2026-11-16 | Step 3 built and merged (PR #3). |
 | 2026-11-16 | Project renamed to AdBanao (PR #4). Repository renamed to `ad-banao` by the owner. |
 | 2026-11-16 | Faculty feedback applied to the plan, the overview, the README and the contributing guide. This progress log added. |
+| 2026-11-18 | Master plan written (docs/): stack, diagrams, 37-goal roadmap. Project packaged as a fresh repository with Makefile, ruff and pre-commit config, CI workflow, templates and decision records. Lint fixes applied to existing code (import order, one `raise ... from None`). The CI workflow has not run yet. |
+| 2026-11-21 | Project structure, tooling and split documentation pushed in pull request #8. First GitHub Actions run: lint passed, 289 tests passed, mypy reported one finding (fixed). |
+| 2026-11-20 | Documentation reorganised: short README for readers. All other documents moved into `docs/` as numbered topic files with an index (`docs/README.md`). Code moved into the planned folder layout (core, db, domain, providers, api/v1, schemas) and tests into `backend/tests`. Imports checked statically; 245 tests pass. API and database tests still never run. |
 | 2026-11-18 | Step 4 built: key features field, fact checking of generated text, Gemini and Groq providers with basic-text fallback, and the generate-copy route. |
