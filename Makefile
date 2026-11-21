@@ -32,6 +32,9 @@ run:  ## Start the API at http://localhost:8000 (docs at /docs)
 db-up:  ## Start local PostgreSQL with Docker
 	docker compose up -d db
 
+migrate:  ## Create or upgrade the database tables (Alembic)
+	cd backend && ../$(VENV)/bin/alembic upgrade head
+
 db-down:  ## Stop local PostgreSQL
 	docker compose down
 
