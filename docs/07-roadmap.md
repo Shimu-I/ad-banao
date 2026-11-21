@@ -9,11 +9,11 @@ Each goal is one pull request with one purpose. Status: ✅ done and merged, �
 | ID | Goal (one small purpose) | Done when | Status |
 | --- | --- | --- | --- |
 | F1 | Repository and documents | README, contributing guide and overview exist | ✅ |
-| F2 | Backend skeleton and database models | App starts, five models defined | ✅ (never run) |
-| F3 | Product and brand profiles | Create, edit, archive, upload photo, readiness report | ✅ (API never run) |
-| F4 | Grounded description and ad text | One route returns description, headline, tagline, button, with fact check and fallback | ✅ (route never run, no real AI call) |
-| F5 | Developer environment and quality gates | `make setup`, `make test`, `make lint` work on Linux. Ruff, mypy, pre-commit and GitHub Actions run on every pull request. Default branch is `main` and protected. Files in the planned structure | 🟡 Files and config are in place: Makefile, pyproject, pre-commit, CI workflow, templates, decision records, and the code is moved into the planned folders (lint and 245 tests pass here). **Not yet run by you or by GitHub.** Branch protection not yet set |
-| F6 | Run everything for real | All tests including the 41 never-run ones pass on your machine and in CI. Failures fixed. Your checklist ticked | ⬜ |
+| F2 | Backend skeleton and database models | App starts, five models defined | ✅ (tests pass in CI) |
+| F3 | Product and brand profiles | Create, edit, archive, upload photo, readiness report | ✅ (API tests pass in CI) |
+| F4 | Grounded description and ad text | One route returns description, headline, tagline, button, with fact check and fallback | ✅ (route tests pass in CI, no real AI call) |
+| F5 | Developer environment and quality gates | `make setup`, `make test`, `make lint` work on Linux. Ruff, mypy, pre-commit and GitHub Actions run on every pull request. Default branch is `main` and protected. Files in the planned structure | 🟡 Files and config are in place: Makefile, pyproject, pre-commit, CI workflow, templates, decision records, and the code is moved into the planned folders (lint and 245 tests pass here). GitHub Actions ran it on 2026-11-21: lint passes, 289 tests pass, mypy reported one finding (fixed). **Not yet run by you:** `make setup` and the pre-commit hooks. Branch protection not yet set |
+| F6 | Run everything for real | All tests pass on your machine and in CI. Failures fixed. Your checklist ticked | 🟡 CI passes (289 tests, SQLite, fake AI). Still to do: you run it on your machine, try a real PostgreSQL and a real Gemini or Groq key |
 | F7 | Database migrations | Alembic creates and upgrades the schema. Local Postgres via Docker Compose. `key_features` column delivered as a migration | ⬜ |
 | F8 | API foundations | `/api/v1` prefix, one error format with request IDs, structured logging, Gemini model name and keys as settings, health checks for database and providers | ⬜ |
 | F9 | Authentication and ownership | Sign up and sign in. Every brand and product belongs to a user. A test proves one user cannot see another's data | ⬜ |

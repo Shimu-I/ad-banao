@@ -72,7 +72,7 @@ def _normalize_money(data: Any, default_currency: str | None) -> Any:
         except NormalizationError as exc:
             raise ValueError(f"{key}: {exc}") from exc
         if not parsed.is_exact:
-            label = parsed.qualifier.replace("_", " ")
+            label = (parsed.qualifier or "").replace("_", " ")
             raise ValueError(f"{key} must be an exact amount, not a '{label}' price")
         if parsed.currency:
             currencies.add(parsed.currency)

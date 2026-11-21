@@ -11,6 +11,9 @@ versions follow [Semantic Versioning](https://semver.org).
 - Grounded product description and ad text generation with fact checking and basic-text fallback.
 - Documentation set in `docs/` (17 topic files and an index), decision records, CI workflow, Makefile and developer tooling.
 
+### Fixed
+- Type error in price validation message (mypy).
+
 ### Changed
 - README shortened for readers. All other documentation moved into `docs/`.
 - Code moved into `core`, `db`, `domain`, `providers`, `api/v1` and `schemas`. Tests moved to `backend/tests`.
