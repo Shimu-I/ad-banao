@@ -1,6 +1,6 @@
 # Progress log
 
-Last updated: 2026-11-18 (Asia/Dhaka). This file is updated in every step's pull request.
+Last updated: 2026-11-20 (Asia/Dhaka). This file is updated in every step's pull request.
 
 ## How far are we
 
@@ -121,6 +121,23 @@ Earlier instructions from the owner: merge pull requests #1 and #2 (2026-11-13);
 | 2026-11-16 | Faculty feedback adopted: the ad is an image generated from the user's details, product information and photo. One form also writes the product description. The ad can be edited after it is made. The interface must be user friendly. |
 | 2026-11-16 | No AI-generated product imagery for now. It could change how the product looks. It stays on the "later" list as optional backgrounds. |
 
+## Known gaps before this counts as a professional product
+
+Each gap names the roadmap goal that closes it. Goal IDs are in the [roadmap](07-roadmap.md).
+
+These are the honest gaps a senior reviewer would raise, each with the goal that closes it.
+
+| Gap | Closed by |
+| --- | --- |
+| Code never run end to end on a real machine | F6 |
+| No automated checks on every pull request (lint, types, tests) | F5 (workflow file added, first real run pending) |
+| No database migrations. Adding the `key_features` column already requires deleting the local database | F7 |
+| No user accounts, so every brand and product is visible to everyone | F9 |
+| No consistent error format, request IDs or API versioning | F8 |
+| Default Gemini model name in code was written from memory and is not verified against today's list | F8 (make it a setting) |
+| Default branch is still named `step-01-repo-setup` | F5 (rename to `main`) |
+| Product name AdBanao not checked for trademark or domain | S5 |
+
 ## Open items and risks
 
 - The default branch is still named `step-01-repo-setup`. Rename it to `main` in the repository settings.
@@ -141,4 +158,6 @@ Earlier instructions from the owner: merge pull requests #1 and #2 (2026-11-13);
 | 2026-11-16 | Step 3 built and merged (PR #3). |
 | 2026-11-16 | Project renamed to AdBanao (PR #4). Repository renamed to `ad-banao` by the owner. |
 | 2026-11-16 | Faculty feedback applied to the plan, the overview, the README and the contributing guide. This progress log added. |
+| 2026-11-18 | Master plan written (docs/): stack, diagrams, 37-goal roadmap. Project packaged as a fresh repository with Makefile, ruff and pre-commit config, CI workflow, templates and decision records. Lint fixes applied to existing code (import order, one `raise ... from None`). The CI workflow has not run yet. |
+| 2026-11-20 | Documentation reorganised: short README for readers. All other documents moved into `docs/` as numbered topic files with an index (`docs/README.md`). Code moved into the planned folder layout (core, db, domain, providers, api/v1, schemas) and tests into `backend/tests`. Imports checked statically; 245 tests pass. API and database tests still never run. |
 | 2026-11-18 | Step 4 built: key features field, fact checking of generated text, Gemini and Groq providers with basic-text fallback, and the generate-copy route. |

@@ -1,0 +1,44 @@
+# Documentation
+
+Read in this order if you are new. Each file covers one topic.
+
+## Understand the project
+
+| File | What it answers |
+| --- | --- |
+| [01-project-overview.md](01-project-overview.md) | What is AdBanao, what problem does it solve, who is it for, how is it different? |
+| [02-features-and-requirements.md](02-features-and-requirements.md) | What does it do, and how well must it do it? |
+| [14-limitations-and-evaluation.md](14-limitations-and-evaluation.md) | What can it not do, what can we safely claim, how will we measure it? |
+| [13-corner-cases.md](13-corner-cases.md) | What can go wrong, and how do we handle it? |
+
+## Design
+
+| File | What it answers |
+| --- | --- |
+| [03-tech-stack.md](03-tech-stack.md) | Which tools, and why? |
+| [04-architecture.md](04-architecture.md) | How do the pieces fit together? (diagrams) |
+| [05-system-design.md](05-system-design.md) | Data model, ad layer format, text generation, API rules |
+| [06-folder-structure.md](06-folder-structure.md) | Where does everything live? |
+| [08-ui-and-home-page.md](08-ui-and-home-page.md) | Screens and the home page plan |
+| [11-security-and-legal.md](11-security-and-legal.md) | Security, privacy and legal controls |
+| [adr/](adr/) | Why each big technical decision was made |
+
+## Build and ship
+
+| File | What it answers |
+| --- | --- |
+| [07-roadmap.md](07-roadmap.md) | What are the 37 small goals, in what order? |
+| [09-development-process.md](09-development-process.md) | How do we work: life cycle, git, standards, CI? |
+| [10-testing-strategy.md](10-testing-strategy.md) | How is it tested? |
+| [12-deployment-and-costs.md](12-deployment-and-costs.md) | How is it deployed, and what do free and paid resources cost? |
+| [16-linux-setup.md](16-linux-setup.md) | How do I set up my Linux machine? |
+| [15-risks.md](15-risks.md) | What are the risks and open decisions? |
+
+## Living documents (change with every pull request)
+
+| File | What it holds |
+| --- | --- |
+| [PROGRESS.md](PROGRESS.md) | How far we are, what is tested and by whom, approvals, decisions, history |
+| [FACULTY_SUGGESTIONS.md](FACULTY_SUGGESTIONS.md) | Every faculty suggestion and what we decided |
+| [CONTRIBUTING.md](CONTRIBUTING.md) | Branch, commit and pull request rules |
+| [17-glossary.md](17-glossary.md) | Terms used |
