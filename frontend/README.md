@@ -7,7 +7,8 @@ HTML pages with no build step.
 | --- | --- |
 | `auth/auth.js` | Small client for the account API (`window.AdBanaoAuth`) |
 | `profile.html` | Signed-in profile page: read and update details, change password, sign out |
-| `signin.html`, `signup.html` | Sign-in and sign-up pages (added when the owner's designs arrive) |
+| `index.html` | Home page, with the sign-in and sign-up screens inside it (`#signin`, `#signup`). The forms call the API. After signing in, the header shows Profile and Sign out |
+| `assets/img/` | Images used by `index.html` |
 
 ## Try it
 
@@ -18,5 +19,7 @@ make run
 cd frontend && python3 -m http.server 5173
 ```
 
-Open http://localhost:5173/profile.html. Signed out visitors are sent to `/signin.html`.
+Open http://localhost:5173/. Create an account from the page, then open Profile. Signed-out visitors to `profile.html` are sent to the sign-in screen.
+
+Note: `index.html` loads Tailwind and fonts from public CDNs. That is fine for a prototype and is replaced when the React frontend is built (goal U1).
 To use another API address, set `window.ADBANAO_API = "https://..."` before loading `auth.js`.

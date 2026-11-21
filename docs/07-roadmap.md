@@ -46,8 +46,8 @@ Each goal is one pull request with one purpose. Status: ✅ done and merged, �
 | ID | Goal | Done when | Status |
 | --- | --- | --- | --- |
 | U1 | Frontend scaffold | Vite, React, TypeScript, Tailwind, shadcn/ui, routing, light and dark theme, English and Bangla switch, generated API client, CI job | ⬜ |
-| U2 | **Engaging home page** | Hero with live demo, before and after editing slider, how-it-works, features, trust section, call to action. Fast and accessible (details in section 14) | ⬜ |
-| U3 | Sign-in screens and app shell | Sign up, sign in, dashboard with brands and products | ⬜ |
+| U2 | **Engaging home page** | Hero with live demo, before and after editing slider, how-it-works, features, trust section, call to action. Fast and accessible (details in section 14) | 🟡 Page added as static HTML in `frontend/index.html` (owner's design, images moved to files). Still to do: speed and accessibility audit, move to React |
+| U3 | Sign-in screens and app shell | Sign up, sign in, dashboard with brands and products | 🟡 Sign-in and sign-up screens work against the real API, plus a profile page. Dashboard not started |
 | U4 | Screen 1: Details | Guided form with examples, draft saving, photo upload, missing-data guidance | ⬜ |
 | U5 | Screen 2: Generate | Progress states, review and edit generated text, basic-text label, retry | ⬜ |
 | U6 | Screen 3: Editor | Konva canvas, layer panel, toolbar, undo and redo, size and template switch, photo replace | ⬜ |
