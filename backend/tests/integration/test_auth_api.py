@@ -141,3 +141,18 @@ def test_users_cannot_see_each_other(client):
     client.post("/auth/logout")
     _signup(client, email="b1@example.com", display_name="B")
     assert client.get("/users/me").json()["display_name"] == "B"
+
+
+def test_cors_allows_the_frontend_with_cookies(client):
+    r = client.options(
+        "/users/me",
+        headers={
+            "Origin": "http://localhost:5173",
+            "Access-Control-Request-Method": "PATCH",
+            "Access-Control-Request-Headers": "content-type",
+        },
+    )
+    assert r.status_code == 200
+    assert r.headers["access-control-allow-origin"] == "http://localhost:5173"
+    assert r.headers["access-control-allow-credentials"] == "true"
+    assert "PATCH" in r.headers["access-control-allow-methods"]
