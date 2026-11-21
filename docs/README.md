@@ -20,6 +20,8 @@ Read in this order if you are new. Each file covers one topic.
 | [05-system-design.md](05-system-design.md) | Data model, ad layer format, text generation, API rules |
 | [06-folder-structure.md](06-folder-structure.md) | Where does everything live? |
 | [08-ui-and-home-page.md](08-ui-and-home-page.md) | Screens and the home page plan |
+| [18-pages-and-user-flow.md](18-pages-and-user-flow.md) | Every page, what it does, and how users move between them (with sketches) |
+| [19-database.md](19-database.md) | Tables, columns, relationships, how the schema is built and changed |
 | [11-security-and-legal.md](11-security-and-legal.md) | Security, privacy and legal controls |
 | [adr/](adr/) | Why each big technical decision was made |
 
@@ -32,6 +34,7 @@ Read in this order if you are new. Each file covers one topic.
 | [10-testing-strategy.md](10-testing-strategy.md) | How is it tested? |
 | [12-deployment-and-costs.md](12-deployment-and-costs.md) | How is it deployed, and what do free and paid resources cost? |
 | [16-linux-setup.md](16-linux-setup.md) | How do I set up my Linux machine? |
+| [20-test-on-your-pc.md](20-test-on-your-pc.md) | How do I run every check on my own computer and send the result? |
 | [15-risks.md](15-risks.md) | What are the risks and open decisions? |
 
 ## Living documents (change with every pull request)
