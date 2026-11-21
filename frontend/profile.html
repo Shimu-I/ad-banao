@@ -68,7 +68,7 @@
   }
   function busy(form, on) { form.querySelector("button").disabled = on; }
 
-  AdBanaoAuth.requireUser("/signin.html").then(fill).catch(function () {});
+  AdBanaoAuth.requireUser("/index.html#signin").then(fill).catch(function () {});
 
   $("profile").addEventListener("submit", function (e) {
     e.preventDefault();
@@ -96,7 +96,7 @@
   });
 
   $("logout").addEventListener("click", function () {
-    AdBanaoAuth.logout().catch(function () {}).then(function () { window.location.href = "/signin.html"; });
+    AdBanaoAuth.logout().catch(function () {}).then(function () { window.location.href = "/index.html#signin"; });
   });
 </script>
 </body>

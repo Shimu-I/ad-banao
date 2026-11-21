@@ -61,7 +61,7 @@
     /* Call on pages that need a signed-in user. Sends visitors to the sign-in page. */
     requireUser: function (signinUrl) {
       return window.AdBanaoAuth.me().catch(function (err) {
-        if (err.status === 401) { window.location.href = signinUrl || "/signin.html"; }
+        if (err.status === 401) { window.location.href = signinUrl || "/index.html#signin"; }
         throw err;
       });
     },
