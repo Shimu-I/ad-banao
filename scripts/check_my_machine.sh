@@ -63,7 +63,14 @@ if [ "$WANT_PG" = 1 ]; then
   if ! command -v docker >/dev/null 2>&1; then skip "PostgreSQL checks" "docker is not installed"
   else
     PGURL="postgresql://adbanao:adbanao@localhost:5432/adbanao"
-    step "Start PostgreSQL in Docker" docker.log docker compose up -d db
+    if ! step "Start PostgreSQL in Docker" docker.log docker compose up -d db; then
+      if grep -qi "permission denied" "$LOGS/docker.log"; then
+        echo "  Docker needs permission. Run: sudo usermod -aG docker \$USER   then log out, log in, and run this again."
+      fi
+      PG_OK=0
+    fi
+  fi
+  if [ "${PG_OK:-1}" = 1 ] && command -v docker >/dev/null 2>&1; then
     for _ in $(seq 1 30); do docker compose exec -T db pg_isready -U adbanao >/dev/null 2>&1 && break; sleep 1; done
     step "Create tables with migrations (PostgreSQL)" migrate-pg.log bash -c "cd backend && DATABASE_URL=$PGURL ../.venv/bin/alembic upgrade head"
     start_api "$PGURL" api-pg.log
