@@ -248,7 +248,8 @@ Never edit a migration that has already been merged. Add a new one.
 | Models behave (archive rule, approval expiry, worst-result-wins) | `test_models.py`, on SQLite |
 | Migration builds the same schema as the models, and downgrades cleanly | `test_migrations.py`, on SQLite |
 | Accounts and sessions through the API | `test_auth_api.py`, on SQLite |
-| **Not yet tested: real PostgreSQL.** Behaviour can differ in details such as case sensitivity and time zones | Run the check script in [20-test-on-your-pc.md](20-test-on-your-pc.md) with `--postgres` |
+| Migration, server and API checks on PostgreSQL 16 in Docker, and downgrade then upgrade again (owner's machine, 2026-11-22) | `scripts/check_my_machine.sh --postgres` |
+| **Not yet tested:** a hosted database (Supabase or Neon). Connection strings and limits can differ | Put its URL in `.env`, run `make migrate`, and re-run the check script |
 
 ## Not built yet (planned)
 

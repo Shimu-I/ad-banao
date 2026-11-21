@@ -15,7 +15,7 @@ flowchart TB
 | Level | Tool | What it covers | Today |
 | --- | --- | --- | --- |
 | Unit | pytest, Vitest | Normalisation, grounding, scene validation, verifiers, layout math | 245 passing locally, 289 in CI with the integration tests |
-| Integration | pytest with a test Postgres | Routes, models, migrations, upload, approval invalidation | 44 run in CI on SQLite and pass. Real PostgreSQL not yet tried (goal F6) |
+| Integration | pytest with a test Postgres | Routes, models, migrations, upload, approval invalidation | 44 run in CI on SQLite and pass. Local PostgreSQL passed on the owner's machine (2026-11-22). Hosted PostgreSQL not yet tried (goal F6) |
 | End to end | Playwright | Whole journey: sign in, fill form, generate, edit, approve, export | Not started |
 | Evaluation | Custom test set | 30 to 50 ads with injected errors. Reports catches, misses, false alarms, "Cannot verify" rate | Goal S1 |
 | Security | Dependency audit, `bandit`, manual review | Uploads, auth, injection | Goal S4 |
