@@ -12,6 +12,7 @@ Last updated: 2026-11-21 (Asia/Dhaka). This file is updated in every step's pull
 | Backend foundation (app, settings, database models) | Done. Tests pass in GitHub Actions (SQLite). Not yet run on your machine or a real PostgreSQL |
 | Product and brand profiles (input, photo upload, price and unit cleanup, readiness report) | Done. API tests pass in GitHub Actions. Not yet tried by you |
 | Product description and ad text generation | Done in code: key features, AI writing behind a swappable layer, fact checking, basic-text fallback. API tests pass in GitHub Actions with fake AI providers. Never tried with a real Gemini or Groq key |
+| User accounts (sign up, sign in, sign out, profile) | Backend done and tested in CI. Profile page done. Sign-in and sign-up pages waiting for the owner's designs |
 | Image ad creation | Not started |
 | Editing the ad | Not started |
 | Verification (prices, OCR, claims, brand, photo) | Not started |
@@ -133,7 +134,7 @@ These are the honest gaps a senior reviewer would raise, each with the goal that
 | --- | --- |
 | Code only tested in CI, not yet run end to end on your machine or a real PostgreSQL | F6 |
 | No automated checks on every pull request (lint, types, tests) | F5 (workflow file added, first real run pending) |
-| No database migrations. Adding the `key_features` column already requires deleting the local database | F7 |
+| ~~No database migrations~~ Done in PR #9. Existing local databases made before it still need to be deleted once | F7 |
 | No user accounts, so every brand and product is visible to everyone | F9 |
 | No consistent error format, request IDs or API versioning | F8 |
 | Default Gemini model name in code was written from memory and is not verified against today's list | F8 (make it a setting) |
@@ -161,6 +162,7 @@ These are the honest gaps a senior reviewer would raise, each with the goal that
 | 2026-11-16 | Project renamed to AdBanao (PR #4). Repository renamed to `ad-banao` by the owner. |
 | 2026-11-16 | Faculty feedback applied to the plan, the overview, the README and the contributing guide. This progress log added. |
 | 2026-11-18 | Master plan written (docs/): stack, diagrams, 37-goal roadmap. Project packaged as a fresh repository with Makefile, ruff and pre-commit config, CI workflow, templates and decision records. Lint fixes applied to existing code (import order, one `raise ... from None`). The CI workflow has not run yet. |
+| 2026-11-22 | Database migrations (Alembic) and user accounts added (PR #9, 310 tests pass in CI). 37 roadmap goals logged as GitHub issues. |
 | 2026-11-21 | Project structure, tooling and split documentation pushed in pull request #8. First GitHub Actions run: lint passed, 289 tests passed, mypy reported one finding (fixed). |
 | 2026-11-20 | Documentation reorganised: short README for readers. All other documents moved into `docs/` as numbered topic files with an index (`docs/README.md`). Code moved into the planned folder layout (core, db, domain, providers, api/v1, schemas) and tests into `backend/tests`. Imports checked statically; 245 tests pass. API and database tests still never run. |
 | 2026-11-18 | Step 4 built: key features field, fact checking of generated text, Gemini and Groq providers with basic-text fallback, and the generate-copy route. |
