@@ -11,6 +11,10 @@ versions follow [Semantic Versioning](https://semver.org).
 - Grounded product description and ad text generation with fact checking and basic-text fallback.
 - Documentation set in `docs/` (17 topic files and an index), decision records, CI workflow, Makefile and developer tooling.
 
+### Added
+- User accounts: sign up, sign in, sign out, profile read and update, password change (`/auth/*`, `/users/me`).
+- Alembic migrations with an initial schema (`make migrate`).
+
 ### Fixed
 - Type error in price validation message (mypy).
 
