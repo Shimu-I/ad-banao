@@ -6,7 +6,7 @@ Known risks with mitigations, the cut line if time runs short, and decisions nee
 
 | ID | Risk | Likelihood | Impact | Mitigation |
 | --- | --- | --- | --- | --- |
-| R-01 | Code has been tested in CI only, not yet on the owner's machine or a real PostgreSQL | Medium | High | Goal F6 comes before any new feature |
+| R-01 | Code has passed in CI and on the owner's machine, on SQLite only. Real PostgreSQL not yet run | Medium | High | Goal F6 comes before any new feature |
 | R-02 | Free AI services change limits, models or terms | High | Medium | Provider interface, fallback chain, basic text, model names as settings |
 | R-03 | Bangla quality is weaker in free AI writing and OCR | High | Medium | Label results honestly, bundle Bangla fonts, plan cloud OCR as the first paid upgrade |
 | R-04 | Pillow may shape Bangla text incorrectly without the Raqm layout engine | Medium | High | Install `libraqm`, verify with a Bangla rendering test in A2 before building templates |

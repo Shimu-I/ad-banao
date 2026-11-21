@@ -86,18 +86,45 @@ Counted by test function; tests with several cases count once. The lint step pas
 
 ### Tested by you
 
-**Nothing reported yet.** As far as this chat shows, you created and renamed the GitHub repository, connected GitHub, and looked at the repository page (screenshots on 2026-11-13 and 2026-11-16). That checks the files arrived, not that the code works.
+**2026-11-22, 01:16 (Asia/Dhaka): first run on the owner's own computer.** Ubuntu (Linux 7.0.0-43, x86_64), Python 3.12.3, Docker 29.10.0, commit `e980609` on `step-01-repo-setup`. Produced by `./scripts/check_my_machine.sh --browser`. Full report below.
+
+```text
+AdBanao machine check
+Date:    2026-11-22T01:16:18+06:00
+System:  Linux 7.0.0-43-generic x86_64
+Python:  Python 3.12.3
+Git:     e980609 on step-01-repo-setup
+Docker:  Docker version 29.10.0, build fdd4b8e
+
+Results
+PASS  Python 3.11 or newer found (you have 3.12)
+PASS  Create virtual environment (.venv)
+PASS  Install backend packages
+PASS  Lint (ruff)
+PASS  Automated tests (pytest)
+PASS  Create tables with migrations (SQLite)
+PASS  API check on SQLite (sign up, profile, brand, product, photo)
+SKIP  PostgreSQL checks   (add --postgres to run them)
+PASS  Install browser test tools
+PASS  Browser: sign up, sign in, profile, sign out
+```
+
+What this proves: the project installs and runs on the owner's machine with the newest package versions (FastAPI 0.165, SQLAlchemy 2.1.9, Pydantic 2.14), all tests pass there, and sign up, sign in, profile, brand, product and photo work against a real server and a real browser.
+
+What it does not prove yet: PostgreSQL (skipped), a real Gemini or Groq key, phones and other browsers.
+
+Earlier, the owner created and renamed the GitHub repository and connected GitHub (screenshots on 2026-11-13 and 2026-11-16).
 
 Tick what you have run yourself, and write the result next to it. Tell Claude, or tick the same list in the project document, and it will be copied here.
 
-- [ ] Install: `pip install -r backend/requirements-dev.txt`
-- [ ] Run `pytest` from the repository root. Result (passed / failed / skipped): ______
+- [x] Install: `pip install -r backend/requirements-dev.txt` (2026-11-22)
+- [x] Run `pytest` from the repository root. Result: all passed (2026-11-22, via the check script)
 - [ ] Start the server: `cd backend` then `uvicorn app.main:app --reload`, and open http://localhost:8000/docs
-- [ ] Create a brand using `/docs`
-- [ ] Create a product with price `৳1,299` and unit `0.5kg`. Check it comes back as `1299.00` and `500 g`
-- [ ] Upload a product photo. Check it is accepted and any warnings make sense
+- [x] Create a brand (covered by the API check, 2026-11-22)
+- [x] Create a product with price `৳1,299` and unit `0.5kg`. Comes back as `1299.00` and `500 g` (API check, 2026-11-22)
+- [x] Upload a product photo (API check, 2026-11-22). Warning wording not yet reviewed by a person
 - [ ] Open `GET /products/{id}/readiness` and check it lists what is missing
-- [ ] Try bad input: price `12,99` and a PDF as the photo. Check the error messages are clear
+- [x] Try bad input: price `12,99` and a PDF as the photo. Both refused (API check, 2026-11-22). Message wording not yet reviewed by a person
 - [ ] (Optional, step 4) Put a free Gemini or Groq key in `.env`, create a product with key features, and call `POST /products/{id}/generate-copy`. Check the text uses only your facts and `source` is `gemini` or `groq`
 - [ ] (Optional) Connect a free Supabase or Neon database through `.env`
 
@@ -132,7 +159,7 @@ These are the honest gaps a senior reviewer would raise, each with the goal that
 
 | Gap | Closed by |
 | --- | --- |
-| Code only tested in CI, not yet run end to end on your machine or a real PostgreSQL | F6 |
+| Run end to end on the owner's machine (done 2026-11-22). Still not run on a real PostgreSQL or with a real AI key | F6 |
 | No automated checks on every pull request (lint, types, tests) | F5 (workflow file added, first real run pending) |
 | ~~No database migrations~~ Done in PR #9. Existing local databases made before it still need to be deleted once | F7 |
 | No user accounts, so every brand and product is visible to everyone | F9 |
@@ -145,7 +172,7 @@ These are the honest gaps a senior reviewer would raise, each with the goal that
 
 - The default branch is still named `step-01-repo-setup`. Rename it to `main` in the repository settings.
 - The name AdBanao has not been checked for existing companies, trademarks or domain availability.
-- The API and models pass in GitHub Actions on SQLite only. They have not been run on a real PostgreSQL or on your machine (see Testing).
+- The API and models pass in GitHub Actions and on the owner's machine, both on SQLite. They have not been run on a real PostgreSQL (see Testing).
 - Claude's environment cannot install packages, so the React frontend and editor cannot be built or run there. They will need testing on your machine.
 - Free AI services have rate limits, and Bangla output will be weaker. Step 4's basic-text fallback is in place.
 - The editor preview in the browser may differ slightly from the exported image. The exported image is final and is the one that gets verified.
@@ -162,6 +189,7 @@ These are the honest gaps a senior reviewer would raise, each with the goal that
 | 2026-11-16 | Project renamed to AdBanao (PR #4). Repository renamed to `ad-banao` by the owner. |
 | 2026-11-16 | Faculty feedback applied to the plan, the overview, the README and the contributing guide. This progress log added. |
 | 2026-11-18 | Master plan written (docs/): stack, diagrams, 37-goal roadmap. Project packaged as a fresh repository with Makefile, ruff and pre-commit config, CI workflow, templates and decision records. Lint fixes applied to existing code (import order, one `raise ... from None`). The CI workflow has not run yet. |
+| 2026-11-22 | First run on the owner's machine (Ubuntu, Python 3.12): all steps passed except PostgreSQL, which was not run. |
 | 2026-11-22 | Added pages and user-flow doc, database guide, and a check script for the owner's machine. GitHub now runs the real API and the real pages in a browser: 18 API checks and 8 browser checks pass. |
 | 2026-11-22 | Combined home, sign-in and sign-up page added and connected to the account API. |
 | 2026-11-22 | Database migrations (Alembic) and user accounts added (PR #9, 310 tests pass in CI). 37 roadmap goals logged as GitHub issues. |
