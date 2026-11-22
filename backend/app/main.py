@@ -3,7 +3,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api.v1 import auth, brands, health, products
+from app.api.v1 import admin, auth, brands, health, products
 from app.core.config import get_settings
 from app.db import models  # noqa: F401  (importing registers the tables on Base)
 from app.db.session import Base, engine
@@ -29,6 +29,7 @@ def create_app() -> FastAPI:
     )
     app.include_router(health.router)
     app.include_router(auth.router)
+    app.include_router(admin.router)
     app.include_router(brands.router)
     app.include_router(products.router)
     return app

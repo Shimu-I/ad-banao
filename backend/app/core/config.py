@@ -19,6 +19,11 @@ class Settings(BaseSettings):
     upload_dir: str = "./uploads"
     gemini_api_key: str = ""
     groq_api_key: str = ""
+    # Emails that become admin when they sign up. Development and tests only: email addresses
+    # are not verified yet, so in production make admins with `make admin EMAIL=...` instead.
+    admin_emails: str = ""
+    # Day boundaries in the admin dashboard (a "day" starts at local midnight).
+    display_timezone: str = "Asia/Dhaka"
 
 
 @lru_cache

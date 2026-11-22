@@ -5,8 +5,10 @@ from sqlalchemy.orm import Session
 from app.api.v1.common import image_error, read_upload
 from app.api.v1.deps import get_current_user
 from app.core.config import get_settings
+from app.db.activity import record
 from app.db.models import Brand, User
 from app.db.session import get_db
+from app.domain import activity as ACT
 from app.domain.images import MIN_SIDE_LOGO, ImageRejected, inspect_image, save_image
 from app.schemas.profiles import (
     BrandCreate,
@@ -53,6 +55,7 @@ def create_brand(
     db.add(brand)
     db.commit()
     db.refresh(brand)
+    record(db, ACT.BRAND_CREATED, user.id, detail=brand.name)
     return brand
 
 

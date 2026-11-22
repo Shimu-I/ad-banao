@@ -14,7 +14,7 @@ import enum
 from datetime import UTC, datetime
 from decimal import Decimal
 
-from sqlalchemy import JSON, DateTime, Enum, ForeignKey, Numeric, String, Text
+from sqlalchemy import JSON, DateTime, Enum, ForeignKey, Index, Numeric, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.session import Base
@@ -72,6 +72,8 @@ class User(Base):
     business_name: Mapped[str | None] = mapped_column(String(200))
     phone: Mapped[str | None] = mapped_column(String(30))
     language: Mapped[str] = mapped_column(String(5), default="en")  # "en" or "bn"
+    role: Mapped[str] = mapped_column(String(10), default="user")  # "user" or "admin"
+    is_active: Mapped[bool] = mapped_column(default=True)  # False = suspended, cannot sign in
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), default=utcnow, onupdate=utcnow
@@ -94,6 +96,23 @@ class UserSession(Base):
     expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
 
     user: Mapped["User"] = relationship(back_populates="sessions")
+
+
+class ActivityLog(Base):
+    """One thing that happened: who, what, and whether it worked. No IP addresses, no passwords."""
+
+    __tablename__ = "activity_log"
+    __table_args__ = (Index("ix_activity_log_user_created", "user_id", "created_at"),)
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    # Empty for a failed sign-in with an unknown email. Kept (set to empty) if the user is removed.
+    user_id: Mapped[int | None] = mapped_column(ForeignKey("users.id", ondelete="SET NULL"))
+    event: Mapped[str] = mapped_column(String(40), index=True)
+    result: Mapped[str] = mapped_column(String(10), default="success")  # "success" or "failed"
+    detail: Mapped[str | None] = mapped_column(String(300))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, index=True)
+
+    user: Mapped["User | None"] = relationship()
 
 
 class Brand(Base):
