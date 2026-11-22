@@ -84,3 +84,18 @@ def test_old_brands_without_any_user_stop_the_migration(tmp_path):
     with pytest.raises(RuntimeError, match="no users"):
         command.upgrade(_config(url), "head")
     engine.dispose()
+
+
+def test_existing_users_become_active_normal_users(tmp_path):
+    from sqlalchemy import text
+
+    url = f"sqlite:///{tmp_path / 'r.db'}"
+    command.upgrade(_config(url), "0002")
+    engine = create_engine(url)
+    with engine.begin() as conn:
+        conn.execute(text(_USER))
+    command.upgrade(_config(url), "head")
+    with engine.connect() as conn:
+        role, active = conn.execute(text("select role, is_active from users")).one()
+    assert role == "user" and active in (1, True)
+    engine.dispose()

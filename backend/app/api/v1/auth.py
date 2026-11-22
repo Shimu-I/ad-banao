@@ -9,8 +9,11 @@ from sqlalchemy.orm import Session
 
 from app.api.v1.deps import SESSION_COOKIE, get_current_session, get_current_user
 from app.core.config import get_settings
+from app.db.activity import record
 from app.db.models import User, UserSession
 from app.db.session import get_db
+from app.domain import activity as ACT
+from app.domain.activity import admin_email_set
 from app.domain.security import (
     DUMMY_HASH,
     hash_password,
@@ -56,11 +59,14 @@ def _start_session(db: Session, user: User, response: Response) -> None:
 def signup(body: SignupRequest, response: Response, db: Session = Depends(get_db)) -> User:
     if db.scalar(select(User).where(User.email == body.email)):
         raise HTTPException(status_code=409, detail="An account with this email already exists.")
+    settings = get_settings()
+    is_admin = settings.app_env != "production" and body.email in admin_email_set(settings.admin_emails)
     user = User(
         email=body.email,
         password_hash=hash_password(body.password),
         display_name=body.display_name,
         business_name=body.business_name,
+        role="admin" if is_admin else "user",
     )
     db.add(user)
     try:
@@ -71,6 +77,7 @@ def signup(body: SignupRequest, response: Response, db: Session = Depends(get_db
             status_code=409, detail="An account with this email already exists."
         ) from None
     _start_session(db, user, response)
+    record(db, ACT.SIGNED_UP, user.id)
     return user
 
 
@@ -80,8 +87,13 @@ def login(body: LoginRequest, response: Response, db: Session = Depends(get_db))
     # Always run one password check so timing does not reveal which emails exist.
     ok = verify_password(body.password, user.password_hash if user else DUMMY_HASH)
     if user is None or not ok:
+        record(db, ACT.SIGN_IN_FAILED, user.id if user else None, "failed", None if user else "unknown email")
         raise HTTPException(status_code=401, detail="Incorrect email or password.")
+    if not user.is_active:
+        record(db, ACT.SIGN_IN_FAILED, user.id, "failed", "account suspended")
+        raise HTTPException(status_code=403, detail="This account is suspended. Contact the administrator.")
     _start_session(db, user, response)
+    record(db, ACT.SIGNED_IN, user.id)
     return user
 
 
@@ -91,8 +103,10 @@ def logout(
     session: UserSession = Depends(get_current_session),
     db: Session = Depends(get_db),
 ) -> None:
+    user_id = session.user_id
     db.delete(session)
     db.commit()
+    record(db, ACT.SIGNED_OUT, user_id)
     response.delete_cookie(SESSION_COOKIE, path="/")
 
 
@@ -112,6 +126,7 @@ def update_me(
             continue  # these cannot be cleared
         setattr(user, field, value)
     db.commit()
+    record(db, ACT.PROFILE_UPDATED, user.id, detail=", ".join(sorted(body.model_dump(exclude_unset=True))))
     return user
 
 
@@ -130,3 +145,4 @@ def change_password(
         delete(UserSession).where(UserSession.user_id == user.id, UserSession.id != session.id)
     )
     db.commit()
+    record(db, ACT.PASSWORD_CHANGED, user.id)

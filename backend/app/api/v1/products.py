@@ -7,8 +7,10 @@ from sqlalchemy.orm import Session
 from app.api.v1.common import image_error, read_upload
 from app.api.v1.deps import get_current_user
 from app.core.config import get_settings
+from app.db.activity import record
 from app.db.models import Brand, Product, User
 from app.db.session import get_db
+from app.domain import activity as ACT
 from app.domain.generation import generate_copy
 from app.domain.grounding import facts_from_product
 from app.domain.images import MIN_SIDE_PRODUCT, ImageRejected, inspect_image, save_image
@@ -69,6 +71,7 @@ def create_product(
     db.add(product)
     db.commit()
     db.refresh(product)
+    record(db, ACT.PRODUCT_CREATED, user.id, detail=product.name)
     return product
 
 
@@ -188,6 +191,7 @@ def upload_product_image(
     product.image_sha256 = info.sha256
     db.commit()
     db.refresh(product)
+    record(db, ACT.PHOTO_UPLOADED, user.id, detail=product.name)
     return ProductImageResult(product=ProductRead.model_validate(product), warnings=warnings)
 
 
@@ -228,6 +232,7 @@ def generate_product_copy(
     language = (payload or GenerateCopyRequest()).language
     facts = facts_from_product(product, product.brand)
     copy = generate_copy(facts, providers_from_settings(get_settings()), language)
+    record(db, ACT.TEXT_GENERATED, user.id, detail=f"{product.name} ({copy.source})")
     return GeneratedCopyRead(
         description=copy.description,
         headline=copy.headline,

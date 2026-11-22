@@ -33,4 +33,13 @@ def get_current_session(
 
 
 def get_current_user(session: UserSession = Depends(get_current_session)) -> User:
-    return session.user
+    user = session.user
+    if not user.is_active:
+        raise HTTPException(status_code=403, detail="This account is suspended.")
+    return user
+
+
+def require_admin(user: User = Depends(get_current_user)) -> User:
+    if user.role != "admin":
+        raise HTTPException(status_code=403, detail="Admins only.")
+    return user
