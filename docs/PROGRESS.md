@@ -219,6 +219,7 @@ These are the honest gaps a senior reviewer would raise, each with the goal that
 | 2026-11-16 | Project renamed to AdBanao (PR #4). Repository renamed to `ad-banao` by the owner. |
 | 2026-11-16 | Faculty feedback applied to the plan, the overview, the README and the contributing guide. This progress log added. |
 | 2026-11-18 | Master plan written (docs/): stack, diagrams, 37-goal roadmap. Project packaged as a fresh repository with Makefile, ruff and pre-commit config, CI workflow, templates and decision records. Lint fixes applied to existing code (import order, one `raise ... from None`). The CI workflow has not run yet. |
+| 2026-11-22 | Demo kit for the faculty: three demo users (`make seed`), a web database viewer (`make db-viewer`) and a demo script (docs/21). |
 | 2026-11-22 | Second run on the owner's machine with PostgreSQL 16 in Docker and the browser test: every step passed. |
 | 2026-11-22 | First run on the owner's machine (Ubuntu, Python 3.12): all steps passed except PostgreSQL, which was not run. |
 | 2026-11-22 | Added pages and user-flow doc, database guide, and a check script for the owner's machine. GitHub now runs the real API and the real pages in a browser: 18 API checks and 8 browser checks pass. |

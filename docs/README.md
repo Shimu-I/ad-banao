@@ -35,6 +35,7 @@ Read in this order if you are new. Each file covers one topic.
 | [12-deployment-and-costs.md](12-deployment-and-costs.md) | How is it deployed, and what do free and paid resources cost? |
 | [16-linux-setup.md](16-linux-setup.md) | How do I set up my Linux machine? |
 | [20-test-on-your-pc.md](20-test-on-your-pc.md) | How do I run every check on my own computer and send the result? |
+| [21-faculty-demo.md](21-faculty-demo.md) | How do I show the pages talking to the database with three demo users? |
 | [15-risks.md](15-risks.md) | What are the risks and open decisions? |
 
 ## Living documents (change with every pull request)
