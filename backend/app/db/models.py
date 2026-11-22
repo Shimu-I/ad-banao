@@ -100,6 +100,8 @@ class Brand(Base):
     __tablename__ = "brands"
 
     id: Mapped[int] = mapped_column(primary_key=True)
+    # The owner. Products and ads belong to a user through their brand.
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="RESTRICT"), index=True)
     name: Mapped[str] = mapped_column(String(200), index=True)
     primary_colors: Mapped[list] = mapped_column(JSON, default=list)  # hex codes
     secondary_colors: Mapped[list] = mapped_column(JSON, default=list)
@@ -112,6 +114,7 @@ class Brand(Base):
         DateTime(timezone=True), default=utcnow, onupdate=utcnow
     )
 
+    owner: Mapped["User"] = relationship()
     products: Mapped[list["Product"]] = relationship(back_populates="brand")
 
 

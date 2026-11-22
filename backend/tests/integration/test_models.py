@@ -16,6 +16,7 @@ from app.db.models import (  # noqa: E402
     CheckResult,
     Product,
     Severity,
+    User,
     VerificationCheck,
     VerificationReport,
 )
@@ -34,10 +35,11 @@ def db():
 
 
 def make_ad(db):
-    brand = Brand(name="Demo Brand", primary_colors=["#112233"])
+    owner = User(email="o@example.com", password_hash="x", display_name="O")
+    brand = Brand(owner=owner, name="Demo Brand", primary_colors=["#112233"])
     product = Product(brand=brand, name="Demo Tea", price=Decimal("1299.00"), currency="BDT")
     ad = Ad(product=product, headline="Fresh tea", content_hash="aaa")
-    db.add_all([brand, product, ad])
+    db.add_all([owner, brand, product, ad])
     db.commit()
     return brand, product, ad
 

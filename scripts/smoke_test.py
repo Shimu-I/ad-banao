@@ -110,6 +110,23 @@ def main():
     s, _ = call("POST", "/products", {"brand_id": brand["id"], "name": "X", "price": "12,99"})
     check("ambiguous price 12,99 is refused", s == 422, str(s))
 
+    # a second person must see none of it
+    other = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(http.cookiejar.CookieJar()))
+    global opener
+    mine, opener = opener, other
+    s, _ = call("POST", "/auth/signup", {"email": f"other{int(time.time())}@example.com", "password": pw, "display_name": "Other"})
+    check("second user signs up", s == 201, str(s))
+    s, b = call("GET", "/brands")
+    check("second user sees no brands", s == 200 and b == [], f"{s} {b}")
+    s, _ = call("GET", f"/brands/{brand['id']}")
+    check("second user cannot open the first user's brand", s == 404, str(s))
+    if p:
+        s, _ = call("GET", f"/products/{p['id']}")
+        check("second user cannot open the first user's product", s == 404, str(s))
+    opener = mine
+    s, _ = call("GET", "/users/me")
+    check("first user is still signed in", s == 200, str(s))
+
 
 try:
     main()

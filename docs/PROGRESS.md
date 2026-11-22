@@ -192,7 +192,7 @@ These are the honest gaps a senior reviewer would raise, each with the goal that
 | Run end to end on the owner's machine and on a local PostgreSQL (done 2026-11-22). Still not run with a real AI key or a hosted database | F6 |
 | No automated checks on every pull request (lint, types, tests) | F5 (workflow file added, first real run pending) |
 | ~~No database migrations~~ Done in PR #9. Existing local databases made before it still need to be deleted once | F7 |
-| No user accounts, so every brand and product is visible to everyone | F9 |
+| ~~No user accounts, so every brand and product is visible to everyone~~ Done (F9). Still missing: password reset by email, login rate limit | later |
 | No consistent error format, request IDs or API versioning | F8 |
 | Default Gemini model name in code was written from memory and is not verified against today's list | F8 (make it a setting) |
 | Default branch is still named `step-01-repo-setup` | F5 (rename to `main`) |
@@ -219,6 +219,7 @@ These are the honest gaps a senior reviewer would raise, each with the goal that
 | 2026-11-16 | Project renamed to AdBanao (PR #4). Repository renamed to `ad-banao` by the owner. |
 | 2026-11-16 | Faculty feedback applied to the plan, the overview, the README and the contributing guide. This progress log added. |
 | 2026-11-18 | Master plan written (docs/): stack, diagrams, 37-goal roadmap. Project packaged as a fresh repository with Makefile, ruff and pre-commit config, CI workflow, templates and decision records. Lint fixes applied to existing code (import order, one `raise ... from None`). The CI workflow has not run yet. |
+| 2026-11-22 | Goal F9 ownership: brands belong to users (migration 0002), all brand and product routes require sign-in and are limited to the owner, tests with three users, demo users now have a brand and product each. |
 | 2026-11-22 | Demo kit for the faculty: three demo users (`make seed`), a web database viewer (`make db-viewer`) and a demo script (docs/21). |
 | 2026-11-22 | Second run on the owner's machine with PostgreSQL 16 in Docker and the browser test: every step passed. |
 | 2026-11-22 | First run on the owner's machine (Ubuntu, Python 3.12): all steps passed except PostgreSQL, which was not run. |

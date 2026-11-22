@@ -16,7 +16,7 @@ Each goal is one pull request with one purpose. Status: ✅ done and merged, �
 | F6 | Run everything for real | All tests pass on your machine and in CI. Failures fixed. Your checklist ticked | 🟡 CI passes, and the owner's machine passed on 2026-11-22 (SQLite, fake AI). PostgreSQL 16 in Docker also passed (01:27). Still to do: a real Gemini or Groq key and a hosted database |
 | F7 | Database migrations | Alembic creates and upgrades the schema. Local Postgres via Docker Compose. `key_features` column delivered as a migration | ✅ (PR #9; `make migrate`; a test checks the migration matches the models) |
 | F8 | API foundations | `/api/v1` prefix, one error format with request IDs, structured logging, Gemini model name and keys as settings, health checks for database and providers | ⬜ |
-| F9 | Authentication and ownership | Sign up and sign in. Every brand and product belongs to a user. A test proves one user cannot see another's data | 🟡 Accounts done: sign up, sign in, sign out, profile, password change (PR #9). Still to do: brands and products belong to a user |
+| F9 | Authentication and ownership | Sign up and sign in. Every brand and product belongs to a user. A test proves one user cannot see another's data | ✅ Accounts (PR #9) and ownership: every brand belongs to a user, products and ads through the brand, every route is checked, and tests with three users prove nobody can see or change another's data. Password reset by email is not done and moves to a later goal |
 
 ## Milestone M1: Ad engine (A)
 

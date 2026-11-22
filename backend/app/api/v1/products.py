@@ -5,8 +5,9 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from app.api.v1.common import image_error, read_upload
+from app.api.v1.deps import get_current_user
 from app.core.config import get_settings
-from app.db.models import Brand, Product
+from app.db.models import Brand, Product, User
 from app.db.session import get_db
 from app.domain.generation import generate_copy
 from app.domain.grounding import facts_from_product
@@ -29,9 +30,10 @@ from app.schemas.profiles import (
 router = APIRouter(prefix="/products", tags=["products"])
 
 
-def _get_product(db: Session, product_id: int) -> Product:
+def _get_product(db: Session, user: User, product_id: int) -> Product:
+    """A product belongs to the user who owns its brand. Others get 404, as if it did not exist."""
     product = db.get(Product, product_id)
-    if product is None:
+    if product is None or product.brand.user_id != user.id:
         raise HTTPException(status_code=404, detail="Product not found")
     return product
 
@@ -54,9 +56,11 @@ def _ensure_name_free(db: Session, brand_id: int, name: str, exclude_id: int | N
 
 
 @router.post("", response_model=ProductRead, status_code=201)
-def create_product(payload: ProductCreate, db: Session = Depends(get_db)):
+def create_product(
+    payload: ProductCreate, db: Session = Depends(get_db), user: User = Depends(get_current_user)
+):
     brand = db.get(Brand, payload.brand_id)
-    if brand is None:
+    if brand is None or brand.user_id != user.id:
         raise HTTPException(status_code=404, detail="Brand not found")
     if brand.is_archived:
         raise HTTPException(status_code=409, detail="Brand is archived; restore it first")
@@ -75,8 +79,16 @@ def list_products(
     limit: int = Query(50, ge=1, le=200),
     offset: int = Query(0, ge=0),
     db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
 ):
-    stmt = select(Product).order_by(Product.id).limit(limit).offset(offset)
+    stmt = (
+        select(Product)
+        .join(Brand, Product.brand_id == Brand.id)
+        .where(Brand.user_id == user.id)
+        .order_by(Product.id)
+        .limit(limit)
+        .offset(offset)
+    )
     if brand_id is not None:
         stmt = stmt.where(Product.brand_id == brand_id)
     if not include_archived:
@@ -85,13 +97,20 @@ def list_products(
 
 
 @router.get("/{product_id}", response_model=ProductRead)
-def get_product(product_id: int, db: Session = Depends(get_db)):
-    return _get_product(db, product_id)
+def get_product(
+    product_id: int, db: Session = Depends(get_db), user: User = Depends(get_current_user)
+):
+    return _get_product(db, user, product_id)
 
 
 @router.patch("/{product_id}", response_model=ProductRead)
-def update_product(product_id: int, payload: ProductUpdate, db: Session = Depends(get_db)):
-    product = _get_product(db, product_id)
+def update_product(
+    product_id: int,
+    payload: ProductUpdate,
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
+    product = _get_product(db, user, product_id)
     _ensure_editable(product)
     changes = payload.model_dump(exclude_unset=True)
     if "name" in changes and changes["name"].lower() != product.name.lower():
@@ -104,9 +123,11 @@ def update_product(product_id: int, payload: ProductUpdate, db: Session = Depend
 
 
 @router.post("/{product_id}/archive", response_model=ProductRead)
-def archive_product(product_id: int, db: Session = Depends(get_db)):
+def archive_product(
+    product_id: int, db: Session = Depends(get_db), user: User = Depends(get_current_user)
+):
     # Archived rather than deleted: existing ads keep pointing at it.
-    product = _get_product(db, product_id)
+    product = _get_product(db, user, product_id)
     product.is_archived = True
     db.commit()
     db.refresh(product)
@@ -114,8 +135,10 @@ def archive_product(product_id: int, db: Session = Depends(get_db)):
 
 
 @router.post("/{product_id}/restore", response_model=ProductRead)
-def restore_product(product_id: int, db: Session = Depends(get_db)):
-    product = _get_product(db, product_id)
+def restore_product(
+    product_id: int, db: Session = Depends(get_db), user: User = Depends(get_current_user)
+):
+    product = _get_product(db, user, product_id)
     if product.is_archived:
         if product.brand.is_archived:
             raise HTTPException(status_code=409, detail="Brand is archived; restore it first")
@@ -128,9 +151,12 @@ def restore_product(product_id: int, db: Session = Depends(get_db)):
 
 @router.post("/{product_id}/image", response_model=ProductImageResult)
 def upload_product_image(
-    product_id: int, file: UploadFile = File(...), db: Session = Depends(get_db)
+    product_id: int,
+    file: UploadFile = File(...),
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
 ):
-    product = _get_product(db, product_id)
+    product = _get_product(db, user, product_id)
     _ensure_editable(product)
     data = read_upload(file)
     try:
@@ -166,8 +192,10 @@ def upload_product_image(
 
 
 @router.get("/{product_id}/readiness", response_model=Readiness)
-def product_readiness(product_id: int, db: Session = Depends(get_db)):
-    product = _get_product(db, product_id)
+def product_readiness(
+    product_id: int, db: Session = Depends(get_db), user: User = Depends(get_current_user)
+):
+    product = _get_product(db, user, product_id)
     issues = check_product(product, product.brand)
     return Readiness(
         can_generate=not blocked_for(issues, "generation"),
@@ -177,12 +205,17 @@ def product_readiness(product_id: int, db: Session = Depends(get_db)):
 
 
 @router.post("/{product_id}/generate-copy", response_model=GeneratedCopyRead)
-def generate_product_copy(product_id: int, payload: GenerateCopyRequest | None = None, db: Session = Depends(get_db)):
+def generate_product_copy(
+    product_id: int,
+    payload: GenerateCopyRequest | None = None,
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
     """Write the description, headline, tagline and button text from the entered facts.
 
     Nothing is saved: the user reviews the text first. If AI writing is unavailable
     or invents facts, plain template text is returned and labelled source "basic"."""
-    product = _get_product(db, product_id)
+    product = _get_product(db, user, product_id)
     issues = check_product(product, product.brand)
     if blocked_for(issues, "generation"):
         raise HTTPException(
