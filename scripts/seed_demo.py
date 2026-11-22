@@ -15,9 +15,12 @@ import urllib.request
 BASE = (sys.argv[1] if len(sys.argv) > 1 else "http://localhost:8000").rstrip("/")
 PASSWORD = "Demo-pass-123"
 USERS = [
-    {"email": "rina@demo.adbanao.test", "display_name": "Rina Akter", "business_name": "Rina's Pickles", "phone": "01711000001", "language": "bn"},
-    {"email": "karim@demo.adbanao.test", "display_name": "Karim Hossain", "business_name": "Karim Fashion House", "phone": "01711000002", "language": "en"},
-    {"email": "nusrat@demo.adbanao.test", "display_name": "Nusrat Jahan", "business_name": "Nusrat Beauty Corner", "phone": "01711000003", "language": "en"},
+    {"email": "rina@demo.adbanao.test", "display_name": "Rina Akter", "business_name": "Rina's Pickles", "phone": "01711000001", "language": "bn",
+     "brand": "Rina's Pickles", "product": {"name": "Mango Pickle 500g", "price": "৳350", "unit": "500g", "key_features": ["Homemade", "No preservatives"]}},
+    {"email": "karim@demo.adbanao.test", "display_name": "Karim Hossain", "business_name": "Karim Fashion House", "phone": "01711000002", "language": "en",
+     "brand": "Karim Fashion House", "product": {"name": "Classic Panjabi", "price": "৳1,299", "key_features": ["Premium cotton", "Regular fit"]}},
+    {"email": "nusrat@demo.adbanao.test", "display_name": "Nusrat Jahan", "business_name": "Nusrat Beauty Corner", "phone": "01711000003", "language": "en",
+     "brand": "Nusrat Beauty Corner", "product": {"name": "Rose Face Lotion", "price": "৳650", "unit": "200ml", "key_features": ["Light on skin", "Rose scent"]}},
 ]
 
 
@@ -43,6 +46,18 @@ for u in USERS:
     status, body = call(opener, "PATCH", "/users/me", {k: u[k] for k in ("business_name", "phone", "language")})
     if status != 200:
         sys.exit(f"Profile update failed for {u['email']}: {status} {body}")
-    print(("created " if created else "updated ") + u["email"])
+    # one brand and one product each, so ownership can be shown
+    status, brands = call(opener, "GET", "/brands")
+    brand = next((b for b in brands if b["name"] == u["brand"]), None) if status == 200 else None
+    if brand is None:
+        status, brand = call(opener, "POST", "/brands", {"name": u["brand"]})
+        if status != 201:
+            sys.exit(f"Brand failed for {u['email']}: {status} {brand}")
+    status, products = call(opener, "GET", f"/products?brand_id={brand['id']}")
+    if status == 200 and not any(p["name"] == u["product"]["name"] for p in products):
+        status, body = call(opener, "POST", "/products", {"brand_id": brand["id"], **u["product"]})
+        if status != 201:
+            sys.exit(f"Product failed for {u['email']}: {status} {body}")
+    print(("created " if created else "updated ") + u["email"] + f"  (brand: {u['brand']}, product: {u['product']['name']})")
 
 print(f"\nDemo password for all three: {PASSWORD}")

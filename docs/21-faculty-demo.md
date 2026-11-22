@@ -9,7 +9,7 @@ A 7 to 10 minute demonstration that shows, live, that what users do on the pages
 | Sign up writes to the database | Create a user on the page, refresh the `users` table, a new row appears |
 | Passwords are not stored | The `password_hash` column shows an unreadable `scrypt$...` string, not the password |
 | Signing in creates a session | A row appears in `user_sessions`. Sign out and the row disappears |
-| Each user has their own data | Three users in three browsers each see only their own profile |
+| Each user has their own data | Three users in three browsers each see only their own profile, brands and products. Another user's id answers "not found" |
 | Profile edits are saved, not just shown | Edit a profile on the page, refresh Adminer, the row changed. Reload the page, the value is still there |
 | Wrong password is refused | Try it. No session row is created |
 
@@ -48,7 +48,7 @@ The three demo users (the same password for all, for demos only):
 
 Password for all three: `Demo-pass-123`
 
-`make seed` can be run again at any time. It restores the three profiles to these values.
+`make seed` can be run again at any time. It restores the three profiles to these values and gives each user one brand and one product of their own (Rina: Rina's Pickles, Mango Pickle 500g. Karim: Karim Fashion House, Classic Panjabi. Nusrat: Nusrat Beauty Corner, Rose Face Lotion).
 
 ### Open the database viewer
 
@@ -91,6 +91,9 @@ In Rina's window open Profile, change the business name to something new, click 
 **5. Wrong password and sign out (1 minute).**
 In a private window try Karim's email with a wrong password: "Incorrect email or password". No new session row. Then in Karim's window click Sign out. Refresh `user_sessions`: his row is gone. Open the Profile page address in that window: it sends him back to sign in. "Signing out ends the session in the database, not only in the browser."
 
+**5b. Show that each user owns their data (2 minutes). This is the strongest point.**
+In Adminer open `brands`: three rows, each with a different `user_id`. Open `products`: three rows. Now in Rina's window (signed in) open http://localhost:8000/docs in a new tab. The page shares the sign-in cookie. Open `GET /brands`, click Try it out, Execute: only **Rina's Pickles** comes back. Do the same in Karim's window: only **Karim Fashion House**. Then in Karim's window try `GET /brands/{id}` with Rina's brand id (shown in Adminer): the answer is **404 Brand not found**. "The server answers not found, as if it did not exist, so ids reveal nothing." Try `GET /products` the same way.
+
 **6. (Optional) Show the browser side (1 minute).**
 In Chrome press F12, open Application, then Cookies. The `adbanao_session` cookie is marked HttpOnly: page scripts cannot read it. The cookie holds a random token. The database holds only its hash.
 
@@ -108,7 +111,7 @@ docker compose exec db psql -U adbanao -d adbanao -c "select id, user_id, create
 
 Say these before they ask:
 
-- **Brands and products are not tied to a user yet.** Today only accounts and profiles are per user. Ownership of brands and products is the next planned goal (F9). Do not create a brand in the demo: every user would see it, which is the gap that goal closes.
+- **There are no screens for brands and products yet.** They are shown through the API page (`/docs`) and the database viewer. The screens come with goals U3 to U5.
 - **No password reset or email check yet.** Planned.
 - **The pages are a prototype** (plain HTML). The React version comes with goal U1.
 - **Passwords for demo users are public.** They exist for the demo only. Delete them (or the database) before any real use.

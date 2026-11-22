@@ -11,13 +11,14 @@ How the database is designed, how it is built, and how to change it. Everything 
 | How is the schema created? | Alembic migrations (`make migrate`). In development and tests, the app also creates missing tables at startup. In production it does not |
 | How many tables? | 7 |
 | Where is the connection set? | `DATABASE_URL` in `.env` (template in `.env.example`) |
-| Who owns each row? | Only users and sessions have an owner today. Brands and products are not tied to a user yet (goal F9) |
+| Who owns each row? | A user owns their sessions and their brands. Products and ads belong to a user through their brand. Every route checks this, and another user's id answers "not found" |
 
 ## Tables and how they connect
 
 ```mermaid
 erDiagram
     users ||--o{ user_sessions : "signs in with"
+    users ||--o{ brands : owns
     brands ||--o{ products : has
     products ||--o{ ads : "advertised by"
     ads ||--o{ verification_reports : "checked by"
@@ -38,6 +39,7 @@ erDiagram
     }
     brands {
         int id PK
+        int user_id FK
         string name
         bool is_archived
     }
@@ -70,7 +72,7 @@ erDiagram
     }
 ```
 
-Today there are two separate groups: **accounts** (`users`, `user_sessions`) and **content** (`brands` down to `verification_checks`). They are joined in goal F9, when each brand gets an owner.
+Accounts (`users`, `user_sessions`) and content (`brands` down to `verification_checks`) are joined by `brands.user_id`. Ownership flows down: a user owns brands, a brand has products, a product has ads, an ad has reports, a report has checks.
 
 ## Table by table
 
@@ -105,6 +107,7 @@ One row per signed-in browser. Signing out deletes the row, which ends that sess
 
 | Column | Type | Null | Notes |
 | --- | --- | --- | --- |
+| `user_id` | integer | no | The owner. Foreign key to `users`, **RESTRICT**. Indexed. Added by migration 0002 |
 | `name` | string(200) | no | Indexed |
 | `primary_colors`, `secondary_colors` | JSON list | no | Hex codes |
 | `fonts` | JSON list | no | |
@@ -199,7 +202,7 @@ flowchart LR
 ```
 
 1. **Models** in `backend/app/db/models.py` describe the tables in Python.
-2. **Migrations** in `backend/alembic/versions/` are numbered scripts that create or change tables. `0001_initial_schema.py` builds all 7 tables. Each script has `upgrade` and `downgrade`.
+2. **Migrations** in `backend/alembic/versions/` are numbered scripts that create or change tables. `0001_initial_schema.py` builds all 7 tables. `0002_brand_owner.py` adds `brands.user_id` (existing brands go to the oldest user; if there are brands and no users, it stops with a message instead of guessing). Each script has `upgrade` and `downgrade`.
 3. **A test** (`backend/tests/integration/test_migrations.py`) builds a fresh database from the migrations and fails if it differs from the models. That stops the two from drifting apart.
 4. **The URL helper** (`backend/app/db/url.py`) accepts `postgres://` and `postgresql://` links as given by Supabase and Neon and converts them for the driver.
 5. **The session** (`backend/app/db/session.py`) creates the engine once and gives each request its own database session, closed after the request. For PostgreSQL it checks connections before use, because free hosts close idle ones.
@@ -248,6 +251,8 @@ Never edit a migration that has already been merged. Add a new one.
 | Models behave (archive rule, approval expiry, worst-result-wins) | `test_models.py`, on SQLite |
 | Migration builds the same schema as the models, and downgrades cleanly | `test_migrations.py`, on SQLite |
 | Accounts and sessions through the API | `test_auth_api.py`, on SQLite |
+| One user cannot see, change or add to another user's brands and products (three users) | `test_ownership.py`, on SQLite. Also the API check in `scripts/smoke_test.py` on SQLite and PostgreSQL |
+| The ownership migration moves old brands to the oldest user, and refuses when there is no user | `test_migrations.py` |
 | Migration, server and API checks on PostgreSQL 16 in Docker, and downgrade then upgrade again (owner's machine, 2026-11-22) | `scripts/check_my_machine.sh --postgres` |
 | **Not yet tested:** a hosted database (Supabase or Neon). Connection strings and limits can differ | Put its URL in `.env`, run `make migrate`, and re-run the check script |
 
@@ -257,10 +262,9 @@ These come from the roadmap and [18-pages-and-user-flow.md](18-pages-and-user-fl
 
 | Planned change | Goal | Why |
 | --- | --- | --- |
-| `user_id` on `brands` (and so on products and ads) | F9 | Each user sees only their own data |
 | Ad versions table (scene JSON, one row per edit) | A5, A6 | Undo and redo, and a fingerprint per version |
 | Overrides (user's written reason for ignoring a check) | V5 | Recorded and shown on the approve screen |
-| Password reset tokens | F9 | Reset by email |
+| Password reset tokens | later | Reset by email |
 | Rate-limit or login-attempt record | S4 | Slow down password guessing |
 | Brand logo variants (light, dark, icon) | U9 | Settings page |
 | Indexes on `ads.status` and `products.is_archived` | when lists get long | Dashboard filters |

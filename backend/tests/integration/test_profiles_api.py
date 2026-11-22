@@ -23,7 +23,12 @@ from app.main import app  # noqa: E402
 def client():
     Base.metadata.create_all(bind=engine)
     with TestClient(app) as test_client:
-        yield test_client
+        signed_up = test_client.post(
+            "/auth/signup",
+            json={"email": "owner@example.com", "password": "blue-River-42", "display_name": "Owner"},
+        )
+        assert signed_up.status_code == 201, signed_up.text
+        yield test_client  # carries the sign-in cookie
     Base.metadata.drop_all(bind=engine)
 
 

@@ -44,3 +44,43 @@ def test_upgrade_matches_models_and_downgrades(tmp_path):
     engine = create_engine(url)
     assert set(inspect(engine).get_table_names()) <= {"alembic_version"}
     engine.dispose()
+
+
+_BRAND = (
+    "insert into brands (name, primary_colors, secondary_colors, fonts, is_archived, created_at, updated_at) "
+    "values ('Old Brand', '[]', '[]', '[]', 0, '2026-01-01', '2026-01-01')"
+)
+_USER = (
+    "insert into users (email, password_hash, display_name, language, created_at, updated_at) "
+    "values ('old@example.com', 'x', 'Old', 'en', '2026-01-01', '2026-01-01')"
+)
+
+
+def test_old_brands_are_given_to_the_oldest_user(tmp_path):
+    from sqlalchemy import text
+
+    url = f"sqlite:///{tmp_path / 'o.db'}"
+    command.upgrade(_config(url), "0001")
+    engine = create_engine(url)
+    with engine.begin() as conn:
+        conn.execute(text(_USER))
+        conn.execute(text(_BRAND))
+    command.upgrade(_config(url), "head")
+    with engine.connect() as conn:
+        owner = conn.execute(text("select user_id from brands")).scalar()
+        uid = conn.execute(text("select id from users")).scalar()
+    assert owner == uid
+    engine.dispose()
+
+
+def test_old_brands_without_any_user_stop_the_migration(tmp_path):
+    from sqlalchemy import text
+
+    url = f"sqlite:///{tmp_path / 'n.db'}"
+    command.upgrade(_config(url), "0001")
+    engine = create_engine(url)
+    with engine.begin() as conn:
+        conn.execute(text(_BRAND))
+    with pytest.raises(RuntimeError, match="no users"):
+        command.upgrade(_config(url), "head")
+    engine.dispose()
