@@ -1,0 +1,121 @@
+# Faculty demo: pages talking to the database, with three users
+
+A 7 to 10 minute demonstration that shows, live, that what users do on the pages changes real rows in the database. Everything here already works and was tested on the owner's machine (see [PROGRESS.md](PROGRESS.md)).
+
+## What you will show
+
+| Claim | How you prove it |
+| --- | --- |
+| Sign up writes to the database | Create a user on the page, refresh the `users` table, a new row appears |
+| Passwords are not stored | The `password_hash` column shows an unreadable `scrypt$...` string, not the password |
+| Signing in creates a session | A row appears in `user_sessions`. Sign out and the row disappears |
+| Each user has their own data | Three users in three browsers each see only their own profile |
+| Profile edits are saved, not just shown | Edit a profile on the page, refresh Adminer, the row changed. Reload the page, the value is still there |
+| Wrong password is refused | Try it. No session row is created |
+
+## Setup (once, before the demo)
+
+You need Docker and the project set up as in [20-test-on-your-pc.md](20-test-on-your-pc.md).
+
+```bash
+cd adbanao && source .venv/bin/activate
+git pull
+make db-viewer                     # PostgreSQL and the database viewer (Docker)
+```
+
+In `.env` make sure this line is present, so the app uses PostgreSQL:
+
+```text
+DATABASE_URL=postgresql://adbanao:adbanao@localhost:5432/adbanao
+```
+
+Then:
+
+```bash
+make migrate                       # create the tables
+make run                           # terminal 1: the API (leave running)
+cd frontend && python3 -m http.server 5173     # terminal 2: the pages (leave running)
+make seed                          # terminal 3: creates the three demo users
+```
+
+The three demo users (the same password for all, for demos only):
+
+| Name | Email | Business | Language |
+| --- | --- | --- | --- |
+| Rina Akter | `rina@demo.adbanao.test` | Rina's Pickles | Bangla |
+| Karim Hossain | `karim@demo.adbanao.test` | Karim Fashion House | English |
+| Nusrat Jahan | `nusrat@demo.adbanao.test` | Nusrat Beauty Corner | English |
+
+Password for all three: `Demo-pass-123`
+
+`make seed` can be run again at any time. It restores the three profiles to these values.
+
+### Open the database viewer
+
+Open http://localhost:8080 and sign in with:
+
+| Field | Value |
+| --- | --- |
+| System | PostgreSQL |
+| Server | `db` |
+| Username | `adbanao` |
+| Password | `adbanao` |
+| Database | `adbanao` |
+
+Click **users** in the left list, then **Select data**. Keep this tab open next to the app.
+
+### Prepare three separate browsers
+
+Cookies are shared between tabs of the same browser, so one browser holds **one** signed-in user. For three users at once use three separate windows:
+
+1. Normal Chrome or Firefox window: Rina
+2. Private (incognito) window: Karim
+3. A different browser, or a second private window of another browser: Nusrat
+
+Open http://localhost:5173/ in each.
+
+## The demo script
+
+**1. Show the empty starting point (1 minute).**
+In Adminer open `user_sessions`. It is empty. Open `users`: three rows, created by the seed script. Point at `password_hash`: "Not the password. A salted scrypt hash. Even with this table, nobody can sign in."
+
+**2. Sign up a fourth user live (1 minute).**
+In window 1 click Get Started, create an account with your own email and any password of 8 or more characters. The page says the account is ready. Switch to Adminer, refresh `users`: a new row. Refresh `user_sessions`: one new row. "The page just wrote to PostgreSQL."
+
+**3. Three users sign in (2 minutes).**
+In each of the three windows sign in as Rina, Karim and Nusrat. Refresh `user_sessions` in Adminer: one row per signed-in browser, each with a different `user_id`. Open Profile in each window: each shows a different name, business and phone. "Same page, same server, three people, three different sets of data."
+
+**4. Edit and prove it is saved (2 minutes).**
+In Rina's window open Profile, change the business name to something new, click Save changes. Show "Saved". Now go to Adminer, refresh `users`: Rina's row changed and `updated_at` moved. Back in Rina's window press reload: the value is still there. "Not a screen trick. It was read back from the database." Karim's and Nusrat's rows did not change.
+
+**5. Wrong password and sign out (1 minute).**
+In a private window try Karim's email with a wrong password: "Incorrect email or password". No new session row. Then in Karim's window click Sign out. Refresh `user_sessions`: his row is gone. Open the Profile page address in that window: it sends him back to sign in. "Signing out ends the session in the database, not only in the browser."
+
+**6. (Optional) Show the browser side (1 minute).**
+In Chrome press F12, open Application, then Cookies. The `adbanao_session` cookie is marked HttpOnly: page scripts cannot read it. The cookie holds a random token. The database holds only its hash.
+
+**7. Show the proof of testing (1 minute).**
+Show the green GitHub Actions run and `my-test-report.txt`: automated tests, a browser test of the same flow, and PostgreSQL checks all pass.
+
+## Commands to use if the viewer is not available
+
+```bash
+docker compose exec db psql -U adbanao -d adbanao -c "select id, email, display_name, business_name, updated_at from users order by id;"
+docker compose exec db psql -U adbanao -d adbanao -c "select id, user_id, created_at, expires_at from user_sessions;"
+```
+
+## Be honest about the limits
+
+Say these before they ask:
+
+- **Brands and products are not tied to a user yet.** Today only accounts and profiles are per user. Ownership of brands and products is the next planned goal (F9). Do not create a brand in the demo: every user would see it, which is the gap that goal closes.
+- **No password reset or email check yet.** Planned.
+- **The pages are a prototype** (plain HTML). The React version comes with goal U1.
+- **Passwords for demo users are public.** They exist for the demo only. Delete them (or the database) before any real use.
+
+## Reset after the demo
+
+```bash
+make seed                          # put the three profiles back
+docker compose down -v             # or remove the database completely
+```

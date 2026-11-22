@@ -4,7 +4,7 @@ PY      := $(VENV)/bin/python
 PIP     := $(VENV)/bin/pip
 
 .DEFAULT_GOAL := help
-.PHONY: help setup test lint fix run db-up db-down clean
+.PHONY: help setup test lint fix run db-up db-viewer seed db-down clean
 
 help:  ## Show this list
 	@grep -E '^[a-zA-Z_-]+:.*##' $(MAKEFILE_LIST) | awk -F':.*## ' '{printf "  %-10s %s\n", $$1, $$2}'
@@ -31,6 +31,12 @@ run:  ## Start the API at http://localhost:8000 (docs at /docs)
 
 db-up:  ## Start local PostgreSQL with Docker
 	docker compose up -d db
+
+db-viewer:  ## Start the web database viewer at http://localhost:8080 (demo)
+	docker compose up -d db adminer
+
+seed:  ## Create 3 demo users (the API must be running)
+	$(PY) scripts/seed_demo.py
 
 migrate:  ## Create or upgrade the database tables (Alembic)
 	cd backend && ../$(VENV)/bin/alembic upgrade head

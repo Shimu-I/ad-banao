@@ -15,5 +15,13 @@ services:
       test: ["CMD-SHELL", "pg_isready -U adbanao"]
       interval: 5s
       retries: 10
+  # Web viewer for the database, for demos. Open http://localhost:8080
+  # System: PostgreSQL, Server: db, Username: adbanao, Password: adbanao, Database: adbanao
+  adminer:
+    image: adminer:4
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
 volumes:
   dbdata:
