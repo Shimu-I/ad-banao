@@ -213,7 +213,7 @@ These are the honest gaps a senior reviewer would raise, each with the goal that
 
 | Date | What happened |
 | --- | --- |
-| 2026-11-23 | Admin console built (docs/22): roles, suspension, activity log (migration 0003), admin API with CSV, admin page in light/dark and desktop/phone. Page checked in a browser against fake data. API and migration tests are only run by GitHub Actions; result recorded below once the pull request has run. Not yet tried by the owner. |
+| 2026-11-23 | Admin console built (docs/22): roles, suspension, activity log (migration 0003), admin API with CSV, admin page in light/dark and desktop/phone. Page checked in a browser against fake data. GitHub Actions (PR #56): 355 tests pass (29 new), plus the admin API checks and the admin page browser checks against the real backend. Not yet tried on the owner's machine. |
 | 2026-11-13 | Idea reviewed. Project document written with features, corner cases, limits and costs. |
 | 2026-11-13 | Step 1 pushed (repo setup). |
 | 2026-11-13 | Step 2 built and merged (PR #2). Project overview added (PR #1). |
