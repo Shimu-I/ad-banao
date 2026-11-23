@@ -6,6 +6,7 @@ versions follow [Semantic Versioning](https://semver.org).
 ## [Unreleased]
 
 ### Added
+- Project tracker (`docs/TRACKER.md`) and `scripts/update_tracker.py`.
 - Project documents, backend skeleton and database models.
 - Product and brand profiles: input, price and unit cleanup, photo validation, readiness report.
 - Grounded product description and ad text generation with fact checking and basic-text fallback.

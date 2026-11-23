@@ -45,6 +45,7 @@ Read in this order if you are new. Each file covers one topic.
 
 | File | What it holds |
 | --- | --- |
+| [TRACKER.md](TRACKER.md) | One-page tracker: mission, scoreboard, what Claude can do alone, what needs a person |
 | [PROGRESS.md](PROGRESS.md) | How far we are, what is tested and by whom, approvals, decisions, history |
 | [FACULTY_SUGGESTIONS.md](FACULTY_SUGGESTIONS.md) | Every faculty suggestion and what we decided |
 | [CONTRIBUTING.md](CONTRIBUTING.md) | Branch, commit and pull request rules |
