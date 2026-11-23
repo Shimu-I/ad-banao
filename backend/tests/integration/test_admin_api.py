@@ -85,7 +85,7 @@ def test_admin_login_checks_all_three_things(admin):
         msgs = {r.json()["detail"] for r in wrong}
         assert [r.status_code for r in wrong] == [401, 401, 401, 401]
         assert msgs == {"Incorrect email, password or secret word."}  # same message for every failure
-        assert c.get("/admin/overview").status_code == 401  # nothing was signed in
+        assert c.get("/admin/overview").status_code == 403  # only a plain-user session exists
         ok = _admin_login(c)
         assert ok.status_code == 200 and ok.json()["role"] == "admin"
         assert "secret" not in ok.text.lower() and "hash" not in ok.text.lower()
