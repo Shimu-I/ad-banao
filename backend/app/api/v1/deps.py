@@ -39,8 +39,17 @@ def get_current_user(session: UserSession = Depends(get_current_session)) -> Use
     return session.user
 
 
-def require_admin(user: User = Depends(get_current_user)) -> User:
-    """Only active admins pass. Everyone else gets 403 (signed-out visitors get 401 above)."""
+ADMIN_VERIFY_DETAIL = "Admin sign-in required."
+
+
+def require_admin(session: UserSession = Depends(get_current_session)) -> User:
+    """Only active admins who signed in on the admin page (email, password and secret word).
+
+    Signed out: 401. Not an admin: 403 "Admins only." An admin who signed in on the normal
+    page: 403 "Admin sign-in required." so the page can send them to the admin sign-in."""
+    user = session.user
     if user.role != ROLE_ADMIN:
         raise HTTPException(status_code=403, detail="Admins only.")
+    if not session.admin_verified:
+        raise HTTPException(status_code=403, detail=ADMIN_VERIFY_DETAIL)
     return user

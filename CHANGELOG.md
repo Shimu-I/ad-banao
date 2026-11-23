@@ -16,6 +16,7 @@ versions follow [Semantic Versioning](https://semver.org).
 - Alembic migrations with an initial schema (`make migrate`).
 
 ### Added
+- Admin sign-in page with email, password and secret word (migration 0004), `make admin-secret`, gradients on the sign-in and sign-up page.
 - Admin console: user roles, account suspension, activity log (migration 0003), `/admin/*` API, CSV downloads, `frontend/admin.html` (light/dark, desktop/phone, English/Bangla), `make admin`, demo admin user, admin end-to-end checks.
 
 ### Fixed

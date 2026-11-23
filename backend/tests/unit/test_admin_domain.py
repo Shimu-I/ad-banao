@@ -12,6 +12,8 @@ from app.domain.admin_stats import (
 )
 from app.domain.csv_export import csv_safe, to_csv
 from app.domain.roles import (
+    bootstrap_secret_word,
+    secret_word_problem,
     is_bootstrap_admin,
     is_demo_email,
     parse_admin_emails,
@@ -61,6 +63,23 @@ def test_admin_email_list():
     assert not is_bootstrap_admin("a@x.com", "a@x.com", "production")
     assert not is_bootstrap_admin("other@x.com", "a@x.com", "development")
     assert not is_bootstrap_admin("a@x.com", "", "development")
+
+
+def test_admin_list_with_secret_words():
+    raw = "a@x.com=Open Sesame, B@y.com , c@z.com="
+    assert parse_admin_emails(raw) == {"a@x.com", "b@y.com", "c@z.com"}
+    assert bootstrap_secret_word("A@X.com", raw, "development") == "Open Sesame"
+    assert bootstrap_secret_word("b@y.com", raw, "test") is None
+    assert bootstrap_secret_word("c@z.com", raw, "test") is None
+    assert bootstrap_secret_word("a@x.com", raw, "production") is None
+
+
+def test_secret_word_rules():
+    assert secret_word_problem("short")
+    assert secret_word_problem("  abcde  ")  # spaces do not count
+    assert secret_word_problem("x" * 129)
+    assert secret_word_problem("same-as-pass", "same-as-pass")
+    assert secret_word_problem("long enough word", "other-password") is None
 
 
 def test_demo_email():

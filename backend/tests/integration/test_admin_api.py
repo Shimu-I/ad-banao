@@ -11,6 +11,9 @@ from app.main import app  # noqa: E402
 
 PW = "blue-River-42"
 ADMIN_EMAIL = "boss@example.com"
+ADMIN_SECRET = "boss-secret-1"
+SECOND_EMAIL = "second.boss@example.com"
+SECOND_SECRET = "second-secret-1"
 
 
 def _client():
@@ -23,14 +26,22 @@ def _signup(c, email, name="Person", **extra):
     return r.json()
 
 
+def _admin_login(c, email=ADMIN_EMAIL, secret=ADMIN_SECRET, password=PW):
+    return c.post("/auth/admin-login", json={"email": email, "password": password, "secret_word": secret})
+
+
+def _verified_admin(c, email=ADMIN_EMAIL, secret=ADMIN_SECRET, name="Boss"):
+    """Sign up (the first time) and sign in on the admin page."""
+    r = c.post("/auth/signup", json={"email": email, "password": PW, "display_name": name})
+    assert r.status_code in (201, 409), r.text
+    assert _admin_login(c, email, secret).status_code == 200
+    return c
+
+
 @pytest.fixture()
 def admin():
     with _client() as c:
-        try:
-            _signup(c, ADMIN_EMAIL, "Boss")
-        except AssertionError:
-            assert c.post("/auth/login", json={"email": ADMIN_EMAIL, "password": PW}).status_code == 200
-        yield c
+        yield _verified_admin(c)
 
 
 @pytest.fixture()
@@ -45,6 +56,12 @@ def member():
         yield c
 
 
+def test_admin_login_cannot_be_used_to_become_admin(member):
+    r = member.post("/auth/admin-login", json={"email": member.user["email"], "password": PW, "secret_word": "guess-word-1"})
+    assert r.status_code == 401
+    assert member.get("/admin/overview").status_code == 403
+
+
 def test_signed_out_gets_401_and_normal_user_gets_403(member):
     with _client() as anon:
         for path in ["/admin/overview", "/admin/users", "/admin/activity", "/admin/export/users.csv"]:
@@ -54,6 +71,90 @@ def test_signed_out_gets_401_and_normal_user_gets_403(member):
         assert member.get(path).status_code == 403, path
     assert member.patch("/admin/users/1", json={"role": "admin"}).status_code == 403
     assert member.post("/admin/users/1/sign-out").status_code == 403
+
+
+def test_admin_login_checks_all_three_things(admin):
+    with _client() as c:
+        wrong = [
+            _admin_login(c, secret="not-the-word"),
+            _admin_login(c, password="wrong-Pass-1"),
+            _admin_login(c, email="nobody@example.com"),
+        ]
+        c.post("/auth/signup", json={"email": "plain@example.com", "password": PW, "display_name": "P"})
+        wrong.append(_admin_login(c, email="plain@example.com", secret="whatever-word"))
+        msgs = {r.json()["detail"] for r in wrong}
+        assert [r.status_code for r in wrong] == [401, 401, 401, 401]
+        assert msgs == {"Incorrect email, password or secret word."}  # same message for every failure
+        assert c.get("/admin/overview").status_code == 401  # nothing was signed in
+        ok = _admin_login(c)
+        assert ok.status_code == 200 and ok.json()["role"] == "admin"
+        assert "secret" not in ok.text.lower() and "hash" not in ok.text.lower()
+        assert c.get("/admin/overview").status_code == 200
+
+
+def test_secret_word_ignores_surrounding_spaces_but_not_case(admin):
+    with _client() as c:
+        assert _admin_login(c, secret="  boss-secret-1  ").status_code == 200
+    with _client() as c:
+        assert _admin_login(c, secret="BOSS-SECRET-1").status_code == 401
+
+
+def test_normal_sign_in_is_not_enough_for_an_admin(admin):
+    with _client() as c:
+        assert c.post("/auth/login", json={"email": ADMIN_EMAIL, "password": PW}).status_code == 200
+        assert c.get("/users/me").json()["role"] == "admin"
+        for path in ["/admin/overview", "/admin/users", "/admin/activity", "/admin/export/users.csv"]:
+            r = c.get(path)
+            assert r.status_code == 403 and r.json()["detail"] == "Admin sign-in required.", path
+        assert c.patch("/admin/users/1", json={"role": "user"}).status_code == 403
+        assert _admin_login(c).status_code == 200
+        assert c.get("/admin/overview").status_code == 200
+
+
+def test_admin_without_a_secret_word_cannot_use_the_admin_area():
+    with _client() as c:
+        c.post("/auth/signup", json={"email": "nosecret@example.com", "password": PW, "display_name": "N"})
+        assert c.get("/users/me").json()["role"] == "admin"  # listed without a word
+        assert _admin_login(c, "nosecret@example.com", "anything-here").status_code == 401
+        assert c.get("/admin/overview").status_code == 403
+
+
+def test_failed_and_successful_admin_sign_ins_are_logged(admin):
+    with _client() as c:
+        _admin_login(c, secret="wrong-secret-9")
+        _admin_login(c)
+    ev = admin.get("/admin/activity?group=admin&per_page=100").json()["items"]
+    types = [e["event_type"] for e in ev]
+    assert "admin_login_failed" in types and "admin_login" in types
+    assert "wrong-secret-9" not in str(ev)
+
+
+def test_suspended_admin_cannot_sign_in_on_the_admin_page(admin):
+    with _client() as second:
+        _verified_admin(second, SECOND_EMAIL, SECOND_SECRET, "Second")
+        second_id = second.get("/users/me").json()["id"]
+        assert admin.patch(f"/admin/users/{second_id}", json={"is_active": False}).status_code == 200
+        assert second.get("/admin/overview").status_code == 401  # sessions ended
+    with _client() as c:
+        assert _admin_login(c, SECOND_EMAIL, "wrong-secret-9").status_code == 401  # still no hint
+        r = _admin_login(c, SECOND_EMAIL, SECOND_SECRET)
+        assert r.status_code == 403 and "suspended" in r.json()["detail"]
+    assert admin.patch(f"/admin/users/{second_id}", json={"is_active": True}).status_code == 200
+    with _client() as c:
+        assert _admin_login(c, SECOND_EMAIL, SECOND_SECRET).status_code == 200
+
+
+def test_demoted_admin_loses_the_secret_word(admin):
+    with _client() as second:
+        _verified_admin(second, SECOND_EMAIL, SECOND_SECRET, "Second")
+        second_id = second.get("/users/me").json()["id"]
+        assert admin.patch(f"/admin/users/{second_id}", json={"role": "user"}).json()["role"] == "user"
+        assert second.get("/admin/overview").status_code == 403
+        assert admin.patch(f"/admin/users/{second_id}", json={"role": "admin"}).status_code == 200
+    # promoted again, but the old word is gone until the server owner sets one
+    detail = admin.get(f"/admin/users/{second_id}").json()
+    assert detail["role"] == "admin" and detail["has_secret_word"] is False
+    assert admin.patch(f"/admin/users/{second_id}", json={"role": "user"}).status_code == 200
 
 
 def test_role_is_in_users_me(admin, member):
@@ -171,7 +272,9 @@ def test_suspend_blocks_login_ends_sessions_and_can_be_undone(admin, member):
 def test_promote_and_demote(admin, member):
     uid = member.user["id"]
     assert admin.patch(f"/admin/users/{uid}", json={"role": "admin"}).json()["role"] == "admin"
-    assert member.get("/admin/overview").status_code == 200
+    # a new admin has no secret word yet, so the admin area stays closed to them
+    assert member.get("/admin/overview").status_code == 403
+    assert admin.get(f"/admin/users/{uid}").json()["has_secret_word"] is False
     assert admin.patch(f"/admin/users/{uid}", json={"role": "user"}).json()["role"] == "user"
     assert member.get("/admin/overview").status_code == 403
 

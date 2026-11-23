@@ -36,7 +36,7 @@ start_api() {  # start_api <database url> <log name>
 stop_api() { [ -n "${API_PID:-}" ] && kill "$API_PID" 2>/dev/null; wait "$API_PID" 2>/dev/null; API_PID=""; sleep 1; }
 
 # Lets the demo admin user become an admin during these checks (development only).
-export ADMIN_EMAILS=admin@demo.adbanao.test
+export ADMIN_EMAILS=admin@demo.adbanao.test=banao-demo-secret
 
 echo "AdBanao check on $(hostname) - $(date)"
 echo

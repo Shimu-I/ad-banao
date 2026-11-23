@@ -86,6 +86,28 @@ def test_old_brands_without_any_user_stop_the_migration(tmp_path):
     engine.dispose()
 
 
+def test_0004_adds_secret_word_columns_and_unverifies_old_sessions(tmp_path):
+    from sqlalchemy import text
+
+    url = f"sqlite:///{tmp_path / 'b.db'}"
+    command.upgrade(_config(url), "0003")
+    engine = create_engine(url)
+    with engine.begin() as conn:
+        conn.execute(text(_USER))
+        conn.execute(text(
+            "insert into user_sessions (user_id, token_hash, created_at, expires_at) "
+            "values (1, 'h', '2026-01-01', '2030-01-01')"
+        ))
+    command.upgrade(_config(url), "head")
+    with engine.connect() as conn:
+        assert conn.execute(text("select admin_secret_hash from users")).scalar() is None
+        assert bool(conn.execute(text("select admin_verified from user_sessions")).scalar()) is False
+    command.downgrade(_config(url), "0003")
+    assert "admin_verified" not in {c["name"] for c in inspect(engine).get_columns("user_sessions")}
+    assert "admin_secret_hash" not in {c["name"] for c in inspect(engine).get_columns("users")}
+    engine.dispose()
+
+
 def test_0003_keeps_existing_users_and_logs_their_signup(tmp_path):
     from sqlalchemy import text
 

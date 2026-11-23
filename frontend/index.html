@@ -1787,6 +1787,18 @@ html{font-size:125%}
 @media(min-width:1024px){.page{padding:24px 16px}.shell{max-width:1148px}.left{padding-top:24px}.body{min-height:min(660px,calc(100svh - 80px))}}
 @media(min-width:1440px){.shell{max-width:1148px}.body{min-height:min(720px,calc(100svh - 80px))}}
 @media(min-width:1920px){.shell{max-width:1148px}}
+
+/* ---- Gradients (sign in / sign up) ---- */
+:root{--gA:#3B8458;--gB:#1B4D34;--gC:#123A27;--pg1:rgba(116,190,140,.34);--pg2:rgba(232,184,74,.24);--rt1:#F3F7E6;--rt2:#D3E0BD;--rt3:#B4D0A2;--rhl:rgba(255,255,255,.6);--cd1:#FFFEF9;--cd2:#F7F2E2}
+:root[data-theme=dark]{--gA:#3FA06A;--gB:#2A7A4C;--gC:#1D5C39;--pg1:rgba(42,122,76,.38);--pg2:rgba(232,184,74,.10);--rt1:#10231A;--rt2:#173225;--rt3:#215038;--rhl:rgba(116,212,147,.2);--cd1:#142A1E;--cd2:#102019}
+.page{background:radial-gradient(62% 52% at 10% 6%,var(--pg1),transparent 70%),radial-gradient(52% 46% at 94% 92%,var(--pg2),transparent 70%),linear-gradient(180deg,var(--bg),var(--bg))}
+.shell{background:linear-gradient(180deg,var(--shell),color-mix(in srgb,var(--shell) 88%,var(--p2)))}
+.fc{background:linear-gradient(180deg,var(--cd1),var(--cd2))}
+.btn{background:linear-gradient(135deg,var(--gA) 0%,var(--gB) 55%,var(--gC) 100%);box-shadow:0 10px 18px -10px var(--gB),inset 0 1px 0 rgba(255,255,255,.18)}
+.logo{background:linear-gradient(135deg,var(--gA),var(--gC))}
+.chk{background:linear-gradient(135deg,var(--gA),var(--gC))}
+.right{background:radial-gradient(75% 55% at 72% 18%,var(--rhl),transparent 62%),radial-gradient(60% 45% at 8% 100%,var(--pg2),transparent 70%),linear-gradient(160deg,var(--rt1) 0%,var(--rt2) 52%,var(--rt3) 100%)}
+.av{background:linear-gradient(135deg,var(--gA),var(--gC));color:#fff}
 </style></head><body>
 <div class="page"><div class="shell">
 <div class="top">

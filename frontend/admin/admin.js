@@ -36,15 +36,15 @@
       selfNote: "You cannot suspend or demote yourself. Ask another admin.",
       "c.suspend.t": "Suspend this account?", "c.suspend.b": "{n} will be signed out now and cannot sign in until you reactivate the account. Their data is kept.",
       "c.react.t": "Reactivate this account?", "c.react.b": "{n} will be able to sign in again.",
-      "c.make.t": "Make this person an admin?", "c.make.b": "{n} will see this admin page and can suspend and promote other users.",
+      "c.make.t": "Make this person an admin?", "c.make.b": "{n} will see this admin page and can suspend and promote other users. They also need a secret word, set on the server with: make admin EMAIL=their email.",
       "c.remove.t": "Remove admin access?", "c.remove.b": "{n} will no longer see this admin page.",
       "c.out.t": "Sign out everywhere?", "c.out.b": "{n} will be signed out of every browser. They can sign in again.",
       "t.suspend": "Account suspended.", "t.react": "Account reactivated.", "t.make": "Admin access given.", "t.remove": "Admin access removed.", "t.out": "Signed out everywhere.", "t.dl": "Download started.", "t.fail": "Something went wrong.",
       "e.signup": "Created an account", "e.login": "Signed in", "e.login_failed": "Signed in (wrong password)", "e.login_blocked": "Tried to sign in (account suspended)", "e.logout": "Signed out",
       "e.password_changed": "Changed password", "e.profile_updated": "Updated profile", "e.brand_created": "Created brand", "e.brand_updated": "Updated brand", "e.brand_archived": "Archived brand", "e.brand_restored": "Restored brand",
       "e.product_created": "Created product", "e.product_updated": "Updated product", "e.product_archived": "Archived product", "e.product_restored": "Restored product",
-      "e.admin_role_changed": "Role changed", "e.admin_suspended": "Account suspended", "e.admin_reactivated": "Account reactivated", "e.admin_signed_out_user": "Signed out everywhere",
-      by: "by {n}", unknownUser: "Unknown visitor", offline: "Cannot reach the server. Check your connection and try again.", viewing: "Showing: {n}", clear: "Clear"
+      "e.admin_role_changed": "Role changed", "e.admin_suspended": "Account suspended", "e.admin_reactivated": "Account reactivated", "e.admin_signed_out_user": "Signed out everywhere", "e.admin_login": "Admin sign-in", "e.admin_login_failed": "Admin sign-in failed",
+      "p.secret": "Secret word", "yes": "Set", "no": "Not set", by: "by {n}", unknownUser: "Unknown visitor", offline: "Cannot reach the server. Check your connection and try again.", viewing: "Showing: {n}", clear: "Clear"
     },
     bn: {
       title: "অ্যাডমিন ড্যাশবোর্ড", subtitle: "আপনার অ্যাডবানাও প্ল্যাটফর্মের সারসংক্ষেপ", soon: "শীঘ্রই",
@@ -74,15 +74,15 @@
       selfNote: "নিজেকে স্থগিত বা অ্যাডমিন থেকে সরানো যায় না। অন্য অ্যাডমিনকে বলুন।",
       "c.suspend.t": "এই অ্যাকাউন্ট স্থগিত করবেন?", "c.suspend.b": "{n} এখনই সাইন আউট হবেন এবং আপনি চালু না করা পর্যন্ত সাইন-ইন করতে পারবেন না। তথ্য থেকে যাবে।",
       "c.react.t": "অ্যাকাউন্ট আবার চালু করবেন?", "c.react.b": "{n} আবার সাইন-ইন করতে পারবেন।",
-      "c.make.t": "একে অ্যাডমিন বানাবেন?", "c.make.b": "{n} এই অ্যাডমিন পেজ দেখতে এবং অন্যদের স্থগিত বা অ্যাডমিন করতে পারবেন।",
+      "c.make.t": "একে অ্যাডমিন বানাবেন?", "c.make.b": "{n} এই অ্যাডমিন পেজ দেখতে এবং অন্যদের স্থগিত বা অ্যাডমিন করতে পারবেন। তাঁর একটি সিক্রেট ওয়ার্ডও লাগবে, সার্ভারে এই কমান্ডে দিন: make admin EMAIL=তাঁর ইমেইল।",
       "c.remove.t": "অ্যাডমিন অনুমতি সরাবেন?", "c.remove.b": "{n} আর এই অ্যাডমিন পেজ দেখতে পারবেন না।",
       "c.out.t": "সব জায়গা থেকে সাইন আউট করবেন?", "c.out.b": "{n} সব ব্রাউজার থেকে সাইন আউট হবেন। তিনি আবার সাইন-ইন করতে পারবেন।",
       "t.suspend": "অ্যাকাউন্ট স্থগিত হয়েছে।", "t.react": "অ্যাকাউন্ট চালু হয়েছে।", "t.make": "অ্যাডমিন অনুমতি দেওয়া হয়েছে।", "t.remove": "অ্যাডমিন অনুমতি সরানো হয়েছে।", "t.out": "সব জায়গা থেকে সাইন আউট হয়েছে।", "t.dl": "ডাউনলোড শুরু হয়েছে।", "t.fail": "কিছু একটা ভুল হয়েছে।",
       "e.signup": "অ্যাকাউন্ট খুলেছেন", "e.login": "সাইন-ইন করেছেন", "e.login_failed": "সাইন-ইন (ভুল পাসওয়ার্ড)", "e.login_blocked": "সাইন-ইনের চেষ্টা (অ্যাকাউন্ট স্থগিত)", "e.logout": "সাইন আউট করেছেন",
       "e.password_changed": "পাসওয়ার্ড বদলেছেন", "e.profile_updated": "প্রোফাইল আপডেট করেছেন", "e.brand_created": "ব্র্যান্ড বানিয়েছেন", "e.brand_updated": "ব্র্যান্ড আপডেট করেছেন", "e.brand_archived": "ব্র্যান্ড আর্কাইভ করেছেন", "e.brand_restored": "ব্র্যান্ড ফিরিয়েছেন",
       "e.product_created": "পণ্য বানিয়েছেন", "e.product_updated": "পণ্য আপডেট করেছেন", "e.product_archived": "পণ্য আর্কাইভ করেছেন", "e.product_restored": "পণ্য ফিরিয়েছেন",
-      "e.admin_role_changed": "ভূমিকা বদলানো হয়েছে", "e.admin_suspended": "অ্যাকাউন্ট স্থগিত", "e.admin_reactivated": "অ্যাকাউন্ট চালু", "e.admin_signed_out_user": "সব জায়গা থেকে সাইন আউট",
-      by: "{n} করেছেন", unknownUser: "অজানা দর্শক", offline: "সার্ভারে পৌঁছানো যাচ্ছে না। সংযোগ দেখে আবার চেষ্টা করুন।", viewing: "দেখানো হচ্ছে: {n}", clear: "মুছুন"
+      "e.admin_role_changed": "ভূমিকা বদলানো হয়েছে", "e.admin_suspended": "অ্যাকাউন্ট স্থগিত", "e.admin_reactivated": "অ্যাকাউন্ট চালু", "e.admin_signed_out_user": "সব জায়গা থেকে সাইন আউট", "e.admin_login": "অ্যাডমিন সাইন-ইন", "e.admin_login_failed": "অ্যাডমিন সাইন-ইন ব্যর্থ",
+      "p.secret": "সিক্রেট ওয়ার্ড", "yes": "দেওয়া আছে", "no": "দেওয়া নেই", by: "{n} করেছেন", unknownUser: "অজানা দর্শক", offline: "সার্ভারে পৌঁছানো যাচ্ছে না। সংযোগ দেখে আবার চেষ্টা করুন।", viewing: "দেখানো হচ্ছে: {n}", clear: "মুছুন"
     }
   };
 
@@ -359,7 +359,7 @@
 
   /* ---------- activity ---------- */
   var EV_ICON = { signup: ["i-plus", ""], login: ["i-in", ""], login_failed: ["i-warn", "bad"], login_blocked: ["i-ban", "bad"], logout: ["i-out", ""], password_changed: ["i-edit", "warn"], profile_updated: ["i-edit", "warn"],
-    admin_role_changed: ["i-shield", "warn"], admin_suspended: ["i-ban", "bad"], admin_reactivated: ["i-check", ""], admin_signed_out_user: ["i-out", "warn"] };
+    admin_login: ["i-shield", ""], admin_login_failed: ["i-warn", "bad"], admin_role_changed: ["i-shield", "warn"], admin_suspended: ["i-ban", "bad"], admin_reactivated: ["i-check", ""], admin_signed_out_user: ["i-out", "warn"] };
   function evIcon(type) { return EV_ICON[type] || (type.indexOf("archived") > 0 ? ["i-edit", "warn"] : ["i-bars", ""]); }
   function feedItems(list, withUser) {
     return list.map(function (e) {
@@ -415,7 +415,7 @@
     if (self) badges.appendChild(h("span", { "class": "badge", text: t("you") }));
     var facts = $("#pFacts"); clear(facts);
     [["p.business", d.business_name || "–"], ["p.phone", d.phone || "–"], ["p.language", langName(d.language)], ["p.joined", fmtDate(d.created_at)], ["p.last", ago(d.last_active)],
-     ["h.signins", nf(d.sign_ins)], ["h.brands", nf(d.brands)], ["h.products", nf(d.products)], ["p.sessions", nf(d.open_sessions)]].forEach(function (r) { facts.appendChild(h("dt", { text: t(r[0]) })); facts.appendChild(h("dd", { text: r[1] })); });
+     ["h.signins", nf(d.sign_ins)], ["h.brands", nf(d.brands)], ["h.products", nf(d.products)], ["p.sessions", nf(d.open_sessions)]].concat(d.role === "admin" ? [["p.secret", t(d.has_secret_word ? "yes" : "no")]] : []).forEach(function (r) { facts.appendChild(h("dt", { text: t(r[0]) })); facts.appendChild(h("dd", { text: r[1] })); });
     var act = $("#pActions"); clear(act);
     var mk = function (label, cls, fn, dis, ic) { return h("button", { type: "button", "class": "btn " + cls, disabled: dis, onclick: fn }, icon(ic), label); };
     act.appendChild(mk(t(d.is_active ? "act.suspend" : "act.reactivate"), d.is_active ? "danger" : "primary", function () { change(d.is_active ? "suspend" : "react"); }, self && d.is_active, d.is_active ? "i-ban" : "i-check"));
@@ -454,7 +454,7 @@
   /* ---------- loading and failure ---------- */
   function show(which) { ["denied", "error"].forEach(function (id) { $("#" + id).hidden = id !== which; }); $("#app").hidden = which !== "app"; }
   function fail(err) {
-    if (err.status === 401) { window.location.href = "index.html#signin"; return; }
+    if (err.status === 401 || (err.status === 403 && err.message === "Admin sign-in required.")) { window.location.href = "admin-login.html"; return; }
     if (err.status === 403 && !S.me) { show("denied"); return; }
     if ($("#app").hidden) { $("#errMsg").textContent = err.message; show("error"); } else toast(err.message || t("t.fail"), true);
   }
@@ -500,7 +500,7 @@
     $("#scrim").addEventListener("click", closeMenu);
     $("#whoBtn").addEventListener("click", function () { var m = $("#whoMenu"); m.hidden = !m.hidden; this.setAttribute("aria-expanded", String(!m.hidden)); });
     document.addEventListener("click", function (e) { if (!e.target.closest(".who")) { $("#whoMenu").hidden = true; $("#whoBtn").setAttribute("aria-expanded", "false"); } });
-    $("#signOutBtn").addEventListener("click", function () { api("POST", "/auth/logout").catch(function () {}).then(function () { window.location.href = "index.html"; }); });
+    $("#signOutBtn").addEventListener("click", function () { api("POST", "/auth/logout").catch(function () {}).then(function () { window.location.href = "admin-login.html"; }); });
     $("#retryBtn").addEventListener("click", loadAll);
     $$("#period button").forEach(function (b) { b.addEventListener("click", function () { setPeriod(b.getAttribute("data-p")); }); });
     var today = new Date().toISOString().slice(0, 10), wk = new Date(Date.now() - 6 * 864e5).toISOString().slice(0, 10);
