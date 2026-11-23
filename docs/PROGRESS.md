@@ -13,6 +13,7 @@ Last updated: 2026-11-21 (Asia/Dhaka). This file is updated in every step's pull
 | Product and brand profiles (input, photo upload, price and unit cleanup, readiness report) | Done. API tests pass in GitHub Actions. Not yet tried by you |
 | Product description and ad text generation | Done in code: key features, AI writing behind a swappable layer, fact checking, basic-text fallback. API tests pass in GitHub Actions with fake AI providers. Never tried with a real Gemini or Groq key |
 | User accounts (sign up, sign in, sign out, profile) | Backend done and tested in CI. Home page with working sign-in and sign-up screens, header sign-in state, and a profile page. Tested in a browser against a fake API; in GitHub Actions the same pages also pass against the real backend (SQLite) |
+| Admin console (roles, suspend, activity log, admin page) | Built 2026-11-23. See History for test status |
 | Image ad creation | Not started |
 | Editing the ad | Not started |
 | Verification (prices, OCR, claims, brand, photo) | Not started |
@@ -212,6 +213,7 @@ These are the honest gaps a senior reviewer would raise, each with the goal that
 
 | Date | What happened |
 | --- | --- |
+| 2026-11-23 | Admin console built (docs/22): roles, suspension, activity log (migration 0003), admin API with CSV, admin page in light/dark and desktop/phone. Page checked in a browser against fake data. GitHub Actions (PR #56): 355 tests pass (29 new), plus the admin API checks and the admin page browser checks against the real backend. Not yet tried on the owner's machine. |
 | 2026-11-13 | Idea reviewed. Project document written with features, corner cases, limits and costs. |
 | 2026-11-13 | Step 1 pushed (repo setup). |
 | 2026-11-13 | Step 2 built and merged (PR #2). Project overview added (PR #1). |

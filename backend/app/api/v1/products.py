@@ -7,8 +7,10 @@ from sqlalchemy.orm import Session
 from app.api.v1.common import image_error, read_upload
 from app.api.v1.deps import get_current_user
 from app.core.config import get_settings
+from app.db import activity
 from app.db.models import Brand, Product, User
 from app.db.session import get_db
+from app.domain import events
 from app.domain.generation import generate_copy
 from app.domain.grounding import facts_from_product
 from app.domain.images import MIN_SIDE_PRODUCT, ImageRejected, inspect_image, save_image
@@ -67,6 +69,7 @@ def create_product(
     _ensure_name_free(db, brand.id, payload.name)
     product = Product(**payload.model_dump())
     db.add(product)
+    activity.record(db, events.PRODUCT_CREATED, user.id, detail=payload.name)
     db.commit()
     db.refresh(product)
     return product
@@ -117,6 +120,7 @@ def update_product(
         _ensure_name_free(db, product.brand_id, changes["name"], exclude_id=product.id)
     for field, value in changes.items():
         setattr(product, field, value)
+    activity.record(db, events.PRODUCT_UPDATED, user.id, detail=product.name)
     db.commit()
     db.refresh(product)
     return product
@@ -129,6 +133,7 @@ def archive_product(
     # Archived rather than deleted: existing ads keep pointing at it.
     product = _get_product(db, user, product_id)
     product.is_archived = True
+    activity.record(db, events.PRODUCT_ARCHIVED, user.id, detail=product.name)
     db.commit()
     db.refresh(product)
     return product
@@ -144,6 +149,7 @@ def restore_product(
             raise HTTPException(status_code=409, detail="Brand is archived; restore it first")
         _ensure_name_free(db, product.brand_id, product.name, exclude_id=product.id)
     product.is_archived = False
+    activity.record(db, events.PRODUCT_RESTORED, user.id, detail=product.name)
     db.commit()
     db.refresh(product)
     return product

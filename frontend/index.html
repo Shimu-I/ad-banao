@@ -1931,6 +1931,14 @@ view();
     targets('signin').forEach(function(e){e.removeAttribute('data-i18n');e.dataset.act='profile';e.title=u.email;});
     targets('start').forEach(function(e){e.removeAttribute('data-i18n');e.dataset.act='signout';e.innerHTML='<span></span>';});
     paint();
+    if(u.role==='admin'){
+      targets('profile').forEach(function(e){
+        if(e.parentNode.querySelector('.admin-link')) return;
+        var a=document.createElement('a'); a.href='admin.html'; a.className='admin-link'; a.textContent=lang()==='bn'?'অ্যাডমিন':'Admin';
+        a.style.cssText='margin-right:12px;font-weight:600;text-decoration:underline;color:inherit;white-space:nowrap';
+        e.parentNode.insertBefore(a,e);
+      });
+    }
   }
   function setOut(){ user=null; }
   function refresh(){ if(window.AdBanaoAuth) AdBanaoAuth.me().then(setIn,setOut); }

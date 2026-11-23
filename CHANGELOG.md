@@ -15,6 +15,9 @@ versions follow [Semantic Versioning](https://semver.org).
 - User accounts: sign up, sign in, sign out, profile read and update, password change (`/auth/*`, `/users/me`).
 - Alembic migrations with an initial schema (`make migrate`).
 
+### Added
+- Admin console: user roles, account suspension, activity log (migration 0003), `/admin/*` API, CSV downloads, `frontend/admin.html` (light/dark, desktop/phone, English/Bangla), `make admin`, demo admin user, admin end-to-end checks.
+
 ### Fixed
 - Type error in price validation message (mypy).
 

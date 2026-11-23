@@ -55,6 +55,7 @@ Each goal is one pull request with one purpose. Status: ✅ done and merged, �
 | U8 | Screen 4: Approve and export | Approval, export, report download | ⬜ |
 | U9 | Polish: accessibility, mobile, Bangla | Keyboard use, AA contrast, phone layouts, Bangla review | ⬜ |
 | U10 | End-to-end tests | Full user journey runs in Playwright in CI | ⬜ |
+| U11 | Admin console | Roles, suspension, activity log, admin page (light/dark, desktop/phone), CSV, tests in CI | 🟡 in review (docs/22-admin.md) |
 
 ## Milestone M4: Ship (S)
 
@@ -78,7 +79,7 @@ Each goal is one pull request with one purpose. Status: ✅ done and merged, �
 | 6 Editing API | A5 to A7 |
 | 7 to 10 Verification | V1 to V4 |
 | 11 Reports, approval, export | V5, V6 |
-| 12 Frontend | U1 to U10 |
+| 12 Frontend | U1 to U11 |
 | 13 Evaluation | S1 |
 | 14 Deployment and docs | S2 to S5 |
 | New | F5 to F9 (professional foundations) |

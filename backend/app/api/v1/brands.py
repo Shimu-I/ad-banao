@@ -5,8 +5,10 @@ from sqlalchemy.orm import Session
 from app.api.v1.common import image_error, read_upload
 from app.api.v1.deps import get_current_user
 from app.core.config import get_settings
+from app.db import activity
 from app.db.models import Brand, User
 from app.db.session import get_db
+from app.domain import events
 from app.domain.images import MIN_SIDE_LOGO, ImageRejected, inspect_image, save_image
 from app.schemas.profiles import (
     BrandCreate,
@@ -51,6 +53,8 @@ def create_brand(
     _ensure_name_free(db, user, payload.name)
     brand = Brand(user_id=user.id, **payload.model_dump())
     db.add(brand)
+    db.flush()
+    activity.record(db, events.BRAND_CREATED, user.id, detail=brand.name)
     db.commit()
     db.refresh(brand)
     return brand
@@ -91,6 +95,7 @@ def update_brand(
         _ensure_name_free(db, user, changes["name"], exclude_id=brand.id)
     for field, value in changes.items():
         setattr(brand, field, value)
+    activity.record(db, events.BRAND_UPDATED, user.id, detail=brand.name)
     db.commit()
     db.refresh(brand)
     return brand
@@ -103,6 +108,7 @@ def archive_brand(
     # Archived rather than deleted: products and ads keep pointing at it.
     brand = _get_brand(db, user, brand_id)
     brand.is_archived = True
+    activity.record(db, events.BRAND_ARCHIVED, user.id, detail=brand.name)
     db.commit()
     db.refresh(brand)
     return brand
@@ -116,6 +122,7 @@ def restore_brand(
     if brand.is_archived:
         _ensure_name_free(db, user, brand.name, exclude_id=brand.id)
     brand.is_archived = False
+    activity.record(db, events.BRAND_RESTORED, user.id, detail=brand.name)
     db.commit()
     db.refresh(brand)
     return brand

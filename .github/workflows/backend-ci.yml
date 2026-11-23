@@ -52,6 +52,7 @@ jobs:
         env:
           DATABASE_URL: sqlite:///./e2e.db
           UPLOAD_DIR: ./e2e-uploads
+          ADMIN_EMAILS: admin@demo.adbanao.test
         run: |
           nohup python -m uvicorn app.main:app --port 8000 > ../api.log 2>&1 &
           (cd ../frontend && nohup python -m http.server 5173 > ../web.log 2>&1 &)
@@ -64,6 +65,10 @@ jobs:
           python scripts/seed_demo.py http://localhost:8000
       - name: Browser test of sign up, sign in, profile, sign out
         run: python scripts/e2e_auth.py
+      - name: "Admin checks (privileges, suspend, activity log, CSV)"
+        run: python scripts/e2e_admin.py http://localhost:8000
+      - name: Browser test of the admin page
+        run: python scripts/e2e_admin_page.py
       - name: Server log (on failure)
         if: failure()
         run: cat api.log

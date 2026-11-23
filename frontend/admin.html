@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>AdBanao Admin</title>
+<meta name="robots" content="noindex">
+<script>
+  /* Set theme and language before first paint (same storage keys as the home page). */
+  (function () {
+    var t = null, l = null;
+    try { t = localStorage.getItem('adbanao-theme'); l = localStorage.getItem('adbanao-lang'); } catch (e) {}
+    if (t !== 'light' && t !== 'dark') t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    document.documentElement.setAttribute('data-theme', t);
+    document.documentElement.setAttribute('lang', l === 'bn' ? 'bn' : 'en');
+  })();
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:wght@500;600;700&family=Hind+Siliguri:wght@400;500;600;700&family=Noto+Serif+Bengali:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="admin/admin.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<div class="shell">
+  <div class="scrim" id="scrim" hidden></div>
+  <aside class="side" id="side" aria-label="Admin menu">
+    <a class="brand" href="index.html" aria-label="AdBanao home"><span class="logo" aria-hidden="true">a.</span><span class="wm">AdBanao</span></a>
+    <nav class="nav">
+      <a href="#dashboard" data-nav="dashboard" class="on"><svg class="i"><use href="#i-home"/></svg><span data-i="nav.dashboard">Dashboard</span></a>
+      <a href="#users" data-nav="users"><svg class="i"><use href="#i-users"/></svg><span data-i="nav.users">Users</span></a>
+      <a href="#activity" data-nav="activity"><svg class="i"><use href="#i-clock"/></svg><span data-i="nav.activity">Activity Log</span></a>
+      <span class="soon" aria-disabled="true"><svg class="i"><use href="#i-chart"/></svg><span data-i="nav.analytics">Analytics</span><em data-i="soon">Soon</em></span>
+      <span class="soon" aria-disabled="true"><svg class="i"><use href="#i-gear"/></svg><span data-i="nav.settings">Settings</span><em data-i="soon">Soon</em></span>
+    </nav>
+    <div class="side-card" aria-hidden="true">
+      <svg viewBox="0 0 120 70" class="shop"><rect x="30" y="26" width="60" height="38" rx="3" fill="none" stroke="currentColor" stroke-width="2.5"/><path d="M26 26h68l-5-14H31z" fill="currentColor" opacity=".85"/><rect x="50" y="40" width="20" height="24" rx="2" fill="none" stroke="currentColor" stroke-width="2.5"/></svg>
+      <b data-i="side.t">Helping Bangladeshi Businesses Grow</b>
+      <small data-i="side.s">Smarter ads. Greater reach.</small>
+    </div>
+  </aside>
+
+  <div class="content">
+    <header class="top">
+      <button class="icon-btn menu" id="menuBtn" type="button" aria-label="Menu" aria-controls="side" aria-expanded="false"><svg class="i"><use href="#i-menu"/></svg></button>
+      <a class="brand brand-m" href="index.html" aria-label="AdBanao home"><span class="logo" aria-hidden="true">a.</span><span class="wm">AdBanao</span></a>
+      <div class="titles">
+        <h1 data-i="title">Admin Dashboard</h1>
+        <p data-i="subtitle">Overview of your AdBanao platform</p>
+      </div>
+      <div class="tools">
+        <button class="pill" id="langBtn" type="button" aria-label="Switch language"><span data-l="en">EN</span><span data-l="bn">বাংলা</span></button>
+        <button class="theme" id="themeBtn" type="button" role="switch" aria-checked="false" aria-label="Dark mode"><svg class="i sun"><use href="#i-sun"/></svg><span class="knob"></span><svg class="i moon"><use href="#i-moon"/></svg></button>
+        <div class="who">
+          <button class="who-btn" id="whoBtn" type="button" aria-haspopup="true" aria-expanded="false"><span class="av" id="whoAv">A</span><span class="who-name" id="whoName">Admin</span><svg class="i"><use href="#i-down"/></svg></button>
+          <div class="menu-pop" id="whoMenu" hidden>
+            <div class="who-mail" id="whoMail"></div>
+            <a href="index.html" data-i="menu.home">Back to home page</a>
+            <button type="button" id="signOutBtn" data-i="menu.signout">Sign out</button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main id="main" tabindex="-1">
+      <section id="denied" class="card denied" hidden>
+        <svg class="i big"><use href="#i-lock"/></svg>
+        <h2 data-i="denied.t">Admins only</h2>
+        <p data-i="denied.d">This page is for AdBanao administrators. Your account does not have admin access.</p>
+        <a class="btn" href="index.html" data-i="menu.home">Back to home page</a>
+      </section>
+      <section id="error" class="card denied" hidden role="alert">
+        <svg class="i big"><use href="#i-warn"/></svg>
+        <h2 data-i="err.t">Could not load the dashboard</h2>
+        <p id="errMsg"></p>
+        <button class="btn" type="button" id="retryBtn" data-i="retry">Try again</button>
+      </section>
+
+      <div id="app" hidden>
+        <div class="bar">
+          <div class="seg" role="group" aria-label="Period" id="period">
+            <button type="button" data-p="today" data-i="p.today">Today</button>
+            <button type="button" data-p="7d" class="on" data-i="p.7d">7 days</button>
+            <button type="button" data-p="30d" data-i="p.30d">30 days</button>
+            <button type="button" data-p="custom"><span data-i="p.custom">Custom</span><svg class="i"><use href="#i-cal"/></svg></button>
+          </div>
+          <div class="custom" id="customBox" hidden>
+            <label><span data-i="from">From</span><input type="date" id="dStart"></label>
+            <label><span data-i="to">To</span><input type="date" id="dEnd"></label>
+            <button type="button" class="btn small" id="applyCustom" data-i="apply">Apply</button>
+          </div>
+          <div class="dl">
+            <button type="button" class="btn" id="dlUsers"><svg class="i"><use href="#i-dl"/></svg><span data-i="dl.users">Download users (CSV)</span></button>
+            <button type="button" class="btn" id="dlActivity"><svg class="i"><use href="#i-dl"/></svg><span data-i="dl.activity">Download activity (CSV)</span></button>
+          </div>
+        </div>
+        <p class="note" id="rangeNote"></p>
+
+        <section class="stats" id="stats" aria-label="Summary"></section>
+
+        <div class="grid2">
+          <section class="card chart" id="cSignups"></section>
+          <section class="card chart" id="cActive"></section>
+          <section class="card topc" id="cTop"></section>
+        </div>
+
+        <section class="card tabs-card" id="tabsCard">
+          <div class="tabs" role="tablist">
+            <button role="tab" id="tabUsers" aria-selected="true" aria-controls="paneUsers" type="button"><svg class="i"><use href="#i-users"/></svg><span data-i="nav.users">Users</span></button>
+            <button role="tab" id="tabActivity" aria-selected="false" aria-controls="paneActivity" type="button"><svg class="i"><use href="#i-clock"/></svg><span data-i="nav.activity">Activity Log</span></button>
+          </div>
+
+          <div id="paneUsers" role="tabpanel" aria-labelledby="tabUsers">
+            <div class="filters">
+              <label class="search"><svg class="i"><use href="#i-search"/></svg><input type="search" id="q" data-i-ph="search" placeholder="Search users…" aria-label="Search users" maxlength="100"></label>
+              <select id="fStatus" aria-label="Status"><option value="all" data-i="f.allStatus">All statuses</option><option value="active" data-i="s.active">Active</option><option value="suspended" data-i="s.suspended">Suspended</option></select>
+              <select id="fRole" aria-label="Role"><option value="all" data-i="f.allRoles">All roles</option><option value="user" data-i="r.user">User</option><option value="admin" data-i="r.admin">Admin</option></select>
+              <select id="fLang" aria-label="Language"><option value="all" data-i="f.allLang">All languages</option><option value="en">English</option><option value="bn">বাংলা</option></select>
+              <span class="grow"></span>
+              <select id="uPer" aria-label="Rows per page"><option>10</option><option selected>25</option><option>50</option><option>100</option></select>
+            </div>
+            <div class="table-wrap">
+              <table id="usersTable">
+                <thead><tr id="usersHead"></tr></thead>
+                <tbody id="usersBody"></tbody>
+              </table>
+            </div>
+            <div class="cards" id="usersCards"></div>
+            <div class="pager" id="usersPager"></div>
+          </div>
+
+          <div id="paneActivity" role="tabpanel" aria-labelledby="tabActivity" hidden>
+            <div class="filters">
+              <select id="aGroup" aria-label="Event type"><option value="all" data-i="g.all">All events</option><option value="signin" data-i="g.signin">Sign-ins</option><option value="content" data-i="g.content">Brands and products</option><option value="account" data-i="g.account">Account changes</option><option value="admin" data-i="g.admin">Admin actions</option></select>
+              <select id="aPeriod" aria-label="Time"><option value="period" data-i="a.period">Selected period</option><option value="all" data-i="a.all">All time</option></select>
+              <span class="who-filter" id="aUserChip" hidden></span>
+              <span class="grow"></span>
+              <select id="aPer" aria-label="Rows per page"><option>10</option><option selected>25</option><option>50</option><option>100</option></select>
+            </div>
+            <ul class="feed" id="feed"></ul>
+            <div class="pager" id="actPager"></div>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+</div>
+
+<aside class="panel" id="panel" aria-label="User details" hidden>
+  <div class="panel-in" role="dialog" aria-modal="true" aria-labelledby="pName" tabindex="-1">
+    <button class="icon-btn close" id="panelClose" type="button" aria-label="Close"><svg class="i"><use href="#i-x"/></svg></button>
+    <div class="p-head"><span class="av big" id="pAv"></span><div><h2 id="pName"></h2><div class="p-mail" id="pMail"></div><div class="badges" id="pBadges"></div></div></div>
+    <dl class="facts" id="pFacts"></dl>
+    <div class="p-actions" id="pActions"></div>
+    <h3 data-i="p.recent">Recent activity</h3>
+    <ul class="feed small" id="pFeed"></ul>
+    <button class="btn" type="button" id="pViewAll" data-i="p.viewall">View all activity</button>
+  </div>
+</aside>
+
+<dialog id="confirm" aria-labelledby="cTitle">
+  <form method="dialog">
+    <h2 id="cTitle"></h2>
+    <p id="cBody"></p>
+    <div class="dlg-actions"><button class="btn" value="no" data-i="cancel">Cancel</button><button class="btn primary" id="cYes" value="yes"></button></div>
+  </form>
+</dialog>
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+<div class="tip" id="tip" hidden></div>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z" fill="currentColor"/></symbol>
+    <symbol id="i-users" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.5-3.6 3.2-5.5 6.5-5.5s6 1.9 6.5 5.5"/><circle cx="17.5" cy="9" r="2.5"/><path d="M17.5 14.5c2.3.2 3.8 1.6 4 4.5"/></g></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></g></symbol>
+    <symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 20V10m6 10V4m6 16v-7m5 7H3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="i-gear" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v3m0 14v3M2 12h3m14 0h3M5 5l2 2m10 10l2 2M19 5l-2 2M7 17l-2 2" stroke-linecap="round"/></g></symbol>
+    <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5M17.5 17.5L19 19M19 5l-1.5 1.5M6.5 17.5L5 19"/></g></symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
+    <symbol id="i-down" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-cal" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M3.5 10h17M8 3v4m8-4v4"/></g></symbol>
+    <symbol id="i-dl" viewBox="0 0 24 24"><path d="M12 4v11m0 0l-4-4m4 4l4-4M5 20h14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></g></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></g></symbol>
+    <symbol id="i-warn" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l10 18H2z"/><path d="M12 10v5m0 3h.01"/></g></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-in" viewBox="0 0 24 24"><path d="M14 4h5a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1h-5M4 12h11m0 0l-4-4m4 4l-4 4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.5-3.6 3.2-5.5 6.5-5.5s6 1.9 6.5 5.5M19 8v6m-3-3h6"/></g></symbol>
+    <symbol id="i-mega" viewBox="0 0 24 24"><path d="M3 10v4a1 1 0 0 0 1 1h3l8 4V5L7 9H4a1 1 0 0 0-1 1zm15-1.5a4.5 4.5 0 0 1 0 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-trophy" viewBox="0 0 24 24"><path d="M7 4h10v5a5 5 0 0 1-10 0zM7 6H3.5c0 3 1.5 4.5 3.7 5M17 6h3.5c0 3-1.5 4.5-3.7 5M12 14v4m-4 2h8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-bars" viewBox="0 0 24 24"><path d="M5 20v-8m5 8V5m5 15v-6m5 6V9" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></symbol>
+    <symbol id="i-trend" viewBox="0 0 24 24"><path d="M3 17l6-6 4 4 8-8m0 0h-5m5 0v5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-edit" viewBox="0 0 24 24"><path d="M4 20l4-1L19 8l-3-3L5 16zM14 7l3 3" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
+    <symbol id="i-out" viewBox="0 0 24 24"><path d="M10 4H5a1 1 0 0 0-1 1v14a1 1 0 0 0 1 1h5M20 12H9m11 0l-4-4m4 4l-4 4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 4.5-3.2 7.8-8 9-4.8-1.2-8-4.5-8-9V6z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
+    <symbol id="i-ban" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M5.7 5.7l12.6 12.6"/></g></symbol>
+  </defs>
+</svg>
+<script src="admin/admin.js"></script>
+</body>
+</html>

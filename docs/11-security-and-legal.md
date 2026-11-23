@@ -15,3 +15,12 @@ Controls for accounts, uploads, secrets, privacy and legal wording.
 | Privacy | Plain notice that free AI providers may use submitted data. Do not upload confidential material on free tiers. Data export and account deletion planned before public launch |
 | Legal | The tool flags issues and is not legal advice. Wording is "no issues detected", not "guaranteed compliant". Users confirm they own the images and logos they upload. Restricted products (alcohol, tobacco, medicine) get a warning |
 | Audit | Approvals, overrides and who did them are recorded |
+
+## Admin access
+
+- Roles are stored only in the database. Sign-up, profile update and every other user-facing route ignore a `role` field (tested).
+- Admin routes return 401 when signed out and 403 for normal users (tested for every route).
+- `ADMIN_EMAILS` works only in development and test. In production an admin is made with `make admin EMAIL=...` on the server, or by another admin.
+- Suspending ends the person's sessions at once. You cannot suspend or demote yourself, or the last active admin.
+- Admin actions are written to the activity log with the admin's identity.
+- CSV downloads neutralise spreadsheet formulas. Details: [22-admin.md](22-admin.md).
