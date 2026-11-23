@@ -10,9 +10,9 @@ from app.core.config import get_settings
 from app.db import activity
 from app.db.models import Brand, Product, User
 from app.db.session import get_db
+from app.domain import events
 from app.domain.generation import generate_copy
 from app.domain.grounding import facts_from_product
-from app.domain import events
 from app.domain.images import MIN_SIDE_PRODUCT, ImageRejected, inspect_image, save_image
 from app.domain.profile_checks import blocked_for, check_product
 from app.providers.llm import providers_from_settings
