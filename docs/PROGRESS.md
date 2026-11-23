@@ -1,10 +1,12 @@
 # Progress log
 
-Last updated: 2026-11-21 (Asia/Dhaka). This file is updated in every step's pull request.
+Last updated: 2026-11-24 (Asia/Dhaka). This file is updated in every step's pull request.
+
+**The one-page summary (mission, scoreboard, what Claude can do alone, what needs a person) is [TRACKER.md](TRACKER.md).** This file keeps the detail: tests, approvals, decisions and history.
 
 ## How far are we
 
-**4 of 14 build steps are done and merged (about 29%).** The steps still ahead include the largest pieces (ad generation, the editor, verification and the screens), so the real share finished is smaller than the step count suggests.
+**38 roadmap goals: 6 done, 5 partly done, 27 not started** (see the scoreboard in [TRACKER.md](TRACKER.md)). The goals still ahead include the largest pieces (ad generation, the editor, verification and the screens), so the real share finished is smaller than the count suggests.
 
 | Part of the product | State |
 | --- | --- |
@@ -13,7 +15,7 @@ Last updated: 2026-11-21 (Asia/Dhaka). This file is updated in every step's pull
 | Product and brand profiles (input, photo upload, price and unit cleanup, readiness report) | Done. API tests pass in GitHub Actions. Not yet tried by you |
 | Product description and ad text generation | Done in code: key features, AI writing behind a swappable layer, fact checking, basic-text fallback. API tests pass in GitHub Actions with fake AI providers. Never tried with a real Gemini or Groq key |
 | User accounts (sign up, sign in, sign out, profile) | Backend done and tested in CI. Home page with working sign-in and sign-up screens, header sign-in state, and a profile page. Tested in a browser against a fake API; in GitHub Actions the same pages also pass against the real backend (SQLite) |
-| Admin console (roles, suspend, activity log, admin page) | Built 2026-11-23. See History for test status |
+| Admin console (roles, suspend, activity log, admin page) | Built 2026-11-23, admin sign-in 2026-11-24. Passes in GitHub Actions. Not yet run on the owner's PC |
 | Image ad creation | Not started |
 | Editing the ad | Not started |
 | Verification (prices, OCR, claims, brand, photo) | Not started |
@@ -21,7 +23,7 @@ Last updated: 2026-11-21 (Asia/Dhaka). This file is updated in every step's pull
 | Screens (guided form, editor, check panel) | Not started |
 | Evaluation and deployment | Not started |
 
-**What a user can do today:** nothing visual. There are no screens yet and no ads can be generated. The only way to try the code is the backend's built-in `/docs` page after starting the server on your own machine.
+**What a user can do today:** sign up, sign in and out, edit a profile on real pages; an admin can sign in separately and manage users. No ads can be generated yet.
 
 ## Steps
 
@@ -213,6 +215,7 @@ These are the honest gaps a senior reviewer would raise, each with the goal that
 
 | Date | What happened |
 | --- | --- |
+| 2026-11-24 | Project tracker added ([TRACKER.md](TRACKER.md)) with a script, `scripts/update_tracker.py`, that recomputes the scoreboard from the roadmap. This page's top section brought up to date. Docs only. |
 | 2026-11-24 | Team roles page added (docs/23) for a team of five, plus `docs/jira-import.csv` made from the roadmap. The Jira board itself is not created yet. |
 | 2026-11-24 | Admin sign-in page (email + password + secret word, migration 0004) and gradients on sign-in/sign-up added on branch feat/admin-login. Test result recorded after the pull request runs. |
 | 2026-11-23 | Admin console built (docs/22): roles, suspension, activity log (migration 0003), admin API with CSV, admin page in light/dark and desktop/phone. Page checked in a browser against fake data. GitHub Actions (PR #56): 355 tests pass (29 new), plus the admin API checks and the admin page browser checks against the real backend. Not yet tried on the owner's machine. |
