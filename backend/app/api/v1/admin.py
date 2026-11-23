@@ -8,7 +8,7 @@ from datetime import UTC, date, datetime, time, timedelta
 from typing import Literal
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Response
-from sqlalchemy import Select, delete, update, func, or_, select
+from sqlalchemy import Select, delete, func, or_, select, update
 from sqlalchemy.orm import Session
 
 from app.api.v1.deps import require_admin
