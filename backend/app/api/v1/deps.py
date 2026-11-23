@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session
 
 from app.db.models import User, UserSession
 from app.db.session import get_db
+from app.domain.roles import ROLE_ADMIN
 from app.domain.security import hash_token
 
 SESSION_COOKIE = "adbanao_session"
@@ -29,8 +30,17 @@ def get_current_session(
         db.delete(row)
         db.commit()
         raise HTTPException(status_code=401, detail="Session expired. Sign in again.")
+    if not row.user.is_active:
+        raise HTTPException(status_code=403, detail="This account has been suspended.")
     return row
 
 
 def get_current_user(session: UserSession = Depends(get_current_session)) -> User:
     return session.user
+
+
+def require_admin(user: User = Depends(get_current_user)) -> User:
+    """Only active admins pass. Everyone else gets 403 (signed-out visitors get 401 above)."""
+    if user.role != ROLE_ADMIN:
+        raise HTTPException(status_code=403, detail="Admins only.")
+    return user

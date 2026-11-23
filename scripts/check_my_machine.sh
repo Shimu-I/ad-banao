@@ -35,6 +35,9 @@ start_api() {  # start_api <database url> <log name>
 }
 stop_api() { [ -n "${API_PID:-}" ] && kill "$API_PID" 2>/dev/null; wait "$API_PID" 2>/dev/null; API_PID=""; sleep 1; }
 
+# Lets the demo admin user become an admin during these checks (development only).
+export ADMIN_EMAILS=admin@demo.adbanao.test
+
 echo "AdBanao check on $(hostname) - $(date)"
 echo
 
@@ -54,6 +57,8 @@ if curl -sf http://localhost:8000/health >/dev/null 2>&1; then
 else
   start_api "sqlite:///$DB" api-sqlite.log
   if wait_for_api; then step "API check on SQLite (sign up, profile, brand, product, photo)" smoke-sqlite.log "$PY" scripts/smoke_test.py http://localhost:8000
+    step "Demo users and demo admin (SQLite)" seed-sqlite.log "$PY" scripts/seed_demo.py http://localhost:8000
+    step "Admin checks on SQLite (privileges, suspend, log, CSV)" admin-sqlite.log "$PY" scripts/e2e_admin.py http://localhost:8000
   else ROWS+=("FAIL  API starts on SQLite   (log: .check-logs/api-sqlite.log)"); echo "API did not start"; fi
   stop_api
 fi
@@ -75,6 +80,8 @@ if [ "$WANT_PG" = 1 ]; then
     step "Create tables with migrations (PostgreSQL)" migrate-pg.log bash -c "cd backend && DATABASE_URL=$PGURL ../.venv/bin/alembic upgrade head"
     start_api "$PGURL" api-pg.log
     if wait_for_api; then step "API check on PostgreSQL" smoke-pg.log "$PY" scripts/smoke_test.py http://localhost:8000
+      step "Demo users and demo admin (PostgreSQL)" seed-pg.log "$PY" scripts/seed_demo.py http://localhost:8000
+      step "Admin checks on PostgreSQL" admin-pg.log "$PY" scripts/e2e_admin.py http://localhost:8000
     else ROWS+=("FAIL  API starts on PostgreSQL   (log: .check-logs/api-pg.log)"); fi
     stop_api
     step "Migration downgrade and upgrade again (PostgreSQL)" roundtrip-pg.log bash -c "cd backend && export DATABASE_URL=$PGURL && ../.venv/bin/alembic downgrade base && ../.venv/bin/alembic upgrade head"
@@ -88,6 +95,8 @@ if [ "$WANT_BROWSER" = 1 ]; then
   start_api "sqlite:///$DB" api-browser.log
   ( cd frontend && exec "$PY" -m http.server 5173 >"$LOGS/web.log" 2>&1 ) & PIDS+=($!)
   if wait_for_api; then step "Browser: sign up, sign in, profile, sign out" e2e.log "$PY" scripts/e2e_auth.py
+    step "Demo users for the admin page" seed-browser.log "$PY" scripts/seed_demo.py http://localhost:8000
+    step "Browser: admin page (access, search, panel, dark, Bangla, mobile)" e2e-admin.log "$PY" scripts/e2e_admin_page.py
   else ROWS+=("FAIL  API starts for the browser test"); fi
   stop_api
 else skip "Browser test" "add --browser to run it"; fi

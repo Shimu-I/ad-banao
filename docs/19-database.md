@@ -9,7 +9,7 @@ How the database is designed, how it is built, and how to change it. Everything 
 | Which database? | PostgreSQL for real use (Supabase or Neon free tier, or Docker on your machine). SQLite for quick local runs and for automated tests |
 | How is it accessed? | SQLAlchemy 2 (the models), never hand-written SQL in routes |
 | How is the schema created? | Alembic migrations (`make migrate`). In development and tests, the app also creates missing tables at startup. In production it does not |
-| How many tables? | 7 |
+| How many tables? | 8 |
 | Where is the connection set? | `DATABASE_URL` in `.env` (template in `.env.example`) |
 | Who owns each row? | A user owns their sessions and their brands. Products and ads belong to a user through their brand. Every route checks this, and another user's id answers "not found" |
 
@@ -19,6 +19,7 @@ How the database is designed, how it is built, and how to change it. Everything 
 erDiagram
     users ||--o{ user_sessions : "signs in with"
     users ||--o{ brands : owns
+    users ||--o{ activity_events : "is recorded in"
     brands ||--o{ products : has
     products ||--o{ ads : "advertised by"
     ads ||--o{ verification_reports : "checked by"
@@ -30,6 +31,15 @@ erDiagram
         string password_hash
         string display_name
         string language
+        string role
+        bool is_active
+    }
+    activity_events {
+        int id PK
+        int user_id FK
+        int actor_id FK
+        string event_type
+        datetime created_at
     }
     user_sessions {
         int id PK
@@ -90,6 +100,8 @@ One row per account.
 | `business_name` | string(200) | yes | Profile |
 | `phone` | string(30) | yes | Profile |
 | `language` | string(5) | no | `en` or `bn` |
+| `role` | string(10) | no | `user` (default) or `admin`. Only changed by an admin or the command line. Added by migration 0003 |
+| `is_active` | boolean | no | `false` = suspended: cannot sign in, sessions deleted. Added by migration 0003 |
 | `created_at`, `updated_at` | datetime with time zone | no | `updated_at` changes on every edit |
 
 ### `user_sessions`
@@ -102,6 +114,18 @@ One row per signed-in browser. Signing out deletes the row, which ends that sess
 | `token_hash` | string(64) | no | Unique. SHA-256 of the random token held in the browser cookie. The token itself is never stored, so a copy of the database cannot be used to sign in |
 | `created_at` | datetime | no | |
 | `expires_at` | datetime | no | 14 days after sign-in. Expired rows are rejected and removed when next used |
+
+### `activity_events`
+
+One line per thing that happened, for the admin Activity Log. Added by migration 0003. See [22-admin.md](22-admin.md).
+
+| Column | Type | Null | Notes |
+| --- | --- | --- | --- |
+| `user_id` | integer | yes | Who it is about. Foreign key to `users`, **SET NULL**. Empty for a failed sign-in with an unknown email. Indexed |
+| `actor_id` | integer | yes | The admin, when an admin did it. Foreign key to `users`, SET NULL |
+| `event_type` | string(40) | no | For example `login`, `brand_created`, `admin_suspended`. Indexed |
+| `detail` | string(300) | yes | Short text such as a brand name or the changed field names. Never a password or an email typed by a stranger |
+| `created_at` | datetime | no | Indexed |
 
 ### `brands`
 

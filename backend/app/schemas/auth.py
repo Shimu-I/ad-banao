@@ -58,6 +58,7 @@ class UserRead(BaseModel):
     business_name: str | None
     phone: str | None
     language: str
+    role: str
     created_at: datetime
 
 

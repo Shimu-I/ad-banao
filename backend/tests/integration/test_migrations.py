@@ -84,3 +84,25 @@ def test_old_brands_without_any_user_stop_the_migration(tmp_path):
     with pytest.raises(RuntimeError, match="no users"):
         command.upgrade(_config(url), "head")
     engine.dispose()
+
+
+def test_0003_keeps_existing_users_and_logs_their_signup(tmp_path):
+    from sqlalchemy import text
+
+    url = f"sqlite:///{tmp_path / 'a.db'}"
+    command.upgrade(_config(url), "0002")
+    engine = create_engine(url)
+    with engine.begin() as conn:
+        conn.execute(text(_USER))
+    command.upgrade(_config(url), "head")
+    with engine.connect() as conn:
+        role, active = conn.execute(text("select role, is_active from users")).one()
+        events = conn.execute(text("select event_type, user_id from activity_events")).all()
+    assert role == "user" and bool(active) is True
+    assert [e[0] for e in events] == ["signup"]
+
+    command.downgrade(_config(url), "0002")
+    cols = {c["name"] for c in inspect(engine).get_columns("users")}
+    assert "role" not in cols and "is_active" not in cols
+    assert "activity_events" not in inspect(engine).get_table_names()
+    engine.dispose()

@@ -9,8 +9,11 @@ from sqlalchemy.orm import Session
 
 from app.api.v1.deps import SESSION_COOKIE, get_current_session, get_current_user
 from app.core.config import get_settings
+from app.db import activity
 from app.db.models import User, UserSession
 from app.db.session import get_db
+from app.domain import events
+from app.domain.roles import ROLE_ADMIN, is_bootstrap_admin
 from app.domain.security import (
     DUMMY_HASH,
     hash_password,
@@ -29,6 +32,15 @@ from app.schemas.auth import (
 router = APIRouter(tags=["auth"])
 
 SESSION_DAYS = 14
+
+
+def _apply_bootstrap_admin(user: User) -> None:
+    """Development and test only: emails in ADMIN_EMAILS become admins."""
+    settings = get_settings()
+    if user.role != ROLE_ADMIN and is_bootstrap_admin(
+        user.email, settings.admin_emails, settings.app_env
+    ):
+        user.role = ROLE_ADMIN
 
 
 def _start_session(db: Session, user: User, response: Response) -> None:
@@ -62,6 +74,7 @@ def signup(body: SignupRequest, response: Response, db: Session = Depends(get_db
         display_name=body.display_name,
         business_name=body.business_name,
     )
+    _apply_bootstrap_admin(user)
     db.add(user)
     try:
         db.commit()
@@ -70,6 +83,7 @@ def signup(body: SignupRequest, response: Response, db: Session = Depends(get_db
         raise HTTPException(
             status_code=409, detail="An account with this email already exists."
         ) from None
+    activity.record(db, events.SIGNUP, user.id)
     _start_session(db, user, response)
     return user
 
@@ -80,7 +94,19 @@ def login(body: LoginRequest, response: Response, db: Session = Depends(get_db))
     # Always run one password check so timing does not reveal which emails exist.
     ok = verify_password(body.password, user.password_hash if user else DUMMY_HASH)
     if user is None or not ok:
+        # Logged without the typed email, so the log never stores strangers' addresses.
+        activity.record(db, events.LOGIN_FAILED, user.id if user else None)
+        db.commit()
         raise HTTPException(status_code=401, detail="Incorrect email or password.")
+    if not user.is_active:
+        # Only said after a correct password, so this does not reveal which emails exist.
+        activity.record(db, events.LOGIN_BLOCKED, user.id)
+        db.commit()
+        raise HTTPException(
+            status_code=403, detail="This account has been suspended. Contact support."
+        )
+    _apply_bootstrap_admin(user)
+    activity.record(db, events.LOGIN, user.id)
     _start_session(db, user, response)
     return user
 
@@ -91,6 +117,7 @@ def logout(
     session: UserSession = Depends(get_current_session),
     db: Session = Depends(get_db),
 ) -> None:
+    activity.record(db, events.LOGOUT, session.user_id)
     db.delete(session)
     db.commit()
     response.delete_cookie(SESSION_COOKIE, path="/")
@@ -107,10 +134,15 @@ def update_me(
     user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ) -> User:
+    changed = []
     for field, value in body.model_dump(exclude_unset=True).items():
         if field in ("display_name", "language") and value is None:
             continue  # these cannot be cleared
+        if getattr(user, field) != value:
+            changed.append(field)
         setattr(user, field, value)
+    if changed:
+        activity.record(db, events.PROFILE_UPDATED, user.id, detail=", ".join(changed))
     db.commit()
     return user
 
@@ -129,4 +161,5 @@ def change_password(
     db.execute(
         delete(UserSession).where(UserSession.user_id == user.id, UserSession.id != session.id)
     )
+    activity.record(db, events.PASSWORD_CHANGED, user.id)
     db.commit()

@@ -19,6 +19,8 @@ class Settings(BaseSettings):
     upload_dir: str = "./uploads"
     gemini_api_key: str = ""
     groq_api_key: str = ""
+    # Comma-separated emails that become admins at sign-up or sign-in. Development and test only.
+    admin_emails: str = ""
 
 
 @lru_cache
