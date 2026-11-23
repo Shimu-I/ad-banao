@@ -115,6 +115,18 @@ gitGraph
 | Releases | Changelog entry per release |
 | Secrets | Never committed. `.env` is ignored. Secret scanning is on |
 
+## Protecting the main branch
+
+Do this once on GitHub, as the repository owner. It turns "CI must pass" from a habit into a rule, and stops a teammate from force-pushing over the history.
+
+1. **Rename the default branch to `main` first** (Settings, General, Default branch, the pencil icon). GitHub retargets open pull requests. Everyone then runs `git fetch origin && git branch -m step-01-repo-setup main && git branch -u origin/main main`.
+2. Settings, Branches, **Add branch ruleset** (or classic rule) for `main`:
+   - Require a pull request before merging. Required approvals: 0 while the owner merges alone, 1 once teammates review.
+   - Require status checks to pass: `test` and `end-to-end` (they show up in the list after the first CI run).
+   - Block force pushes and block deletion.
+   - Leave "do not allow bypassing" **off**, so the owner can still fix a broken pipeline.
+3. Do not tick "require branches to be up to date" yet: with one pull request at a time it only adds waiting.
+
 ## Code standards
 
 - Python: type hints everywhere, Ruff for lint and format, mypy for types, docstrings for public functions.

@@ -9,7 +9,7 @@ Five people, equal workload, and not everyone touches code or GitHub. This page 
 | A. Project manager (Jira) | | Jira, Docs |
 | B. Planner and requirements analyst | | Docs, Jira (read) |
 | C. UI and UX designer | | Figma or Docs, browser |
-| D. Backend and database developer | | GitHub, terminal |
+| D. **Database lead** and backend developer | | GitHub, terminal |
 | E. Frontend, testing and CI developer | | GitHub, terminal, browser |
 
 ## The first update
@@ -20,10 +20,14 @@ The faculty asked for four things. Each has one lead and one supporter.
 | --- | --- | --- | --- |
 | Project management setup | **Half done.** 38 goals and five milestones exist on GitHub. The Jira board is **not** set up yet | A | B |
 | Repository setup | Done and merged. Folder structure, short README, `docs/`, CI, templates | E | D |
-| Database setup | Done. Schema, migrations, PostgreSQL and SQLite, tests. Passed on the owner's PC | D | B |
+| Database setup | Done. Schema, migrations, PostgreSQL and SQLite, tests. Passed on the owner's PC. Explained as a story in [24-database-story.md](24-database-story.md) | D | B |
 | User sign-up, sign-in and profile (full stack) | Done. Pages, API and database work together. Passed on the owner's PC | D (API) and E (pages) | C (look and feel) |
 
 Also built beyond the four: an admin console with its own sign-in (email, password, secret word). It passed GitHub's checks and has **not** been run on the owner's PC yet.
+
+## How this follows the first update
+
+The faculty's four requirements decide who leads what. A leads project management, E leads repository setup, D leads database setup, and D and E together lead sign-up, sign-in and profile. B and C do not lead one of the four, because the four are mostly technical and management work. Their work sits inside them: B writes the stories and acceptance tests for sign-up, sign-in and profile and checks the database against the requirements, and C reviews how the sign-in, sign-up and profile pages look and read. If your faculty counts planning and design as separate items, B and C are those items.
 
 ## Equal workload
 
@@ -83,13 +87,13 @@ No code. Works from screenshots and the running pages.
 
 Known differences from the admin mockup, so you do not report them as new: no "Pending" status (accounts are Active or Suspended), Analytics and Settings are placeholders marked "Soon", a simpler sidebar picture, the home page logo instead of a leaf.
 
-### D. Backend and database developer
+### D. Database lead and backend developer
 
-Uses GitHub and a terminal.
+Uses GitHub and a terminal. **In charge of the database**: nothing about the schema changes without D's approval, and D keeps [19-database.md](19-database.md) and [24-database-story.md](24-database-story.md) true. The rules D enforces are at the end of the story page.
 
 | Task | Hours | Hand in |
 | --- | --- | --- |
-| Learn and explain the schema in [19-database.md](19-database.md): tables, keys, and how they connect. Draw one diagram in your own words | 4 | Diagram |
+| Own the database. Learn [24-database-story.md](24-database-story.md) and [19-database.md](19-database.md) well enough to tell the story of one user across all eight tables without notes, and say which tables are not used by a page yet. Draw one diagram in your own words | 4 | Diagram and the story told aloud |
 | Run the migrations on SQLite and PostgreSQL, including downgrade and upgrade again, and keep the output | 3 | Run log |
 | Explain sign-up, sign-in and sessions: scrypt hashing, the session cookie, the token stored only as a hash. Show it live in Adminer | 4 | Notes and live demo |
 | Explain ownership: every brand belongs to a user, other users get "not found". Run `make test` and show the result | 3 | Test output |
