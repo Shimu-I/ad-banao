@@ -15,6 +15,7 @@ from datetime import UTC, datetime
 from decimal import Decimal
 
 from sqlalchemy import JSON, DateTime, Enum, ForeignKey, Numeric, String, Text
+from sqlalchemy import false as sa_false
 from sqlalchemy import true as sa_true
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -75,6 +76,8 @@ class User(Base):
     language: Mapped[str] = mapped_column(String(5), default="en")  # "en" or "bn"
     role: Mapped[str] = mapped_column(String(10), default="user", server_default="user")
     is_active: Mapped[bool] = mapped_column(default=True, server_default=sa_true())
+    # scrypt hash of the admin's secret word (second sign-in factor). Empty for normal users.
+    admin_secret_hash: Mapped[str | None] = mapped_column(String(300))
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), default=utcnow, onupdate=utcnow
@@ -95,6 +98,8 @@ class UserSession(Base):
     token_hash: Mapped[str] = mapped_column(String(64), unique=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
     expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    # True only when this browser signed in on the admin page with the secret word.
+    admin_verified: Mapped[bool] = mapped_column(default=False, server_default=sa_false())
 
     user: Mapped["User"] = relationship(back_populates="sessions")
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Check the admin console against a running API.
 
-    ADMIN_EMAILS=admin@demo.adbanao.test python -m uvicorn app.main:app --port 8000   (in backend/)
+    ADMIN_EMAILS=admin@demo.adbanao.test=banao-demo-secret python -m uvicorn app.main:app --port 8000   (in backend/)
     python scripts/e2e_admin.py [http://localhost:8000]
 
 Needs the API started in development mode with that ADMIN_EMAILS, and the demo users
@@ -46,12 +46,23 @@ def check(label, ok, extra=""):
         failures.append(label)
 
 
+SECRET = "banao-demo-secret"
+ADMIN_EMAIL = "admin@demo.adbanao.test"
 admin = client()
-s, me = call(admin, "POST", "/auth/login", {"email": "admin@demo.adbanao.test", "password": PW})
+s, _ = call(admin, "POST", "/auth/login", {"email": ADMIN_EMAIL, "password": PW})
 if s != 200:
     sys.exit("Cannot sign in as admin@demo.adbanao.test. Run scripts/seed_demo.py first.")
-check("admin user has the admin role", me["role"] == "admin",
-      "Start the API with ADMIN_EMAILS=admin@demo.adbanao.test")
+check("normal sign-in is not enough for the admin area", call(admin, "GET", "/admin/overview")[0] == 403)
+for label, body in [
+    ("wrong secret word is refused", {"email": ADMIN_EMAIL, "password": PW, "secret_word": "not-the-word"}),
+    ("wrong password is refused", {"email": ADMIN_EMAIL, "password": "Wrong-pass-1", "secret_word": SECRET}),
+    ("a normal user cannot use the admin sign-in", {"email": "rina@demo.adbanao.test", "password": PW, "secret_word": SECRET}),
+]:
+    check(label, call(client(), "POST", "/auth/admin-login", body)[0] == 401)
+s, me = call(admin, "POST", "/auth/admin-login", {"email": ADMIN_EMAIL, "password": PW, "secret_word": SECRET})
+if s != 200:
+    sys.exit(f"Admin sign-in failed ({s} {me}). Start the API with ADMIN_EMAILS=admin@demo.adbanao.test={SECRET}")
+check("admin signs in with email, password and secret word", me["role"] == "admin")
 
 rina = client()
 call(rina, "POST", "/auth/login", {"email": "rina@demo.adbanao.test", "password": PW})

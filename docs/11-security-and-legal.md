@@ -18,6 +18,7 @@ Controls for accounts, uploads, secrets, privacy and legal wording.
 
 ## Admin access
 
+- Admins sign in on a separate page with email, password and a secret word (hash stored, never returned). The admin area only accepts sessions made there. A normal sign-in by an admin does not open it. All failure cases give one identical message. Failed admin sign-ins are logged; wrong guesses are not rate limited yet.
 - Roles are stored only in the database. Sign-up, profile update and every other user-facing route ignore a `role` field (tested).
 - Admin routes return 401 when signed out and 403 for normal users (tested for every route).
 - `ADMIN_EMAILS` works only in development and test. In production an admin is made with `make admin EMAIL=...` on the server, or by another admin.

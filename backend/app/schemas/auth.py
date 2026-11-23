@@ -49,6 +49,17 @@ class LoginRequest(BaseModel):
         return normalize_email(v)
 
 
+class AdminLoginRequest(BaseModel):
+    email: str
+    password: str = Field(max_length=128)
+    secret_word: str = Field(max_length=128)
+
+    @field_validator("email")
+    @classmethod
+    def _email(cls, v: str) -> str:
+        return normalize_email(v)
+
+
 class UserRead(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 

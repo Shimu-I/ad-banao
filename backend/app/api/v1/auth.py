@@ -13,7 +13,11 @@ from app.db import activity
 from app.db.models import User, UserSession
 from app.db.session import get_db
 from app.domain import events
-from app.domain.roles import ROLE_ADMIN, is_bootstrap_admin
+from app.domain.roles import (
+    ROLE_ADMIN,
+    bootstrap_secret_word,
+    is_bootstrap_admin,
+)
 from app.domain.security import (
     DUMMY_HASH,
     hash_password,
@@ -22,6 +26,7 @@ from app.domain.security import (
     verify_password,
 )
 from app.schemas.auth import (
+    AdminLoginRequest,
     LoginRequest,
     PasswordChange,
     SignupRequest,
@@ -41,15 +46,21 @@ def _apply_bootstrap_admin(user: User) -> None:
         user.email, settings.admin_emails, settings.app_env
     ):
         user.role = ROLE_ADMIN
+    word = bootstrap_secret_word(user.email, settings.admin_emails, settings.app_env)
+    if word and user.role == ROLE_ADMIN and not user.admin_secret_hash:
+        user.admin_secret_hash = hash_password(word)
 
 
-def _start_session(db: Session, user: User, response: Response) -> None:
+def _start_session(
+    db: Session, user: User, response: Response, admin_verified: bool = False
+) -> None:
     token = new_session_token()
     db.add(
         UserSession(
             user_id=user.id,
             token_hash=hash_token(token),
             expires_at=datetime.now(UTC) + timedelta(days=SESSION_DAYS),
+            admin_verified=admin_verified,
         )
     )
     db.commit()
@@ -108,6 +119,39 @@ def login(body: LoginRequest, response: Response, db: Session = Depends(get_db))
     _apply_bootstrap_admin(user)
     activity.record(db, events.LOGIN, user.id)
     _start_session(db, user, response)
+    return user
+
+
+@router.post("/auth/admin-login", response_model=UserRead)
+def admin_login(
+    body: AdminLoginRequest, response: Response, db: Session = Depends(get_db)
+) -> User:
+    """Second sign-in for admins: email, password and secret word. The three are checked
+    together and one message covers every failure, so nothing reveals which part was wrong
+    or whether the email belongs to an admin."""
+    user = db.scalar(select(User).where(User.email == body.email))
+    password_ok = verify_password(body.password, user.password_hash if user else DUMMY_HASH)
+    if user is not None and password_ok:
+        _apply_bootstrap_admin(user)  # development and test only
+    secret_hash = user.admin_secret_hash if user and user.admin_secret_hash else None
+    secret_ok = verify_password(body.secret_word.strip(), secret_hash or DUMMY_HASH)
+    allowed = bool(
+        user and password_ok and secret_ok and secret_hash and user.role == ROLE_ADMIN
+    )
+    if not allowed or user is None:
+        activity.record(db, events.ADMIN_LOGIN_FAILED, user.id if user else None)
+        db.commit()
+        raise HTTPException(
+            status_code=401, detail="Incorrect email, password or secret word."
+        )
+    if not user.is_active:
+        activity.record(db, events.LOGIN_BLOCKED, user.id)
+        db.commit()
+        raise HTTPException(
+            status_code=403, detail="This account has been suspended. Contact support."
+        )
+    activity.record(db, events.ADMIN_LOGIN, user.id)
+    _start_session(db, user, response, admin_verified=True)
     return user
 
 

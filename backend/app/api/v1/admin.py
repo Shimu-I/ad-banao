@@ -8,7 +8,7 @@ from datetime import UTC, date, datetime, time, timedelta
 from typing import Literal
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Response
-from sqlalchemy import Select, delete, func, or_, select
+from sqlalchemy import Select, delete, func, or_, select, update
 from sqlalchemy.orm import Session
 
 from app.api.v1.deps import require_admin
@@ -411,6 +411,7 @@ def user_detail(user_id: int, db: Session = Depends(get_db)) -> AdminUserDetail:
         **_row(*row),
         phone=user.phone,
         open_sessions=sessions,
+        has_secret_word=bool(user.admin_secret_hash),
         recent_events=[_event(e) for e in recent],
     )
 
@@ -460,6 +461,11 @@ def update_user(
             detail=f"{target.role} -> {changes['role']}",
         )
         target.role = changes["role"]
+        if target.role != ROLE_ADMIN:  # no longer an admin: forget the secret word
+            target.admin_secret_hash = None
+            db.execute(
+                update(UserSession).where(UserSession.user_id == target.id).values(admin_verified=False)
+            )
     if "is_active" in changes and changes["is_active"] != target.is_active:
         target.is_active = changes["is_active"]
         activity.record(

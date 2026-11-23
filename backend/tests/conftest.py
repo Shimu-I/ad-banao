@@ -7,4 +7,4 @@ import tempfile
 os.environ["DATABASE_URL"] = "sqlite://"
 os.environ["APP_ENV"] = "test"
 os.environ["UPLOAD_DIR"] = tempfile.mkdtemp(prefix="adbanao-test-uploads-")
-os.environ["ADMIN_EMAILS"] = "boss@example.com, Second.Boss@Example.com"
+os.environ["ADMIN_EMAILS"] = "boss@example.com=boss-secret-1, Second.Boss@Example.com=second-secret-1, nosecret@example.com"

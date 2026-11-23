@@ -19,12 +19,15 @@ ADMIN_ROLE_CHANGED = "admin_role_changed"
 ADMIN_SUSPENDED = "admin_suspended"
 ADMIN_REACTIVATED = "admin_reactivated"
 ADMIN_SIGNED_OUT_USER = "admin_signed_out_user"
+ADMIN_LOGIN = "admin_login"
+ADMIN_LOGIN_FAILED = "admin_login_failed"
 
 ALL_EVENTS = (
     SIGNUP, LOGIN, LOGIN_FAILED, LOGIN_BLOCKED, LOGOUT, PASSWORD_CHANGED, PROFILE_UPDATED,
     BRAND_CREATED, BRAND_UPDATED, BRAND_ARCHIVED, BRAND_RESTORED,
     PRODUCT_CREATED, PRODUCT_UPDATED, PRODUCT_ARCHIVED, PRODUCT_RESTORED,
     ADMIN_ROLE_CHANGED, ADMIN_SUSPENDED, ADMIN_REACTIVATED, ADMIN_SIGNED_OUT_USER,
+    ADMIN_LOGIN, ADMIN_LOGIN_FAILED,
 )  # fmt: skip
 
 # Filter groups shown in the admin page.
@@ -35,7 +38,10 @@ GROUPS: dict[str, tuple[str, ...]] = {
         PRODUCT_CREATED, PRODUCT_UPDATED, PRODUCT_ARCHIVED, PRODUCT_RESTORED,
     ),  # fmt: skip
     "account": (PASSWORD_CHANGED, PROFILE_UPDATED),
-    "admin": (ADMIN_ROLE_CHANGED, ADMIN_SUSPENDED, ADMIN_REACTIVATED, ADMIN_SIGNED_OUT_USER),
+    "admin": (
+        ADMIN_ROLE_CHANGED, ADMIN_SUSPENDED, ADMIN_REACTIVATED, ADMIN_SIGNED_OUT_USER,
+        ADMIN_LOGIN, ADMIN_LOGIN_FAILED,
+    ),  # fmt: skip
 }
 
 # Events that show a person actually used the product. Failed or blocked sign-ins and things

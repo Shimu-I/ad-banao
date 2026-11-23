@@ -310,9 +310,9 @@ flowchart TB
 
 ---
 
-### Page 10: Admin console (built)
+### Page 10: Admin sign in and admin console (built)
 
-Only for users with the `admin` role. Shows users, activity and controls (suspend, make admin, sign out everywhere, CSV). Full description: [22-admin.md](22-admin.md). Signed-out visitors go to sign in; normal users see "Admins only".
+`admin-login.html` asks for admin email, password and secret word. The console is only for users with the `admin` role who signed in there. Shows users, activity and controls (suspend, make admin, sign out everywhere, CSV). Full description: [22-admin.md](22-admin.md). Signed-out visitors go to sign in; normal users see "Admins only".
 
 ### Page 9: Brands and account settings
 

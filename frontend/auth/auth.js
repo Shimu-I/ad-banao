@@ -52,6 +52,9 @@
     login: function (email, password) {
       return request("POST", "/auth/login", { email: email, password: password });
     },
+    adminLogin: function (email, password, secretWord) {
+      return request("POST", "/auth/admin-login", { email: email, password: password, secret_word: secretWord });
+    },
     logout: function () { return request("POST", "/auth/logout"); },
     me: function () { return request("GET", "/users/me"); },
     updateProfile: function (fields) { return request("PATCH", "/users/me", fields); },

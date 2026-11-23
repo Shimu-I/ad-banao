@@ -87,6 +87,7 @@ class AdminUserDetail(AdminUserRow):
 
     phone: str | None
     open_sessions: int
+    has_secret_word: bool
     recent_events: list[EventRead]
 
 

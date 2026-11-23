@@ -11,9 +11,46 @@ BOOTSTRAP_ENVS = ("development", "test")
 DEMO_EMAIL_DOMAIN = "@demo.adbanao.test"
 
 
+SECRET_MIN = 6
+SECRET_MAX = 128
+
+
+def _entries(raw: str) -> dict[str, str | None]:
+    """'A@x.com=word, b@y.com' -> {'a@x.com': 'word', 'b@y.com': None}."""
+    out: dict[str, str | None] = {}
+    for part in (raw or "").split(","):
+        part = part.strip()
+        if not part:
+            continue
+        email, sep, word = part.partition("=")
+        email = email.strip().lower()
+        if email:
+            out[email] = word.strip() or None if sep else None
+    return out
+
+
 def parse_admin_emails(raw: str) -> frozenset[str]:
-    """'A@x.com, b@y.com' -> {'a@x.com', 'b@y.com'}. Blank entries are ignored."""
-    return frozenset(p.strip().lower() for p in (raw or "").split(",") if p.strip())
+    """'A@x.com=word, b@y.com' -> {'a@x.com', 'b@y.com'}. Blank entries are ignored."""
+    return frozenset(_entries(raw))
+
+
+def bootstrap_secret_word(email: str, raw_list: str, app_env: str) -> str | None:
+    """The secret word given for this email in ADMIN_EMAILS (development and test only)."""
+    if app_env not in BOOTSTRAP_ENVS:
+        return None
+    return _entries(raw_list).get(email.strip().lower())
+
+
+def secret_word_problem(word: str, password: str = "") -> str | None:
+    """Reason a secret word is not acceptable, or None."""
+    word = word.strip()
+    if len(word) < SECRET_MIN:
+        return f"The secret word must be at least {SECRET_MIN} characters."
+    if len(word) > SECRET_MAX:
+        return f"The secret word must be at most {SECRET_MAX} characters."
+    if password and word == password:
+        return "The secret word must be different from the password."
+    return None
 
 
 def is_bootstrap_admin(email: str, raw_list: str, app_env: str) -> bool:

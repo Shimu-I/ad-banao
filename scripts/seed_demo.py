@@ -61,7 +61,7 @@ for u in USERS:
     print(("created " if created else "updated ") + u["email"] + f"  (brand: {u['brand']}, product: {u['product']['name']})")
 
 # An admin demo user. It becomes an admin when the API was started with
-# ADMIN_EMAILS=admin@demo.adbanao.test (development only), or after: make admin EMAIL=admin@demo.adbanao.test
+# ADMIN_EMAILS=admin@demo.adbanao.test=banao-demo-secret (development only), or after: make admin EMAIL=admin@demo.adbanao.test
 ADMIN = {"email": "admin@demo.adbanao.test", "display_name": "Demo Admin"}
 opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(http.cookiejar.CookieJar()))
 status, me = call(opener, "POST", "/auth/signup", {"email": ADMIN["email"], "password": PASSWORD, "display_name": ADMIN["display_name"]})
@@ -72,6 +72,7 @@ if status != 201:
 role = me.get("role") if isinstance(me, dict) else None
 print(f"{'ready  ' if role == 'admin' else 'created'} {ADMIN['email']}  (role: {role})")
 if role != "admin":
-    print("  Not an admin yet. Start the API with ADMIN_EMAILS=admin@demo.adbanao.test, or run: make admin EMAIL=admin@demo.adbanao.test")
+    print("  Not an admin yet. Start the API with ADMIN_EMAILS=admin@demo.adbanao.test=banao-demo-secret, or run: make admin EMAIL=admin@demo.adbanao.test")
 
 print(f"\nDemo password for all demo users: {PASSWORD}")
+print("Demo admin secret word: banao-demo-secret")

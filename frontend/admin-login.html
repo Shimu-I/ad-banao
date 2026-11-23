@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>AdBanao – Admin sign in</title>
+<meta name="robots" content="noindex">
+<script>
+  (function () {
+    var t = null, l = null;
+    try { t = localStorage.getItem('adbanao-theme'); l = localStorage.getItem('adbanao-lang'); } catch (e) {}
+    if (t !== 'light' && t !== 'dark') t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    document.documentElement.setAttribute('data-theme', t);
+    document.documentElement.setAttribute('lang', l === 'bn' ? 'bn' : 'en');
+  })();
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:wght@400;600;700&family=Hind+Siliguri:wght@400;500;600&family=Noto+Serif+Bengali:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="admin/admin-login.css">
+</head>
+<body>
+<div class="page">
+  <div class="shell">
+    <header class="top">
+      <a class="brand" href="index.html" aria-label="AdBanao home"><span class="logo" aria-hidden="true">a.</span>AdBanao</a>
+      <span class="sp"></span>
+      <button class="pill" id="langBtn" type="button" aria-label="Switch language"><span data-l="en">EN</span><span data-l="bn">বাংলা</span></button>
+      <button class="ic" id="themeBtn" type="button" aria-label="Switch between light and dark"><svg class="sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg><svg class="moon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button>
+    </header>
+    <div class="body">
+      <main class="left">
+        <div class="fc">
+          <span class="badge"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l8 3v6c0 4.5-3.2 7.8-8 9-4.8-1.2-8-4.5-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg><span data-i="badge">Admin area</span></span>
+          <h1 data-i="title">Admin sign in</h1>
+          <p class="sub" data-i="sub">Restricted area. Enter your admin email, password and secret word.</p>
+          <form id="form" novalidate>
+            <label for="email" data-i="email">Admin email</label>
+            <input class="in" id="email" type="email" autocomplete="username" inputmode="email" data-p="emailPh" placeholder="admin@example.com">
+            <div class="err" id="xEmail"></div>
+
+            <label for="pw" data-i="pw">Password</label>
+            <div class="pw"><input class="in" id="pw" type="password" autocomplete="current-password" data-p="pwPh" placeholder="Enter your password"><button class="eye" type="button" aria-label="Show password" data-for="pw"><svg viewBox="0 0 24 24"><g class="shown"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></g><g class="off"><path d="M3 3l18 18M10.6 5.2A10 10 0 0 1 12 5c6.4 0 10 7 10 7a17 17 0 0 1-3.2 4M6.5 6.6A16 16 0 0 0 2 12s3.6 7 10 7a10 10 0 0 0 4.3-1"/></g></svg></button></div>
+            <div class="err" id="xPw"></div>
+
+            <label for="secret" data-i="secret">Secret word</label>
+            <div class="pw"><input class="in" id="secret" type="password" autocomplete="off" data-p="secretPh" placeholder="Your secret word"><button class="eye" type="button" aria-label="Show secret word" data-for="secret"><svg viewBox="0 0 24 24"><g class="shown"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></g><g class="off"><path d="M3 3l18 18M10.6 5.2A10 10 0 0 1 12 5c6.4 0 10 7 10 7a17 17 0 0 1-3.2 4M6.5 6.6A16 16 0 0 0 2 12s3.6 7 10 7a10 10 0 0 0 4.3-1"/></g></svg></button></div>
+            <div class="hint"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg><span data-i="hint">The secret word is a second password that only admins have.</span></div>
+            <div class="err" id="xForm" role="alert"></div>
+
+            <button class="btn" type="submit" id="go" data-i="go">Verify and sign in</button>
+          </form>
+          <p class="alt"><a href="index.html#signin" data-i="normal">Not an admin? Sign in as a normal user</a></p>
+          <p class="skip"><a href="index.html" data-i="back">Back to the website</a></p>
+          <p class="note" data-i="note">Lost your secret word? Ask the person who runs the server. It cannot be reset from this page.</p>
+        </div>
+      </main>
+      <aside class="right" aria-hidden="true">
+        <img class="ill" src="assets/img/a267e8ab76.webp" alt="" width="1608" height="978">
+        <p class="tag" data-i="tag">Secure access for AdBanao admins</p>
+      </aside>
+    </div>
+  </div>
+</div>
+<script src="auth/auth.js"></script>
+<script>
+(function () {
+  "use strict";
+  var $ = function (s) { return document.querySelector(s); };
+  var T = {
+    en: { badge: "Admin area", title: "Admin sign in", sub: "Restricted area. Enter your admin email, password and secret word.", email: "Admin email", pw: "Password", secret: "Secret word",
+      hint: "The secret word is a second password that only admins have.", go: "Verify and sign in", wait: "Checking…", normal: "Not an admin? Sign in as a normal user", back: "Back to the website",
+      note: "Lost your secret word? Ask the person who runs the server. It cannot be reset from this page.", tag: "Secure access for AdBanao admins",
+      emailPh: "admin@example.com", pwPh: "Enter your password", secretPh: "Your secret word", eEmail: "Enter a valid email address.", ePw: "Enter your password.", eSecret: "Enter your secret word.",
+      show: "Show", hide: "Hide", bad: "Incorrect email, password or secret word.", suspended: "This account has been suspended. Contact support.", net: "Cannot reach the server. Check your connection and try again.", fail: "Something went wrong. Try again." },
+    bn: { badge: "অ্যাডমিন এলাকা", title: "অ্যাডমিন সাইন-ইন", sub: "সীমিত এলাকা। আপনার অ্যাডমিন ইমেইল, পাসওয়ার্ড ও সিক্রেট ওয়ার্ড দিন।", email: "অ্যাডমিন ইমেইল", pw: "পাসওয়ার্ড", secret: "সিক্রেট ওয়ার্ড",
+      hint: "সিক্রেট ওয়ার্ড হলো দ্বিতীয় পাসওয়ার্ড, যা শুধু অ্যাডমিনদের কাছে থাকে।", go: "যাচাই করে সাইন-ইন", wait: "যাচাই হচ্ছে…", normal: "অ্যাডমিন নন? সাধারণ ব্যবহারকারী হিসেবে সাইন-ইন করুন", back: "ওয়েবসাইটে ফিরুন",
+      note: "সিক্রেট ওয়ার্ড হারিয়ে ফেলেছেন? যিনি সার্ভার চালান তাঁকে বলুন। এই পেজ থেকে রিসেট করা যায় না।", tag: "অ্যাডবানাও অ্যাডমিনদের জন্য নিরাপদ প্রবেশ",
+      emailPh: "admin@example.com", pwPh: "আপনার পাসওয়ার্ড দিন", secretPh: "আপনার সিক্রেট ওয়ার্ড", eEmail: "সঠিক ইমেইল ঠিকানা দিন।", ePw: "পাসওয়ার্ড দিন।", eSecret: "সিক্রেট ওয়ার্ড দিন।",
+      show: "দেখান", hide: "লুকান", bad: "ইমেইল, পাসওয়ার্ড বা সিক্রেট ওয়ার্ড ভুল।", suspended: "এই অ্যাকাউন্ট স্থগিত। সাপোর্টের সঙ্গে যোগাযোগ করুন।", net: "সার্ভারে পৌঁছানো যাচ্ছে না। সংযোগ দেখে আবার চেষ্টা করুন।", fail: "কিছু একটা ভুল হয়েছে। আবার চেষ্টা করুন।" }
+  };
+  var lang = document.documentElement.lang === "bn" ? "bn" : "en";
+  var t = function (k) { return T[lang][k]; };
+  var store = { set: function (k, v) { try { localStorage.setItem(k, v); } catch (e) {} } };
+  function paint() {
+    document.documentElement.lang = lang;
+    document.querySelectorAll("[data-i]").forEach(function (e) { e.textContent = t(e.getAttribute("data-i")); });
+    document.querySelectorAll("[data-p]").forEach(function (e) { e.placeholder = t(e.getAttribute("data-p")); });
+    document.querySelectorAll(".eye").forEach(function (b) { b.setAttribute("aria-label", t(b.classList.contains("on") ? "hide" : "show") + " " + t(b.getAttribute("data-for") === "pw" ? "pw" : "secret").toLowerCase()); });
+    document.title = lang === "bn" ? "অ্যাডবানাও – অ্যাডমিন সাইন-ইন" : "AdBanao – Admin sign in";
+  }
+  function mark(id, errId, msg) { $("#" + id).classList.toggle("bad", !!msg); $("#" + errId).textContent = msg || ""; return !msg; }
+  $("#langBtn").addEventListener("click", function () { lang = lang === "bn" ? "en" : "bn"; store.set("adbanao-lang", lang); ["xEmail", "xPw", "xForm"].forEach(function (i) { $("#" + i).textContent = ""; }); paint(); });
+  $("#themeBtn").addEventListener("click", function () { var r = document.documentElement, n = r.dataset.theme === "dark" ? "light" : "dark"; r.dataset.theme = n; store.set("adbanao-theme", n); });
+  document.querySelectorAll(".eye").forEach(function (b) {
+    b.addEventListener("click", function () { var i = $("#" + b.getAttribute("data-for")), show = i.type === "password"; i.type = show ? "text" : "password"; b.classList.toggle("on", show); paint(); });
+  });
+  $("#form").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var email = $("#email").value.trim(), pw = $("#pw").value, secret = $("#secret").value;
+    $("#xForm").textContent = "";
+    var a = mark("email", "xEmail", /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ? "" : t("eEmail"));
+    var b = mark("pw", "xPw", pw ? "" : t("ePw"));
+    var c = !!secret; $("#secret").classList.toggle("bad", !c); if (!c) $("#xForm").textContent = t("eSecret");
+    if (!(a && b && c)) { (!a ? $("#email") : !b ? $("#pw") : $("#secret")).focus(); return; }
+    var btn = $("#go"); btn.disabled = true; btn.textContent = t("wait");
+    window.AdBanaoAuth.adminLogin(email, pw, secret).then(function () {
+      window.location.href = "admin.html";
+    }, function (err) {
+      btn.disabled = false; btn.textContent = t("go");
+      $("#secret").value = "";
+      $("#xForm").textContent = err.status === 401 ? t("bad") : err.status === 403 ? t("suspended") : err.status === 0 || /reach/i.test(err.message) ? t("net") : t("fail");
+    });
+  });
+  paint();
+})();
+</script>
+</body>
+</html>

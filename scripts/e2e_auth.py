@@ -52,8 +52,12 @@ with sync_playwright() as p:
     auth.locator("#p2").fill(password)
     auth.locator("#t2").check()
     auth.locator("#fup button[type=submit]").click()
-    page.wait_for_timeout(1500)
-    msg = (auth.locator("#x2").text_content() or "") + (auth.locator("#z2").text_content() or "")
+    msg = ""
+    for _ in range(40):  # wait up to 10 seconds for the answer instead of a fixed pause
+        page.wait_for_timeout(250)
+        msg = (auth.locator("#x2").text_content() or "") + (auth.locator("#z2").text_content() or "")
+        if "already exists" in msg:
+            break
     check("duplicate email is refused with a message", "already exists" in msg, msg)
 
     # sign in with a wrong and then the right password

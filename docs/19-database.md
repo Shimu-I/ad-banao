@@ -102,6 +102,7 @@ One row per account.
 | `language` | string(5) | no | `en` or `bn` |
 | `role` | string(10) | no | `user` (default) or `admin`. Only changed by an admin or the command line. Added by migration 0003 |
 | `is_active` | boolean | no | `false` = suspended: cannot sign in, sessions deleted. Added by migration 0003 |
+| `admin_secret_hash` | string(300) | yes | scrypt hash of an admin's secret word (second sign-in factor). Empty for normal users. Migration 0004 |
 | `created_at`, `updated_at` | datetime with time zone | no | `updated_at` changes on every edit |
 
 ### `user_sessions`
@@ -114,6 +115,7 @@ One row per signed-in browser. Signing out deletes the row, which ends that sess
 | `token_hash` | string(64) | no | Unique. SHA-256 of the random token held in the browser cookie. The token itself is never stored, so a copy of the database cannot be used to sign in |
 | `created_at` | datetime | no | |
 | `expires_at` | datetime | no | 14 days after sign-in. Expired rows are rejected and removed when next used |
+| `admin_verified` | boolean | no | `true` only for sessions made on the admin sign-in page (email + password + secret word). Migration 0004 |
 
 ### `activity_events`
 

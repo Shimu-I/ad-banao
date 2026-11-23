@@ -4,7 +4,7 @@ PY      := $(VENV)/bin/python
 PIP     := $(VENV)/bin/pip
 
 .DEFAULT_GOAL := help
-.PHONY: help setup test lint fix run db-up db-viewer admin seed db-down clean
+.PHONY: help setup test lint fix run db-up db-viewer admin admin-secret seed db-down clean
 
 help:  ## Show this list
 	@grep -E '^[a-zA-Z_-]+:.*##' $(MAKEFILE_LIST) | awk -F':.*## ' '{printf "  %-10s %s\n", $$1, $$2}'
@@ -35,8 +35,11 @@ db-up:  ## Start local PostgreSQL with Docker
 db-viewer:  ## Start the web database viewer at http://localhost:8080 (demo)
 	docker compose up -d db adminer
 
-admin:  ## Make an existing user an admin: make admin EMAIL=you@example.com
+admin:  ## Make an existing user an admin (asks for a secret word): make admin EMAIL=you@example.com
 	cd backend && ../$(VENV)/bin/python -m app.cli make-admin $(EMAIL)
+
+admin-secret:  ## Change an admin's secret word: make admin-secret EMAIL=you@example.com
+	cd backend && ../$(VENV)/bin/python -m app.cli set-secret $(EMAIL)
 
 seed:  ## Create the demo users and the demo admin (the API must be running)
 	$(PY) scripts/seed_demo.py
