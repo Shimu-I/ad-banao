@@ -213,6 +213,7 @@ These are the honest gaps a senior reviewer would raise, each with the goal that
 
 | Date | What happened |
 | --- | --- |
+| 2026-11-24 | Team roles page added (docs/23) for a team of five, plus `docs/jira-import.csv` made from the roadmap. The Jira board itself is not created yet. |
 | 2026-11-24 | Admin sign-in page (email + password + secret word, migration 0004) and gradients on sign-in/sign-up added on branch feat/admin-login. Test result recorded after the pull request runs. |
 | 2026-11-23 | Admin console built (docs/22): roles, suspension, activity log (migration 0003), admin API with CSV, admin page in light/dark and desktop/phone. Page checked in a browser against fake data. GitHub Actions (PR #56): 355 tests pass (29 new), plus the admin API checks and the admin page browser checks against the real backend. Not yet tried on the owner's machine. |
 | 2026-11-13 | Idea reviewed. Project document written with features, corner cases, limits and costs. |

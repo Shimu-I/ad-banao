@@ -36,6 +36,7 @@ Read in this order if you are new. Each file covers one topic.
 | [16-linux-setup.md](16-linux-setup.md) | How do I set up my Linux machine? |
 | [20-test-on-your-pc.md](20-test-on-your-pc.md) | How do I run every check on my own computer and send the result? |
 | [22-admin.md](22-admin.md) | How do admin roles, suspension, the activity log and the admin page work? |
+| [23-team-roles.md](23-team-roles.md) | Who does what in the team of five, for the first update, and who presents what? |
 | [21-faculty-demo.md](21-faculty-demo.md) | How do I show the pages talking to the database with three demo users? |
 | [15-risks.md](15-risks.md) | What are the risks and open decisions? |
 
