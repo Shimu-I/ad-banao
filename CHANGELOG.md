@@ -10,6 +10,7 @@ versions follow [Semantic Versioning](https://semver.org).
 - The database viewer port can be changed with `ADMINER_PORT` when 8080 is already in use.
 
 ### Added
+- ADR 0007: the AI proposes the design, our code renders and checks it.
 - AI and ad engine plan (`docs/25-ai-and-ad-engine-plan.md`).
 - Project tracker (`docs/TRACKER.md`) and `scripts/update_tracker.py`.
 - Project documents, backend skeleton and database models.

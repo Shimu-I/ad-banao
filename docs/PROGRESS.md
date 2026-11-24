@@ -215,6 +215,7 @@ These are the honest gaps a senior reviewer would raise, each with the goal that
 
 | Date | What happened |
 | --- | --- |
+| 2026-11-24 | Owner accepted option B for the ad engine (the AI proposes the design, our code validates, renders and checks it). Recorded as ADR 0007. Docs only. |
 | 2026-11-24 | AI and ad engine plan written ([25](25-ai-and-ad-engine-plan.md)): four options with pros and cons, free-tier facts checked against provider pages, recommendation and six decisions for the owner. Found that our default Gemini model is shut down. Docs only, no code. |
 | 2026-11-24 | Project tracker added ([TRACKER.md](TRACKER.md)) with a script, `scripts/update_tracker.py`, that recomputes the scoreboard from the roadmap. This page's top section brought up to date. Docs only. |
 | 2026-11-24 | Team roles page added (docs/23) for a team of five, plus `docs/jira-import.csv` made from the roadmap. The Jira board itself is not created yet. |

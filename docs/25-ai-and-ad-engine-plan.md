@@ -1,6 +1,6 @@
 # AI features, API foundations and the ad engine: options and plan
 
-Status: **proposal for the owner to decide.** No code for this has been written. Written 2026-11-24 (Asia/Dhaka).
+Status: **owner accepted option B on 2026-11-24** ([ADR 0007](adr/0007-ad-engine-ai-designer.md)). Still open: the free keys, and option C after A4. No code for this has been written yet. Written 2026-11-24 (Asia/Dhaka).
 
 Goals covered: F8 (API foundations), A1 to A7 (ad engine), and where AI touches V1 to V6 (verification). Related: [03-tech-stack.md](03-tech-stack.md), [12-deployment-and-costs.md](12-deployment-and-costs.md), [15-risks.md](15-risks.md) (R-02, R-04), [07-roadmap.md](07-roadmap.md).
 
