@@ -29,7 +29,7 @@
 </head>
 <body>
 <main>
-  <header><a href="/index.html"><strong>AdBanao</strong></a><button class="ghost" id="logout" style="margin:0">Sign out</button></header>
+  <header><a href="/index.html"><strong>AdBanao</strong></a><span style="display:flex;align-items:center;gap:12px"><span id="avatar" title="" style="width:38px;height:38px;border-radius:50%;background:var(--brand);color:#fff;display:none;place-items:center;font-weight:700;text-transform:uppercase"></span><button class="ghost" id="logout" style="margin:0">Sign out</button></span></header>
   <h1>Your profile</h1>
   <p class="sub" id="who">Loading…</p>
 
@@ -58,12 +58,13 @@
   </section>
 </main>
 
-<script src="/auth/auth.js"></script>
+<script src="auth/auth.js"></script>
 <script>
   var $ = function (id) { return document.getElementById(id); };
   function show(el, text, ok) { el.textContent = text; el.className = "msg " + (ok ? "ok" : "err"); }
   function fill(u) {
     $("who").textContent = "Signed in as " + u.email;
+    var av = $("avatar"); av.textContent = (Array.from(u.display_name || u.email)[0] || "?"); av.title = u.email; av.style.display = "grid";
     ["email", "display_name", "business_name", "phone", "language"].forEach(function (k) { $(k).value = u[k] || ""; });
   }
   function busy(form, on) { form.querySelector("button").disabled = on; }

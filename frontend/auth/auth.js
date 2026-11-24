@@ -8,7 +8,10 @@
   "use strict";
 
   // Set window.ADBANAO_API before this script to point at another server.
-  var API = (window.ADBANAO_API || "http://localhost:8000").replace(/\/$/, "");
+  // Same host name as the page (localhost or 127.0.0.1), so the sign-in cookie is sent back.
+  var host = (window.location && window.location.hostname) || "localhost";
+  if (!/^[\w.\-]+$/.test(host)) host = "localhost";
+  var API = (window.ADBANAO_API || "http://" + host + ":8000").replace(/\/$/, "");
 
   function message(body, status) {
     // FastAPI sends {detail: "text"} or, for validation, {detail: [{msg: "..."}]}.

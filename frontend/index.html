@@ -109,6 +109,20 @@
   .theme-btn[data-mode="dark"] .sun { display: none; }
   .theme-btn:not([data-mode="dark"]) .moon { display: none; }
   .link-plain { padding: .5rem .6rem; font-size: .98rem; color: var(--fg); }
+
+  /* ===== Signed-in avatar badge ===== */
+  .avatar-wrap { position: relative; display: none; }
+  .avatar-wrap.on { display: inline-block; }
+  .avatar { width: 38px; height: 38px; border-radius: 50%; background: var(--brand); color: var(--brand-ink, #fff); font: 700 1rem/1 inherit; display: grid; place-items: center; border: 2px solid var(--line); cursor: pointer; padding: 0; text-transform: uppercase; position: relative; }
+  .avatar::after { content: ""; position: absolute; right: -2px; bottom: -2px; width: 11px; height: 11px; border-radius: 50%; background: #2fbf6b; border: 2px solid var(--bg); }
+  .avatar:focus-visible { outline: 3px solid var(--outline, var(--brand)); outline-offset: 2px; }
+  .avatar-menu { position: absolute; right: 0; top: calc(100% + 8px); min-width: 220px; background: var(--panel, var(--bg)); color: var(--fg); border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 12px 32px rgba(0,0,0,.18); padding: .4rem; z-index: 50; }
+  .avatar-menu[hidden] { display: none; }
+  .avatar-menu .who { padding: .5rem .7rem .6rem; border-bottom: 1px solid var(--line); margin-bottom: .3rem; }
+  .avatar-menu .who b { display: block; font-size: .95rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .avatar-menu .who span { display: block; font-size: .8rem; color: var(--fg-soft); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .avatar-menu a, .avatar-menu button { display: block; width: 100%; text-align: left; padding: .55rem .7rem; border-radius: 8px; font-size: .95rem; color: var(--fg); background: none; border: 0; cursor: pointer; text-decoration: none; }
+  .avatar-menu a:hover, .avatar-menu button:hover { background: var(--bg2, rgba(0,0,0,.05)); }
   .only-sm { display: none; }
   @media (min-width: 640px) { .only-sm { display: inline-flex; } .no-sm { display: none !important; } }
   @media (min-width: 960px) { .nav { display: flex; } .menu-btn { display: none; } }
@@ -599,6 +613,15 @@
       <div class="hdr-right">
         <button type="button" id="langBtn" class="pill" data-i18n-aria="aria.lang" aria-label="Switch language"><span data-l="en" class="on">EN</span> / <span data-l="bn">বাংলা</span></button>
         <button type="button" id="themeBtn" class="ic-btn theme-btn" data-i18n-aria="aria.theme" aria-label="Switch between light and dark"><svg class="sun" aria-hidden="true"><use href="#i-sun"/></svg><svg class="moon" aria-hidden="true"><use href="#i-moon"/></svg></button>
+        <div class="avatar-wrap" id="avatarWrap">
+          <button type="button" class="avatar" id="avatarBtn" aria-haspopup="true" aria-expanded="false" aria-label="Account menu">?</button>
+          <div class="avatar-menu" id="avatarMenu" hidden role="menu">
+            <div class="who"><b id="avName"></b><span id="avEmail"></span></div>
+            <a href="profile.html" id="avProfile" role="menuitem">Profile</a>
+            <a href="admin.html" id="avAdmin" role="menuitem" hidden>Admin</a>
+            <button type="button" id="avOut" role="menuitem">Sign out</button>
+          </div>
+        </div>
         <button type="button" class="link-plain only-sm" data-act="signin" data-i18n="signin">Sign in</button>
         <button type="button" class="btn sm only-sm" data-act="start"><span data-i18n="getStarted">Get Started</span><svg class="i" aria-hidden="true"><use href="#i-arrow"/></svg></button>
         <button type="button" id="menuBtn" class="ic-btn menu-btn" aria-expanded="false" aria-controls="mobileNav" data-i18n-aria="aria.menu" aria-label="Open menu"><svg aria-hidden="true"><use href="#i-menu"/></svg></button>
@@ -1927,40 +1950,57 @@ view();
 </script>
 
 <script>
-/* Signed-in state for the home page header. Uses the same API as the sign-in form. */
+/* Signed-in state for the home page header: circular avatar badge with a menu. */
 (function(){
-  var L={en:{profile:"Profile",out:"Sign out"},bn:{profile:"প্রোফাইল",out:"সাইন আউট"}};
-  var user=null;
+  var L={en:{profile:"Profile",out:"Sign out",admin:"Admin",acct:"Account menu"},bn:{profile:"প্রোফাইল",out:"সাইন আউট",admin:"অ্যাডমিন",acct:"অ্যাকাউন্ট মেনু"}};
   function lang(){return document.documentElement.lang==='bn'?'bn':'en';}
-  function targets(act){return document.querySelectorAll('header [data-act="'+act+'"], #mobileNav [data-act="'+act+'"]');}
+  function $(id){return document.getElementById(id);}
+  var user=null;
+  function initial(u){var n=(u.display_name||u.email||'?').trim();return (Array.from(n)[0]||'?').toUpperCase();}
+  function mobile(on){
+    document.querySelectorAll('#mobileNav .no-sm').forEach(function(e){e.hidden=on;});
+    var old=$('mobAcct'); if(old) old.remove();
+    if(!on) return;
+    var box=document.createElement('div'); box.id='mobAcct';
+    box.innerHTML='<a href="profile.html" data-p></a><a href="admin.html" data-a hidden></a><button type="button" data-o></button>';
+    $('mobileNav').appendChild(box); box.style.display='contents';
+    box.querySelector('[data-o]').onclick=signout;
+  }
   function paint(){
-    var a=targets('profile'),b=targets('signout');
-    a.forEach(function(e){e.textContent=L[lang()].profile;});
-    b.forEach(function(e){e.textContent=L[lang()].out;});
+    if(!user) return;
+    var t=L[lang()];
+    $('avatarBtn').setAttribute('aria-label',t.acct+': '+user.email);
+    $('avProfile').textContent=t.profile; $('avOut').textContent=t.out; $('avAdmin').textContent=t.admin;
+    var m=$('mobAcct'); if(m){m.querySelector('[data-p]').textContent=t.profile+' ('+user.display_name+')';m.querySelector('[data-o]').textContent=t.out;m.querySelector('[data-a]').textContent=t.admin;}
   }
   function setIn(u){
     user=u;
-    targets('signin').forEach(function(e){e.removeAttribute('data-i18n');e.dataset.act='profile';e.title=u.email;});
-    targets('start').forEach(function(e){e.removeAttribute('data-i18n');e.dataset.act='signout';e.innerHTML='<span></span>';});
+    $('avatarBtn').textContent=initial(u); $('avatarBtn').title=u.display_name+' ('+u.email+')';
+    $('avName').textContent=u.display_name; $('avEmail').textContent=u.email;
+    var admin=u.role==='admin'; $('avAdmin').hidden=!admin;
+    $('avatarWrap').classList.add('on');
+    document.querySelectorAll('header .only-sm').forEach(function(e){e.hidden=true;e.style.display='none';});
+    mobile(true);
+    var m=$('mobAcct'); if(m) m.querySelector('[data-a]').hidden=!admin;
     paint();
-    if(u.role==='admin'){
-      targets('profile').forEach(function(e){
-        if(e.parentNode.querySelector('.admin-link')) return;
-        var a=document.createElement('a'); a.href='admin.html'; a.className='admin-link'; a.textContent=lang()==='bn'?'অ্যাডমিন':'Admin';
-        a.style.cssText='margin-right:12px;font-weight:600;text-decoration:underline;color:inherit;white-space:nowrap';
-        e.parentNode.insertBefore(a,e);
-      });
-    }
+    // Leave the sign-in screen and show the home page with the badge visible.
+    if(location.hash==='#signin'||location.hash==='#signup'){ location.hash='#top'; }
   }
-  function setOut(){ user=null; }
-  function refresh(){ if(window.AdBanaoAuth) AdBanaoAuth.me().then(setIn,setOut); }
-  document.addEventListener('click',function(e){
-    var b=e.target.closest('[data-act]'); if(!b) return;
-    if(b.dataset.act==='profile'){ location.href='profile.html'; }
-    if(b.dataset.act==='signout'){ AdBanaoAuth.logout().catch(function(){}).then(function(){ location.href='index.html'; }); }
+  function setOut(){
+    user=null; $('avatarWrap').classList.remove('on');
+    document.querySelectorAll('header .only-sm').forEach(function(e){e.hidden=false;e.style.display='';});
+    mobile(false);
+  }
+  function signout(){ AdBanaoAuth.logout().catch(function(){}).then(function(){ setOut(); location.href='index.html'; }); }
+  function refresh(){ if(window.AdBanaoAuth) return AdBanaoAuth.me().then(setIn,setOut); }
+  $('avatarBtn').addEventListener('click',function(e){
+    e.stopPropagation(); var m=$('avatarMenu'); m.hidden=!m.hidden; this.setAttribute('aria-expanded',String(!m.hidden));
   });
+  document.addEventListener('click',function(e){ if(!e.target.closest('#avatarWrap')){ $('avatarMenu').hidden=true; $('avatarBtn').setAttribute('aria-expanded','false'); } });
+  document.addEventListener('keydown',function(e){ if(e.key==='Escape') $('avatarMenu').hidden=true; });
+  $('avOut').addEventListener('click',signout);
   addEventListener('message',function(e){
-    var f=document.getElementById('authFrame');
+    var f=$('authFrame');
     if(f&&e.source===f.contentWindow&&e.data&&e.data.type==='ab-authed'){ refresh(); }
   });
   new MutationObserver(paint).observe(document.documentElement,{attributes:true,attributeFilter:['lang']});

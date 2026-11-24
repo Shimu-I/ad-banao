@@ -23,6 +23,12 @@ def create_app() -> FastAPI:
     app.add_middleware(
         CORSMiddleware,
         allow_origins=[settings.frontend_origin],
+        # Dev convenience: the page may be opened as localhost or 127.0.0.1 on any port.
+        allow_origin_regex=(
+            None
+            if settings.app_env == "production"
+            else r"^http://(localhost|127\.0\.0\.1)(:\d+)?$"
+        ),
         allow_credentials=True,  # the sign-in cookie
         allow_methods=["*"],
         allow_headers=["*"],
