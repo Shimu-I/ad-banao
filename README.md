@@ -43,7 +43,7 @@ Reasons for each choice: [docs/03-tech-stack.md](docs/03-tech-stack.md).
 
 ## Status
 
-Early development. The backend for product profiles and text writing exists. There are no screens yet, and no ads can be made yet. What is done and tested: [docs/PROGRESS.md](docs/PROGRESS.md).
+Early development. Sign-up, sign-in, profile and admin pages work, and an ad creation page exists as a clickable prototype with sample data. No ad can be generated yet. To run it: [docs/26-run-adbanao.md](docs/26-run-adbanao.md). What is done and tested: [docs/PROGRESS.md](docs/PROGRESS.md).
 
 ## Quick start (Linux)
 
