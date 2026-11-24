@@ -124,6 +124,9 @@
   .avatar-menu a, .avatar-menu button { display: block; width: 100%; text-align: left; padding: .55rem .7rem; border-radius: 8px; font-size: .95rem; color: var(--fg); background: none; border: 0; cursor: pointer; text-decoration: none; }
   .avatar-menu a:hover, .avatar-menu button:hover { background: var(--bg2, rgba(0,0,0,.05)); }
   .only-sm { display: none; }
+  /* Dashboard button: shown only when signed in, beside the avatar. On phones it lives in the mobile menu. */
+  .dash-btn { display: none; white-space: nowrap; }
+  @media (min-width: 640px) { .dash-btn.on { display: inline-flex; } }
   @media (min-width: 640px) { .only-sm { display: inline-flex; } .no-sm { display: none !important; } }
   @media (min-width: 960px) { .nav { display: flex; } .menu-btn { display: none; } }
   .mobile-nav { display: grid; padding: .3rem 0 1rem; border-bottom: 1px solid var(--line); background: var(--bg); position: relative; z-index: 5; }
@@ -613,10 +616,12 @@
       <div class="hdr-right">
         <button type="button" id="langBtn" class="pill" data-i18n-aria="aria.lang" aria-label="Switch language"><span data-l="en" class="on">EN</span> / <span data-l="bn">বাংলা</span></button>
         <button type="button" id="themeBtn" class="ic-btn theme-btn" data-i18n-aria="aria.theme" aria-label="Switch between light and dark"><svg class="sun" aria-hidden="true"><use href="#i-sun"/></svg><svg class="moon" aria-hidden="true"><use href="#i-moon"/></svg></button>
+        <a href="dashboard.html" id="dashBtn" class="btn-line sm sans dash-btn" data-i18n="dash">Dashboard</a>
         <div class="avatar-wrap" id="avatarWrap">
           <button type="button" class="avatar" id="avatarBtn" aria-haspopup="true" aria-expanded="false" aria-label="Account menu">?</button>
           <div class="avatar-menu" id="avatarMenu" hidden role="menu">
             <div class="who"><b id="avName"></b><span id="avEmail"></span></div>
+            <a href="dashboard.html" id="avDash" role="menuitem">Dashboard</a>
             <a href="create.html" id="avCreate" role="menuitem">Create ad</a>
             <a href="profile.html" id="avProfile" role="menuitem">Profile</a>
             <a href="admin.html" id="avAdmin" role="menuitem" hidden>Admin</a>
@@ -897,7 +902,7 @@
   const I18N = {
     en: {
       'nav.how': 'How it works', 'nav.features': 'Features', 'nav.examples': 'Examples', 'nav.faq': 'FAQ',
-      'signin': 'Sign in', 'getStarted': 'Get Started', 'startFree': 'Start free',
+      'signin': 'Sign in', 'getStarted': 'Get Started', 'startFree': 'Start free', 'dash': 'Dashboard',
       'aria.lang': 'Switch language', 'aria.theme': 'Switch between light and dark', 'aria.menu': 'Open menu',
       'eyebrow.create': 'Your ideas, beautifully advertised.',
       'h1': 'From product details to ads that stand out.',
@@ -949,7 +954,7 @@
     },
     bn: {
       'nav.how': 'কীভাবে কাজ করে', 'nav.features': 'ফিচার', 'nav.examples': 'উদাহরণ', 'nav.faq': 'প্রশ্নোত্তর',
-      'signin': 'সাইন ইন', 'getStarted': 'শুরু করুন', 'startFree': 'বিনামূল্যে শুরু',
+      'signin': 'সাইন ইন', 'getStarted': 'শুরু করুন', 'startFree': 'বিনামূল্যে শুরু', 'dash': 'ড্যাশবোর্ড',
       'aria.lang': 'ভাষা বদলান', 'aria.theme': 'লাইট ও ডার্ক মোড বদলান', 'aria.menu': 'মেনু খুলুন',
       'eyebrow.create': 'আপনার আইডিয়াগুলোকে দিন আকর্ষণীয় বিজ্ঞাপনের রূপ।',
       'h1': 'পণ্যের তথ্য থেকে তৈরি করুন নজরকাড়া বিজ্ঞাপন, যা সহজেই সবার দৃষ্টি আকর্ষণ করবে।',
@@ -1956,7 +1961,7 @@ view();
 <script>
 /* Signed-in state for the home page header: circular avatar badge with a menu. */
 (function(){
-  var L={en:{profile:"Profile",out:"Sign out",admin:"Admin",acct:"Account menu"},bn:{profile:"প্রোফাইল",out:"সাইন আউট",admin:"অ্যাডমিন",acct:"অ্যাকাউন্ট মেনু"}};
+  var L={en:{dash:"Dashboard",profile:"Profile",out:"Sign out",admin:"Admin",acct:"Account menu"},bn:{dash:"ড্যাশবোর্ড",profile:"প্রোফাইল",out:"সাইন আউট",admin:"অ্যাডমিন",acct:"অ্যাকাউন্ট মেনু"}};
   function lang(){return document.documentElement.lang==='bn'?'bn':'en';}
   function $(id){return document.getElementById(id);}
   var user=null;
@@ -1966,7 +1971,7 @@ view();
     var old=$('mobAcct'); if(old) old.remove();
     if(!on) return;
     var box=document.createElement('div'); box.id='mobAcct';
-    box.innerHTML='<a href="profile.html" data-p></a><a href="admin.html" data-a hidden></a><button type="button" data-o></button>';
+    box.innerHTML='<a href="dashboard.html" class="no-sm" data-d></a><a href="profile.html" data-p></a><a href="admin.html" data-a hidden></a><button type="button" data-o></button>';
     $('mobileNav').appendChild(box); box.style.display='contents';
     box.querySelector('[data-o]').onclick=signout;
   }
@@ -1974,15 +1979,15 @@ view();
     if(!user) return;
     var t=L[lang()];
     $('avatarBtn').setAttribute('aria-label',t.acct+': '+user.email);
-    $('avProfile').textContent=t.profile; $('avOut').textContent=t.out; $('avAdmin').textContent=t.admin;
-    var m=$('mobAcct'); if(m){m.querySelector('[data-p]').textContent=t.profile+' ('+user.display_name+')';m.querySelector('[data-o]').textContent=t.out;m.querySelector('[data-a]').textContent=t.admin;}
+    $('avDash').textContent=t.dash; $('avProfile').textContent=t.profile; $('avOut').textContent=t.out; $('avAdmin').textContent=t.admin;
+    var m=$('mobAcct'); if(m){m.querySelector('[data-d]').textContent=t.dash;m.querySelector('[data-p]').textContent=t.profile+' ('+user.display_name+')';m.querySelector('[data-o]').textContent=t.out;m.querySelector('[data-a]').textContent=t.admin;}
   }
   function setIn(u){
     user=u;
     $('avatarBtn').textContent=initial(u); $('avatarBtn').title=u.display_name+' ('+u.email+')';
     $('avName').textContent=u.display_name; $('avEmail').textContent=u.email;
     var admin=u.role==='admin'; $('avAdmin').hidden=!admin;
-    $('avatarWrap').classList.add('on');
+    $('avatarWrap').classList.add('on'); $('dashBtn').classList.add('on');
     document.querySelectorAll('header .only-sm').forEach(function(e){e.hidden=true;e.style.display='none';});
     mobile(true);
     var m=$('mobAcct'); if(m) m.querySelector('[data-a]').hidden=!admin;
@@ -1991,7 +1996,7 @@ view();
     if(location.hash==='#signin'||location.hash==='#signup'){ location.hash='#top'; }
   }
   function setOut(){
-    user=null; $('avatarWrap').classList.remove('on');
+    user=null; $('avatarWrap').classList.remove('on'); $('dashBtn').classList.remove('on');
     document.querySelectorAll('header .only-sm').forEach(function(e){e.hidden=false;e.style.display='';});
     mobile(false);
   }
