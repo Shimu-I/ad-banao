@@ -38,12 +38,12 @@ $up = $false
 1..30 | ForEach-Object { if (-not $up) { try { Invoke-WebRequest "http://${h}:8000/health" -UseBasicParsing | Out-Null; $up = $true } catch { Start-Sleep 1 } } }
 if (-not $up) { Write-Host "API did not start. See .run-logs\api.err"; Stop-Process $api.Id,$web.Id -Force -ErrorAction SilentlyContinue; exit 1 }
 
-$email = & $py -c "import sys;sys.path.insert(0,'scripts');import _admin_creds as c;print(c.EMAIL)"
+$email = & $py -c "import sys;sys.path.insert(0,'scripts');import _admin_creds as c;print(c.load()[0])"
 Write-Host "`nAdBanao is running. Use ONLY these links (127.0.0.1):"
 Write-Host "  App:    http://${h}:5173/"
 Write-Host "  Admin:  http://${h}:5173/admin-login.html"
 Write-Host "  Email:  $email"
-Write-Host "  Password and secret word: see scripts\_admin_creds.py"
+Write-Host "  Password and secret word: in .env (ADBANAO_ADMIN_PASSWORD, ADBANAO_ADMIN_SECRET)"
 Write-Host "Press Ctrl+C or close this window to stop."
 try { while ($true) { Start-Sleep 2 } }
 finally { Stop-Process $api.Id,$web.Id -Force -ErrorAction SilentlyContinue; Free-Port 8000; Free-Port 5173; Write-Host "Stopped." }

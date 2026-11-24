@@ -51,6 +51,8 @@ elif "user:password@" in cur:
 
 put("APP_ENV", "development")
 put("FRONTEND_ORIGIN", "http://localhost:5173")
-put("ADMIN_EMAILS", f"{creds.EMAIL}={creds.SECRET}")
 ENV.write_text("\n".join(lines) + "\n")
+creds.ensure()
+_email, _pw, _secret = creds.load()
+creds.write_env({"ADMIN_EMAILS": f"{_email}={_secret}"})
 print("OK  .env fixed. Database:", get("DATABASE_URL").split("@")[-1])
