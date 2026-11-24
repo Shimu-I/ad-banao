@@ -44,8 +44,11 @@ with sync_playwright() as p:
     check("sign up shows the success screen", True)
 
     # duplicate
-    page.goto(f"{WEB}/index.html#signup", wait_until="domcontentloaded")
+    # The home page leaves the sign-up screen when someone is already signed in,
+    # so sign out first and only then open the sign-up screen again.
+    page.goto(f"{WEB}/index.html", wait_until="domcontentloaded")
     page.evaluate("fetch('http://localhost:8000/auth/logout',{method:'POST',credentials:'include'})")
+    page.goto(f"{WEB}/index.html#signup", wait_until="domcontentloaded")
     page.reload()
     auth = page.frame_locator("#authFrame")
     auth.locator("#e2").fill(email)
@@ -75,20 +78,21 @@ with sync_playwright() as p:
 
     # header changes, profile page works
     page.goto(f"{WEB}/index.html", wait_until="domcontentloaded")
-    page.wait_for_selector('header [data-act="profile"]', timeout=10000)
-    check("header shows Profile when signed in", True)
+    page.wait_for_selector('#avatarWrap.on', timeout=10000)
+    check("header shows the avatar badge when signed in", True)
     page.goto(f"{WEB}/profile.html", wait_until="domcontentloaded")
     page.wait_for_function("document.getElementById('who').textContent.includes('@')", timeout=10000)
-    page.fill("#business_name", "E2E Shop")
+    page.fill("#biz", "E2E Shop")
     page.fill("#phone", "01711111111")
-    page.click("#profile button")
+    page.click("#saveBtn")
     page.wait_for_selector("#profile-msg.ok", timeout=10000)
     page.reload()
-    page.wait_for_function("document.getElementById('business_name').value !== ''", timeout=10000)
+    page.wait_for_function("document.getElementById('biz').value !== ''", timeout=10000)
     check("profile changes survive a reload (read back from the database)",
-          page.input_value("#business_name") == "E2E Shop" and page.input_value("#phone") == "01711111111")
+          page.input_value("#biz") == "E2E Shop" and page.input_value("#phone") == "01711111111")
 
     # sign out
+    page.click("#avatarBtn")  # the Sign out button lives inside the avatar menu
     page.click("#logout")
     page.wait_for_url("**/index.html#signin", timeout=10000)
     page.goto(f"{WEB}/profile.html", wait_until="domcontentloaded")
