@@ -40,8 +40,9 @@ with sync_playwright() as p:
     auth.locator("#p2").fill(password)
     auth.locator("#t2").check()
     auth.locator("#fup button[type=submit]").click()
-    auth.locator("#done").wait_for(state="visible", timeout=10000)
-    check("sign up shows the success screen", True)
+    # After sign-up the home page leaves the form and shows the avatar badge.
+    page.wait_for_selector("#avatarWrap.on", timeout=10000)
+    check("sign up lands on the home page signed in", True)
 
     # duplicate
     # The home page leaves the sign-up screen when someone is already signed in,
@@ -73,8 +74,8 @@ with sync_playwright() as p:
     check("wrong password message", "Incorrect" in (auth.locator("#y1").text_content() or ""))
     auth.locator("#p1").fill(password)
     auth.locator("#fin button[type=submit]").click()
-    auth.locator("#done").wait_for(state="visible", timeout=10000)
-    check("sign in shows the success screen", True)
+    page.wait_for_selector("#avatarWrap.on", timeout=10000)
+    check("sign in lands on the home page signed in", True)
 
     # header changes, profile page works
     page.goto(f"{WEB}/index.html", wait_until="domcontentloaded")
