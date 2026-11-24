@@ -32,7 +32,7 @@ run:  ## Start the API at http://localhost:8000 (docs at /docs)
 db-up:  ## Start local PostgreSQL with Docker
 	docker compose up -d db
 
-db-viewer:  ## Start the web database viewer at http://localhost:8080 (demo)
+db-viewer:  ## Start the web database viewer at http://localhost:8080, or ADMINER_PORT=8081 make db-viewer
 	docker compose up -d db adminer
 
 admin:  ## Make an existing user an admin (asks for a secret word): make admin EMAIL=you@example.com
