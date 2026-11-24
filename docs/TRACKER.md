@@ -60,7 +60,7 @@ Goals are not equal in size. The goals still ahead (ad engine, verification, the
 | --- | --- | --- | --- |
 | 1 | Finish the first update | Create the Jira and GitHub boards, add teammates, rename the branch to `main` and protect it ([09-development-process.md](09-development-process.md)) | **A person** (owner) |
 | 2 | Owner runs `./scripts/check_my_machine.sh --postgres --browser` and sends the report | Proves the admin work on a real PC | **A person** |
-| 3 | F8 API foundations | Small, and everything later depends on it | Claude alone |
+| 3 | F8 API foundations, after you decide on [25-ai-and-ad-engine-plan.md](25-ai-and-ad-engine-plan.md) | Small, fixes the shut-down model, everything later depends on it | Claude alone. A person supplies free keys |
 | 4 | A1 to A7 ad engine | The core of the product | Claude writes and tests; a person judges how the ads look |
 | 5 | V1 to V6 verification | The reason the product exists | Claude writes and tests; a person judges accuracy |
 | 6 | U1 and U4 to U10 the React app | Everything a user sees | Claude writes; a person runs and tests (see below) |
@@ -108,7 +108,7 @@ One goal at a time, each as a pull request with CI, then merge and pull.
 
 ## Known gaps
 
-No limit on wrong sign-in guesses. No password reset by email. No consistent error format or request IDs (F8). The default Gemini model name was written from memory and is not checked (F8). Details and the goal that closes each one: "Known gaps" in [PROGRESS.md](PROGRESS.md).
+No limit on wrong sign-in guesses. No password reset by email. No consistent error format or request IDs (F8). The default Gemini model in code (`gemini-2.0-flash`) was shut down by Google on 2026-06-01, so a real Gemini call would fail until F8.1. Details and the goal that closes each one: "Known gaps" in [PROGRESS.md](PROGRESS.md).
 
 ## Activity log
 

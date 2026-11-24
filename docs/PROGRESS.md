@@ -197,7 +197,7 @@ These are the honest gaps a senior reviewer would raise, each with the goal that
 | ~~No database migrations~~ Done in PR #9. Existing local databases made before it still need to be deleted once | F7 |
 | ~~No user accounts, so every brand and product is visible to everyone~~ Done (F9). Still missing: password reset by email, login rate limit | later |
 | No consistent error format, request IDs or API versioning | F8 |
-| Default Gemini model name in code was written from memory and is not verified against today's list | F8 (make it a setting) |
+| **Default Gemini model `gemini-2.0-flash` in code was shut down by Google on 2026-06-01** (Google pricing page, checked 2026-11-24). A real Gemini call would fail today. Fake-provider tests do not show this | F8.1 (make it a setting, verify with a real key) |
 | Default branch is still named `step-01-repo-setup` | F5 (rename to `main`) |
 | Product name AdBanao not checked for trademark or domain | S5 |
 
@@ -215,6 +215,7 @@ These are the honest gaps a senior reviewer would raise, each with the goal that
 
 | Date | What happened |
 | --- | --- |
+| 2026-11-24 | AI and ad engine plan written ([25](25-ai-and-ad-engine-plan.md)): four options with pros and cons, free-tier facts checked against provider pages, recommendation and six decisions for the owner. Found that our default Gemini model is shut down. Docs only, no code. |
 | 2026-11-24 | Project tracker added ([TRACKER.md](TRACKER.md)) with a script, `scripts/update_tracker.py`, that recomputes the scoreboard from the roadmap. This page's top section brought up to date. Docs only. |
 | 2026-11-24 | Team roles page added (docs/23) for a team of five, plus `docs/jira-import.csv` made from the roadmap. The Jira board itself is not created yet. |
 | 2026-11-24 | Admin sign-in page (email + password + secret word, migration 0004) and gradients on sign-in/sign-up added on branch feat/admin-login. Test result recorded after the pull request runs. |

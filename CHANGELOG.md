@@ -6,6 +6,7 @@ versions follow [Semantic Versioning](https://semver.org).
 ## [Unreleased]
 
 ### Added
+- AI and ad engine plan (`docs/25-ai-and-ad-engine-plan.md`).
 - Project tracker (`docs/TRACKER.md`) and `scripts/update_tracker.py`.
 - Project documents, backend skeleton and database models.
 - Product and brand profiles: input, price and unit cleanup, photo validation, readiness report.
