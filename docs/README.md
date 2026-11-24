@@ -34,6 +34,7 @@ Read in this order if you are new. Each file covers one topic.
 | [10-testing-strategy.md](10-testing-strategy.md) | How is it tested? |
 | [12-deployment-and-costs.md](12-deployment-and-costs.md) | How is it deployed, and what do free and paid resources cost? |
 | [16-linux-setup.md](16-linux-setup.md) | How do I set up my Linux machine? |
+| [26-run-adbanao.md](26-run-adbanao.md) | **Start here to run it:** one command to start everything, links, logins and fixes for common mistakes |
 | [20-test-on-your-pc.md](20-test-on-your-pc.md) | How do I run every check on my own computer and send the result? |
 | [22-admin.md](22-admin.md) | How do admin roles, suspension, the activity log and the admin page work? |
 | [24-database-story.md](24-database-story.md) | What does each table hold and how do they link, told as one user's story? |

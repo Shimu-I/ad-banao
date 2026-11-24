@@ -93,6 +93,9 @@
   .btn.light { background: #F7F1E0; color: #1B4D34; border-color: #F7F1E0; box-shadow: none; }
 
   /* ---------- Header ---------- */
+  /* The nav bar stays in the same place while scrolling, like on the profile and create pages */
+  html { scroll-padding-top: 5.5rem; }
+  body > header { position: sticky; top: 0; z-index: 40; background: var(--bg); }
   .hdr { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 1rem; padding-block: 1rem; border-bottom: 1px solid var(--line); position: relative; z-index: 5; }
   .brand-link { display: inline-flex; align-items: center; gap: .55rem; min-width: 0; }
   .logo { display: grid; place-items: center; width: 2.35rem; height: 2.35rem; border-radius: .6rem; background: var(--brand); color: #fff; font: 700 1.3rem/1 var(--ff-sans); padding-bottom: .12rem; flex: none; }
@@ -153,7 +156,8 @@
   .eyebrow.center { justify-content: center; }
   .hero-copy { display: grid; gap: 1.3rem; justify-items: start; position: relative; z-index: 2; }
   .display { font: 600 clamp(2.6rem, 5.4vw, 4.3rem)/1.02 var(--ff-serif); letter-spacing: -.02em; margin: 0; color: var(--fg); text-wrap: balance; }
-  [lang="bn"] .display { line-height: 1.2; letter-spacing: 0; }
+  /* Bangla letters are wider and taller than Latin ones, so the Bangla headline gets its own smaller size to match the English layout */
+  [lang="bn"] .display { font-size: clamp(1.75rem, 3.1vw, 2.6rem); line-height: 1.3; letter-spacing: 0; }
   .display em { font-style: italic; font-weight: 600; color: var(--leaf); }
   .lede { font: 400 clamp(1.02rem, 1.5vw, 1.2rem)/1.55 var(--ff-serif); color: var(--fg-soft); max-width: 29rem; margin: 0; }
   .hero-note { display: flex; align-items: center; gap: .6rem; font: 400 .92rem var(--ff-serif); color: var(--fg-soft); }
@@ -877,7 +881,7 @@
     </div>
   </section>
 </main>
-<footer class="foot"><div class="wrap" data-i18n="foot">AdBanao is a prototype. Nothing you type here is saved or sent.</div></footer>
+<footer class="foot"><div class="wrap" data-i18n="foot">AdBanao is in development. Accounts are real. The ad creation page is a prototype, so nothing you type there is saved or sent.</div></footer>
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
@@ -944,7 +948,7 @@
       'q3': 'Can I change the text on the ad?', 'a3': 'Yes. Click the name, feature or price on the ad and type. Checks run again straight away.',
       'q4': 'Does it work in Bangla?', 'a4': 'The whole page switches between English and Bangla. The spelling check covers English words only for now.',
       'cta.eyebrow': 'Ready to get started?', 'cta.title': 'Make your next ad with confidence.', 'cta.btn': 'Try AdBanao Free',
-      'foot': 'AdBanao is a prototype. Nothing you type here is saved or sent.',
+      'foot': 'AdBanao is in development. Accounts are real. The ad creation page is a prototype, so nothing you type there is saved or sent.',
       'toast.signin': 'Sign in isn’t connected in this demo.'
     },
     bn: {
@@ -996,7 +1000,7 @@
       'q3': 'বিজ্ঞাপনের লেখা কি বদলানো যায়?', 'a3': 'হ্যাঁ। বিজ্ঞাপনে নাম, বৈশিষ্ট্য বা দামে ক্লিক করে লিখুন। যাচাই সাথে সাথে আবার চলে।',
       'q4': 'বাংলায় কি কাজ করে?', 'a4': 'পুরো পেজ ইংরেজি ও বাংলার মধ্যে বদলানো যায়। বানান যাচাই এখন শুধু ইংরেজি শব্দের জন্য।',
       'cta.eyebrow': 'শুরু করতে প্রস্তুত?', 'cta.title': 'আপনার পরের বিজ্ঞাপন বানান নিশ্চিন্তে।', 'cta.btn': 'অ্যাডবানাও বিনামূল্যে ব্যবহার করুন',
-      'foot': 'অ্যাডবানাও একটি প্রোটোটাইপ। এখানে যা লিখবেন তা সংরক্ষণ বা পাঠানো হয় না।',
+      'foot': 'অ্যাডবানাও তৈরির কাজ চলছে। অ্যাকাউন্ট আসল। বিজ্ঞাপন তৈরির পাতাটি প্রোটোটাইপ, তাই সেখানে যা লিখবেন তা সংরক্ষণ বা পাঠানো হয় না।',
       'toast.signin': 'এই ডেমোতে সাইন ইন সংযুক্ত নেই।'
     }
   };

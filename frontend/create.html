@@ -85,7 +85,10 @@
 <main class="mx-auto max-w-[88rem] px-4 pb-16 pt-24 sm:px-5">
 
   <!-- Stepper (not fixed) -->
-  <ol id="stepper" class="mb-4 flex items-center gap-2 overflow-x-auto text-sm" aria-label="Progress"></ol>
+  <div class="mb-4 flex items-center justify-between gap-3">
+    <ol id="stepper" class="flex items-center gap-2 overflow-x-auto text-sm" aria-label="Progress"></ol>
+    <button type="button" id="guideBtn" class="pill shrink-0" aria-haspopup="dialog">How to start</button>
+  </div>
 
   <!-- Banners -->
   <div id="banners" class="space-y-2" role="status"></div>
@@ -220,6 +223,8 @@ AdBanaoAuth.requireUser('index.html#signin').then(u => {
   $('menuEmail').textContent = u.email;
   $('navInitial').textContent = (Array.from(u.display_name || u.email)[0] || 'U').toUpperCase();
   document.body.style.visibility = 'visible';
+  window.__pageReady = true;  // the guide script may load before or after this line runs
+  if (window.AdBanaoGuide) AdBanaoGuide.maybeOpen();
 }).catch(err => { if (err.status !== 401) document.body.style.visibility = 'visible'; });
 $('logout').addEventListener('click', () => {
   AdBanaoAuth.logout().catch(() => {}).finally(() => { window.location.href = 'index.html#signin'; });
@@ -411,6 +416,75 @@ let tt; function toast(m){ const t=$('toast'); t.textContent=m; t.classList.remo
 function renderAll(){ renderStepper(); renderBanners(); renderPickers(); renderCanvas(); renderChecks(); syncFields(); renderApprove(); renderTools(); setThumb();
   document.querySelectorAll('[data-d]').forEach(b => b.setAttribute('aria-pressed', b.dataset.d===demoName)); }
 initEls(); txt=defaults(lang,true); setTab('details'); renderAll(); commit();
+</script>
+
+<!-- ============ How to start (can be turned off with "Don't show this again") ============ -->
+<style>
+  .gd-back, .gd-back * { box-sizing: border-box; }
+  .gd-back { position: fixed; inset: 0; z-index: 100; display: grid; grid-template-columns: minmax(0, 1fr); place-items: center; padding: 1rem; background: rgba(8,20,13,.55); }
+  .gd-back[hidden] { display: none; }
+  .gd-dlg { width: 100%; max-width: 40rem; max-height: calc(100vh - 2rem); overflow: auto; background: #fff; color: #12221b; border: 1px solid rgba(29,74,55,.15); border-radius: 1.2rem; box-shadow: 0 20px 50px rgba(0,0,0,.3); padding: 1.5rem 1.5rem 1.2rem; font-family: "DM Sans","Hind Siliguri",sans-serif; }
+  .dark .gd-dlg { background: #14211a; color: #e8efe9; border-color: rgba(255,255,255,.12); }
+  .gd-dlg h2 { margin: 0; font: 600 1.7rem/1.15 "Source Serif 4", Georgia, serif; }
+  .gd-sub { margin: .4rem 0 1.1rem; font-size: .95rem; line-height: 1.5; opacity: .75; }
+  .gd-list { list-style: none; margin: 0; padding: 0; display: grid; gap: .7rem; }
+  .gd-list li { display: grid; grid-template-columns: 2.4rem 1fr; gap: .8rem; align-items: start; padding: .75rem .85rem; border: 1px solid rgba(29,74,55,.15); border-radius: .85rem; background: rgba(29,74,55,.04); }
+  .dark .gd-list li { border-color: rgba(255,255,255,.12); background: rgba(255,255,255,.04); }
+  .gd-n { width: 2.4rem; height: 2.4rem; border-radius: .7rem; background: #1d4a37; color: #fff; display: grid; place-items: center; font-weight: 700; }
+  .dark .gd-n { background: #8cc9a2; color: #0c1511; }
+  .gd-list b { display: block; font-size: .98rem; margin-bottom: .1rem; }
+  .gd-list span.t { font-size: .88rem; line-height: 1.45; opacity: .78; }
+  .gd-note { margin: .9rem 0 0; padding: .7rem .9rem; border-radius: .7rem; background: rgba(224,179,65,.18); font-size: .85rem; line-height: 1.45; }
+  .gd-foot { display: flex; align-items: center; gap: .8rem; flex-wrap: wrap; justify-content: space-between; margin-top: 1.1rem; padding-top: 1rem; border-top: 1px solid rgba(29,74,55,.15); }
+  .dark .gd-foot { border-color: rgba(255,255,255,.12); }
+  .gd-chk { display: flex; align-items: center; gap: .6rem; font-size: .9rem; cursor: pointer; min-height: 44px; }
+  .gd-chk input { width: 1.25rem; height: 1.25rem; accent-color: #1d4a37; }
+  .gd-btns { display: flex; gap: .6rem; margin-left: auto; }
+  @media (max-width: 520px) { .gd-dlg { padding: 1.2rem 1rem 1rem; } .gd-btns { width: 100%; } .gd-btns .btn { flex: 1; } }
+</style>
+<div class="gd-back" id="guide" hidden></div>
+<script>
+(function () {
+  var KEY = 'adbanao-guide-hidden', back = document.getElementById('guide'), lastFocus = null, asked = false;
+  function get() { try { return localStorage.getItem(KEY); } catch (e) { return null; } }
+  function set(v) { try { localStorage.setItem(KEY, v); } catch (e) { /* storage unavailable */ } }
+  var STEPS = [
+    ['Add your product details once', 'Photo, name, brand, price, key features and the claims you allow. Everything else is built from these facts.'],
+    ['AI writes and designs', 'Press "Create my ad". The AI writes the headline, tagline and description and proposes a design. It never changes your photo or your price.'],
+    ['Edit and check', 'Drag, resize and edit anything. After every edit the ad is checked again: price, text, claims, brand and photo. Fix problems with one click.'],
+    ['Approve and export', 'Only you can approve. If you edit the ad afterwards, the approval is cancelled. Then export the image.']
+  ];
+  function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+  function build() {
+    back.textContent = '';
+    var dlg = el('div', 'gd-dlg'), never = el('input'), close = function () { set(never.checked ? '1' : '0'); hide(); };
+    dlg.setAttribute('role', 'dialog'); dlg.setAttribute('aria-modal', 'true'); dlg.setAttribute('aria-labelledby', 'gdT');
+    var h = el('h2', null, 'How to start'); h.id = 'gdT';
+    dlg.appendChild(h);
+    dlg.appendChild(el('p', 'gd-sub', 'Four steps, about three minutes. This page is a prototype: nothing you type is saved or sent anywhere.'));
+    var ol = el('ol', 'gd-list');
+    STEPS.forEach(function (s, i) { var li = el('li'), d = el('div'), b = el('b', null, s[0]); d.appendChild(b); d.appendChild(el('span', 't', s[1])); li.appendChild(el('span', 'gd-n', String(i + 1))); li.appendChild(d); ol.appendChild(li); });
+    dlg.appendChild(ol);
+    dlg.appendChild(el('p', 'gd-note', 'The “Demo state” buttons let you preview every situation (empty, generating, ready, needs attention, approved, AI limit reached). They will be removed when the backend is connected.'));
+    var foot = el('div', 'gd-foot'), lab = el('label', 'gd-chk');
+    never.type = 'checkbox'; never.id = 'gdNever'; never.checked = get() === '1'; lab.appendChild(never); lab.appendChild(el('span', null, 'Don’t show this again'));
+    var btns = el('div', 'gd-btns'), skip = el('button', 'btn btn-o', 'Skip'), go = el('button', 'btn btn-p', 'Start'); skip.type = 'button'; go.type = 'button'; go.id = 'gdGo';
+    skip.addEventListener('click', close); go.addEventListener('click', close);
+    btns.appendChild(skip); btns.appendChild(go); foot.appendChild(lab); foot.appendChild(btns); dlg.appendChild(foot);
+    back.appendChild(dlg);
+    back.onclick = function (e) { if (e.target === back) close(); };
+    back.onkeydown = function (e) {
+      if (e.key === 'Escape') { e.preventDefault(); close(); }
+      if (e.key === 'Tab') { var f = dlg.querySelectorAll('button, input'), a = f[0], z = f[f.length - 1];
+        if (e.shiftKey && document.activeElement === a) { e.preventDefault(); z.focus(); } else if (!e.shiftKey && document.activeElement === z) { e.preventDefault(); a.focus(); } }
+    };
+  }
+  function hide() { back.hidden = true; if (lastFocus && document.contains(lastFocus)) lastFocus.focus(); }
+  function open() { lastFocus = document.activeElement; build(); back.hidden = false; document.getElementById('gdGo').focus(); }
+  window.AdBanaoGuide = { open: open, maybeOpen: function () { if (asked) return; asked = true; if (get() !== '1') open(); } };
+  document.getElementById('guideBtn').addEventListener('click', open);
+  if (window.__pageReady) window.AdBanaoGuide.maybeOpen();
+})();
 </script>
 </body>
 </html>

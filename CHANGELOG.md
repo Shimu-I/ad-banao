@@ -6,10 +6,15 @@ versions follow [Semantic Versioning](https://semver.org).
 ## [Unreleased]
 
 ### Fixed
+- The Bangla headline on the home page is smaller so it no longer overflows or shifts the hero layout.
+- The home page nav bar stays at the top while scrolling.
+- The home page footer no longer says nothing is saved (accounts are real; only the ad creation page is a prototype).
 - Sign-in and sign-up card no longer changes layout when an error message appears: space for the message is reserved. A network failure now shows the short translated message.
 - The database viewer port can be changed with `ADMINER_PORT` when 8080 is already in use.
 
 ### Added
+- "How to start" guide on the ad creation page, with a "Don't show this again" option and a "How to start" button to open it again.
+- The run guide now lives in `docs/26-run-adbanao.md` (moved from the project root).
 - ADR 0007: the AI proposes the design, our code renders and checks it.
 - AI and ad engine plan (`docs/25-ai-and-ad-engine-plan.md`).
 - Project tracker (`docs/TRACKER.md`) and `scripts/update_tracker.py`.
