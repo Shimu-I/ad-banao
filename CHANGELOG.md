@@ -5,6 +5,9 @@ versions follow [Semantic Versioning](https://semver.org).
 
 ## [Unreleased]
 
+### Fixed
+- The database viewer port can be changed with `ADMINER_PORT` when 8080 is already in use.
+
 ### Added
 - AI and ad engine plan (`docs/25-ai-and-ad-engine-plan.md`).
 - Project tracker (`docs/TRACKER.md`) and `scripts/update_tracker.py`.

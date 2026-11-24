@@ -52,7 +52,7 @@ Password for all three: `Demo-pass-123`
 
 ### Open the database viewer
 
-Open http://localhost:8080 and sign in with:
+Open http://localhost:8080 and sign in with (if the start failed with "port 8080 address already in use", run `docker compose down` and then `ADMINER_PORT=8081 make db-viewer`, and open http://localhost:8081 instead; `sudo ss -ltnp | grep 8080` shows what is using the port):
 
 | Field | Value |
 | --- | --- |
