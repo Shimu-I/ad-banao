@@ -2,7 +2,7 @@
  * All user-supplied text is inserted with textContent, never as HTML. */
 (function () {
   "use strict";
-  var API = (window.ADBANAO_API || "http://localhost:8000").replace(/\/$/, "");
+  var API = (window.ADBANAO_API || "http://" + ((window.location.hostname && /^[\w.\-]+$/.test(window.location.hostname)) ? window.location.hostname : "localhost") + ":8000").replace(/\/$/, "");
   var $ = function (s, r) { return (r || document).querySelector(s); };
   var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
 

@@ -53,3 +53,9 @@ db-down:  ## Stop local PostgreSQL
 clean:  ## Remove caches
 	find . -name __pycache__ -type d -prune -exec rm -rf {} +
 	rm -rf .pytest_cache .ruff_cache .mypy_cache
+
+start:  ## One command: fix ports, migrate, set admin, run everything
+	./start-adbanao.sh
+
+stop:  ## Free ports 8000 and 5173
+	./stop-adbanao.sh
