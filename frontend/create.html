@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Create an ad – AdBanao</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Hind+Siliguri:wght@400;500;600;700&family=Source+Serif+4:wght@500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com/3.4.17"></script>
+<script>
+  tailwind.config = { darkMode: 'class', theme: { extend: {
+    fontFamily: { sans: ['"DM Sans"', '"Hind Siliguri"', 'sans-serif'], serif: ['"Source Serif 4"', 'Georgia', 'serif'] },
+    colors: { cream: '#f6f0e4', forest: '#1d4a37', sage: '#8cc9a2', ink: '#12221b' } } } };
+  try { if (localStorage.getItem('theme') === 'dark') document.documentElement.classList.add('dark'); } catch (e) {}
+</script>
+<style>
+  body { background-image: radial-gradient(ellipse at top right, rgba(214,210,140,.3), transparent 55%); background-attachment: fixed; }
+  .dark body { background-image: none; }
+  :focus-visible { outline: 2px solid #1d4a37; outline-offset: 2px; }
+  .dark :focus-visible { outline-color: #8cc9a2; }
+  .card { background: rgba(255,255,255,.72); border: 1px solid rgba(29,74,55,.1); border-radius: 1rem; box-shadow: 0 2px 10px rgba(18,34,27,.06); }
+  .dark .card { background: #14211a; border-color: rgba(255,255,255,.1); box-shadow: none; }
+  .fld { width: 100%; min-height: 44px; border-radius: .75rem; border: 1px solid rgba(29,74,55,.3); background: #fff; padding: .6rem .85rem; font-size: 15px; color: #12221b; }
+  .dark .fld { background: #0c1511; border-color: rgba(255,255,255,.22); color: #e8efe9; }
+  .fld:focus-within { border-color: #1d4a37; } .dark .fld:focus-within { border-color: #8cc9a2; }
+  .btn { min-height: 44px; border-radius: .75rem; padding: 0 1.1rem; font-size: 15px; font-weight: 600; }
+  .btn-p { background: #1d4a37; color: #fff; } .btn-p:hover:not(:disabled) { background: #163a2b; }
+  .btn-o { border: 1px solid #1d4a37; color: #1d4a37; } .btn-o:hover:not(:disabled) { background: #1d4a37; color: #fff; }
+  .dark .btn-o { border-color: #8cc9a2; color: #8cc9a2; } .dark .btn-o:hover:not(:disabled) { background: #8cc9a2; color: #0c1511; }
+  .btn:disabled { opacity: .5; cursor: not-allowed; }
+  .sec { color: rgba(18,34,27,.72); } .dark .sec { color: rgba(232,239,233,.72); }
+  .chip { display: inline-flex; align-items: center; gap: .25rem; border-radius: 999px; background: rgba(29,74,55,.1); padding: .2rem .3rem .2rem .7rem; font-size: 14px; }
+  .dark .chip { background: rgba(140,201,162,.16); }
+  .chip button { width: 24px; height: 24px; border-radius: 999px; line-height: 1; }
+  .pill { min-height: 44px; border-radius: 999px; border: 1px solid rgba(29,74,55,.3); padding: 0 .95rem; font-size: 14px; font-weight: 500; }
+  .dark .pill { border-color: rgba(255,255,255,.25); }
+  .pill[aria-pressed="true"], .seg[aria-pressed="true"] { background: #1d4a37; color: #fff; border-color: #1d4a37; }
+  .dark .pill[aria-pressed="true"], .dark .seg[aria-pressed="true"] { background: #8cc9a2; color: #0c1511; border-color: #8cc9a2; }
+  .seg { min-height: 44px; flex: 1; font-weight: 600; font-size: 15px; border-radius: .75rem; }
+  .tb { min-width: 44px; min-height: 44px; border-radius: .75rem; font-size: 14px; font-weight: 500; padding: 0 .6rem; }
+  .tb:hover:not(:disabled) { background: rgba(29,74,55,.1); } .tb:disabled { opacity: .4; }
+  [data-el] { position: absolute; cursor: grab; touch-action: none; user-select: none; }
+  [data-el]:active { cursor: grabbing; }
+  .hd { position: absolute; width: 10px; height: 10px; background: #fff; border: 2px solid #1d4a37; border-radius: 2px; pointer-events: none; }
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+</style>
+</head>
+<body class="bg-cream text-ink font-sans antialiased dark:bg-[#0c1511] dark:text-[#e8efe9]" style="visibility:hidden">
+
+<!-- ============ FIXED TOP NAV (same as profile.html; only the menu gains "Create ad") ============ -->
+<header class="fixed inset-x-0 top-0 z-50 border-b border-forest/10 bg-cream/90 backdrop-blur dark:border-white/10 dark:bg-[#0c1511]/90">
+  <nav class="mx-auto flex h-16 max-w-6xl items-center justify-between px-5">
+    <a href="index.html" class="flex items-center gap-2.5">
+      <span class="grid h-9 w-9 place-items-center rounded-lg bg-forest text-lg font-bold text-white">a.</span>
+      <span class="font-serif text-2xl font-semibold text-forest dark:text-sage">AdBanao</span>
+    </a>
+    <ul class="hidden items-center gap-8 text-[15px] font-medium md:flex">
+      <li><a href="index.html#features" class="hover:text-forest dark:hover:text-sage">Features</a></li>
+      <li><a href="index.html#how" class="hover:text-forest dark:hover:text-sage">How it works</a></li>
+      <li><a href="index.html#examples" class="hover:text-forest dark:hover:text-sage">Examples</a></li>
+      <li><a href="index.html#faq" class="hover:text-forest dark:hover:text-sage">FAQ</a></li>
+    </ul>
+    <div class="flex items-center gap-3">
+      <button class="hidden rounded-full border border-forest/20 px-3 py-1.5 text-sm font-semibold sm:block dark:border-white/20">EN <span class="font-normal opacity-60">/ বাংলা</span></button>
+      <button id="themeBtn" aria-label="Toggle theme" class="grid h-9 w-9 place-items-center rounded-full hover:bg-forest/10 dark:hover:bg-white/10">
+        <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+      </button>
+      <div class="relative" id="menuWrap">
+        <button id="avatarBtn" aria-haspopup="true" aria-expanded="false" aria-label="Open profile menu"
+          class="grid h-10 w-10 place-items-center overflow-hidden rounded-full bg-forest text-sm font-bold text-white ring-2 ring-forest/30 ring-offset-2 ring-offset-cream focus-visible:outline-none focus-visible:ring-sage dark:ring-offset-[#0c1511]">
+          <span id="navInitial">U</span>
+        </button>
+        <div id="menu" class="absolute right-0 mt-3 hidden w-60 rounded-2xl border border-forest/10 bg-white p-2 shadow-xl dark:border-white/10 dark:bg-[#14211a]">
+          <div class="px-3 py-2"><p id="menuName" class="text-sm font-semibold">…</p><p id="menuEmail" class="truncate text-xs opacity-60"></p></div>
+          <hr class="my-1 border-forest/10 dark:border-white/10">
+          <a href="index.html" class="block rounded-lg px-3 py-2 text-sm hover:bg-forest/10 dark:hover:bg-white/10">My ads</a>
+          <a href="create.html" aria-current="page" class="block rounded-lg bg-forest/10 px-3 py-2 text-sm font-medium dark:bg-white/10">Create ad</a>
+          <a href="profile.html" class="block rounded-lg px-3 py-2 text-sm hover:bg-forest/10 dark:hover:bg-white/10">Your profile</a>
+          <button id="logout" class="mt-1 w-full rounded-lg px-3 py-2 text-left text-sm text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-500/10">Sign out</button>
+        </div>
+      </div>
+    </div>
+  </nav>
+</header>
+
+<main class="mx-auto max-w-[88rem] px-4 pb-16 pt-24 sm:px-5">
+
+  <!-- Stepper (not fixed) -->
+  <ol id="stepper" class="mb-4 flex items-center gap-2 overflow-x-auto text-sm" aria-label="Progress"></ol>
+
+  <!-- Banners -->
+  <div id="banners" class="space-y-2" role="status"></div>
+
+  <!-- Demo state switcher (remove when wiring a backend) -->
+  <div class="card mt-3 flex flex-wrap items-center gap-2 p-3">
+    <span class="sec mr-1 text-sm">Demo state</span>
+    <div id="demo" class="flex flex-wrap gap-2"></div>
+  </div>
+
+  <!-- Mobile tabs -->
+  <div role="tablist" aria-label="Panels" class="mt-4 flex gap-2 md:hidden" id="tabs">
+    <button role="tab" data-tab="details" class="seg pill">Details</button>
+    <button role="tab" data-tab="checks" class="seg pill">Checks</button>
+  </div>
+
+  <div class="mt-4 grid gap-5 md:grid-cols-2 lg:grid-cols-[22rem_minmax(0,1fr)_22rem]">
+
+    <!-- ===== LEFT: Product details ===== -->
+    <section id="pDetails" aria-labelledby="hDetails" class="card order-3 p-5 md:order-1 max-md:hidden">
+      <h2 id="hDetails" class="font-serif text-2xl font-semibold">Product details</h2>
+      <form id="form" class="mt-4 grid gap-4" onsubmit="return false">
+        <div>
+          <span class="mb-1.5 block text-sm font-medium" id="lPhoto">Product photo</span>
+          <label id="drop" class="fld flex cursor-pointer items-center gap-3 border-dashed !p-3 focus-within:ring-2">
+            <span id="thumb" class="h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-forest/10"></span>
+            <span class="text-sm"><b class="block">Drop a photo or browse</b><span class="sec">JPG or PNG</span></span>
+            <input id="photo" type="file" accept="image/*" class="sr-only" aria-labelledby="lPhoto">
+          </label>
+          <p class="sec mt-2 inline-flex items-center gap-1.5 rounded-full bg-forest/10 px-3 py-1 text-xs font-medium dark:bg-white/10">
+            <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/></svg>Original photo stays unchanged</p>
+        </div>
+        <div><label class="mb-1.5 block text-sm font-medium" for="pname">Product name</label><input id="pname" class="fld" value="Pure Mustard Oil"></div>
+        <div><label class="mb-1.5 block text-sm font-medium" for="brand">Brand</label>
+          <select id="brand" class="fld"><option>Shonar Gram</option><option>Panshi Foods</option><option>Add a new brand…</option></select></div>
+        <div class="grid grid-cols-[1fr_6rem] gap-3">
+          <div><label class="mb-1.5 block text-sm font-medium" for="price">Price</label><input id="price" inputmode="decimal" class="fld" value="285"></div>
+          <div><label class="mb-1.5 block text-sm font-medium" for="cur">Currency</label>
+            <select id="cur" class="fld !px-2"><option>BDT</option><option>USD</option><option>EUR</option><option>GBP</option><option>INR</option></select></div>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div><label class="mb-1.5 block text-sm font-medium" for="orig">Original price <span class="sec font-normal">(optional)</span></label><input id="orig" inputmode="decimal" class="fld" value="320"></div>
+          <div><label class="mb-1.5 block text-sm font-medium" for="unit">Unit</label><input id="unit" class="fld" value="500 g"></div>
+        </div>
+        <div>
+          <div class="mb-1.5 flex justify-between text-sm"><label class="font-medium" for="featIn">Key features</label><span id="featCnt" class="sec">0/20</span></div>
+          <div id="feat" class="fld flex flex-wrap gap-1.5 !py-1.5"><input id="featIn" aria-label="Add a feature, then press Enter" placeholder="Type, then press Enter" class="min-w-[8rem] flex-1 bg-transparent py-1.5 outline-none"></div>
+        </div>
+        <div>
+          <label class="mb-1.5 block text-sm font-medium" for="clIn">Allowed claims</label>
+          <div id="claims" class="fld flex flex-wrap gap-1.5 !py-1.5"><input id="clIn" aria-label="Add an allowed claim, then press Enter" placeholder="e.g. Cold pressed" class="min-w-[8rem] flex-1 bg-transparent py-1.5 outline-none"></div>
+          <p class="sec mt-1 text-xs">Only claims listed here can appear in your ad.</p>
+        </div>
+        <div>
+          <span class="mb-1.5 block text-sm font-medium" id="lLang">Ad language</span>
+          <div class="flex gap-2" role="group" aria-labelledby="lLang">
+            <button type="button" class="seg pill" data-lang="en" aria-pressed="true">English</button>
+            <button type="button" class="seg pill" data-lang="bn" aria-pressed="false" style="font-family:'Hind Siliguri'">বাংলা</button>
+          </div>
+        </div>
+        <div>
+          <button id="createBtn" type="button" class="btn btn-p w-full">Create my ad</button>
+          <p class="sec mt-2 text-center text-xs">Text is written only from what you entered.</p>
+        </div>
+      </form>
+    </section>
+
+    <!-- ===== CENTER: Ad canvas ===== -->
+    <section aria-labelledby="hCanvas" class="card order-1 min-w-0 p-4 md:order-2 sm:p-5">
+      <h2 id="hCanvas" class="font-serif text-2xl font-semibold">Ad canvas</h2>
+      <div class="mt-3 flex flex-wrap items-center gap-x-6 gap-y-3">
+        <div><span class="sec mb-1 block text-xs">Template</span><div id="tpls" class="flex gap-2" role="group" aria-label="Template"></div></div>
+        <div><span class="sec mb-1 block text-xs">Size</span><div id="sizes" class="flex flex-wrap gap-2" role="group" aria-label="Size"></div></div>
+      </div>
+      <div class="mt-3 flex flex-wrap items-center gap-1 border-y border-forest/10 py-2 dark:border-white/10" role="toolbar" aria-label="Canvas tools">
+        <button class="tb" id="undo" aria-label="Undo">↶ Undo</button>
+        <button class="tb" id="redo" aria-label="Redo">↷ Redo</button>
+        <span class="mx-1 h-6 w-px bg-forest/15 dark:bg-white/20"></span>
+        <button class="tb" id="zout" aria-label="Zoom out">−</button>
+        <span id="zv" class="w-12 text-center text-sm" aria-live="polite">100%</span>
+        <button class="tb" id="zin" aria-label="Zoom in">+</button>
+        <select id="ver" aria-label="Version history" class="fld ml-auto !w-auto !py-1.5 text-sm">
+          <option>Version 3, edited just now</option><option>Version 2, 12 minutes ago</option><option>Version 1, first draft</option></select>
+      </div>
+      <div class="relative mt-4 rounded-xl bg-forest/[.07] p-3 dark:bg-white/5">
+        <div id="tpanel" class="absolute left-1/2 top-2 z-20 hidden w-[min(92%,22rem)] -translate-x-1/2 space-y-2 rounded-xl border border-forest/15 bg-white p-3 shadow-xl dark:border-white/15 dark:bg-[#14211a]" role="group" aria-label="Text options">
+          <input id="tpText" class="fld !min-h-[40px]" aria-label="Text">
+          <div class="flex gap-2">
+            <select id="tpFont" class="fld !min-h-[40px]" aria-label="Font"><option>DM Sans</option><option>Source Serif 4</option><option>Hind Siliguri</option></select>
+            <input id="tpColor" type="color" aria-label="Text color" class="h-10 w-12 shrink-0 cursor-pointer rounded-lg border border-forest/20 bg-transparent p-1">
+          </div>
+          <label class="flex items-center gap-3 text-sm">Size <input id="tpSize" type="range" min="1.4" max="9" step=".1" class="w-full accent-[#1d4a37]"></label>
+        </div>
+        <div class="overflow-auto"><div id="canvas" class="relative mx-auto overflow-hidden rounded-lg shadow-lg" style="container-type:inline-size"></div></div>
+      </div>
+      <p id="progress" class="sec mt-3 hidden text-center text-sm" aria-live="polite"></p>
+      <p class="sec mt-3 text-xs">Click an element to select it. Drag to move, use the corner square to resize text, or use arrow keys. The photo is never changed.</p>
+    </section>
+
+    <!-- ===== RIGHT: Checks ===== -->
+    <section id="pChecks" aria-labelledby="hChecks" class="card order-3 p-5 md:order-3 md:col-span-2 lg:col-span-1 lg:sticky lg:top-24 lg:self-start max-md:hidden">
+      <h2 id="hChecks" class="font-serif text-2xl font-semibold">Checks</h2>
+      <div id="checks" class="mt-3" aria-live="polite"></div>
+      <h3 class="mt-6 font-serif text-xl font-semibold">Your text</h3>
+      <div id="texts" class="mt-3 grid gap-4"></div>
+      <div class="mt-6 grid gap-2">
+        <button id="approve" class="btn btn-p">Approve ad</button>
+        <button id="export" class="btn btn-o">Export PNG</button>
+        <p id="appHint" class="sec text-xs"></p>
+        <p class="sec text-xs">Editing the ad cancels your approval.</p>
+      </div>
+    </section>
+  </div>
+</main>
+<div id="toast" role="status" aria-live="polite" class="fixed bottom-5 left-1/2 z-[60] hidden -translate-x-1/2 rounded-xl bg-ink px-4 py-3 text-sm text-white shadow-xl dark:bg-sage dark:text-ink"></div>
+
+<script src="auth/auth.js"></script>
+<script>
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* ---------- nav behaviour (same as profile.html) ---------- */
+const btn = $('avatarBtn'), menu = $('menu');
+btn.addEventListener('click', e => { e.stopPropagation(); const o = menu.classList.toggle('hidden') === false; btn.setAttribute('aria-expanded', o); });
+document.addEventListener('click', e => { if (!$('menuWrap').contains(e.target)) { menu.classList.add('hidden'); btn.setAttribute('aria-expanded', false); } });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') menu.classList.add('hidden'); });
+$('themeBtn').addEventListener('click', () => { const d = document.documentElement.classList.toggle('dark'); try { localStorage.setItem('theme', d ? 'dark' : 'light'); } catch (e) {} });
+
+/* ---------- sign-in guard: only signed-in users can open this page ---------- */
+AdBanaoAuth.requireUser('index.html#signin').then(u => {
+  $('menuName').textContent = u.display_name || u.email;
+  $('menuEmail').textContent = u.email;
+  $('navInitial').textContent = (Array.from(u.display_name || u.email)[0] || 'U').toUpperCase();
+  document.body.style.visibility = 'visible';
+}).catch(err => { if (err.status !== 401) document.body.style.visibility = 'visible'; });
+$('logout').addEventListener('click', () => {
+  AdBanaoAuth.logout().catch(() => {}).finally(() => { window.location.href = 'index.html#signin'; });
+});
+
+/* ---------- mock data ---------- */
+const SZ = { fb:{w:1200,h:630,n:'Facebook post'}, ig:{w:1080,h:1080,n:'Instagram square'}, story:{w:1080,h:1920,n:'Instagram story'}, banner:{w:1200,h:300,n:'Banner'} };
+const L = {
+  fb:{photo:[0,0,44,100],logo:[50,8],headline:[50,22,46],tagline:[50,55,46],price:[50,70],button:[74,74]},
+  ig:{photo:[0,0,100,56],logo:[6,4],headline:[6,60,88],tagline:[6,75,88],price:[6,85],button:[62,86]},
+  story:{photo:[0,0,100,50],logo:[8,3],headline:[8,54,84],tagline:[8,69,84],price:[8,80],button:[8,90]},
+  banner:{photo:[0,0,24,100],logo:[27,10],headline:[27,28,42],tagline:[27,64,42],price:[74,18],button:[74,60]} };
+const S = { fb:{logo:2.4,headline:4.2,tagline:2.4,price:3.4,button:2.2}, ig:{logo:3.4,headline:6,tagline:3.4,price:5,button:3.2},
+  story:{logo:4,headline:7.4,tagline:4,price:6,button:4}, banner:{logo:1.8,headline:3,tagline:1.8,price:3,button:1.8} };
+const TPL = [ {n:'Forest',bg:'#1d4a37',fg:'#f6f0e4',ac:'#8cc9a2'}, {n:'Cream',bg:'#f6f0e4',fg:'#12221b',ac:'#1d4a37'},
+  {n:'Sunrise',bg:'#f4c95d',fg:'#3b2300',ac:'#b4440e'}, {n:'Midnight',bg:'#101f2e',fg:'#f3f6fa',ac:'#6fb7ff'}, {n:'Sage',bg:'#dcebe0',fg:'#12221b',ac:'#2f6b4f'} ];
+const TXT = {
+  en:{ claim:{headline:'Best in Bangladesh: pure mustard oil'}, headline:'Pure mustard oil, cold pressed', tagline:'Cold pressed. No added colour.', button:'Order now',
+       desc:'Pure mustard oil in a 500 g bottle. Cold pressed with no added colour.' },
+  bn:{ claim:{headline:'বাংলাদেশের সেরা খাঁটি সরিষার তেল'}, headline:'খাঁটি সরিষার তেল, কোল্ড প্রেসড', tagline:'কোল্ড প্রেসড। কোনো রং নেই।', button:'এখনই অর্ডার করুন',
+       desc:'৫০০ গ্রামের বোতলে খাঁটি সরিষার তেল। কোল্ড প্রেসড, কোনো রং মেশানো নেই।' } };
+const ALT = { en:{headline:['Cold pressed pure mustard oil','Pure mustard oil in a glass bottle'],tagline:['Pure. Cold pressed. No added colour.','Mustard oil with no added colour.'],button:['Buy now','Shop now'],desc:['A 500 g bottle of cold pressed mustard oil with no added colour.']},
+  bn:{headline:['কোল্ড প্রেসড খাঁটি সরিষার তেল'],tagline:['খাঁটি। কোনো রং নেই।'],button:['এখনই কিনুন'],desc:['৫০০ গ্রামের কোল্ড প্রেসড সরিষার তেল, কোনো রং নেই।']} };
+const UNSUP = ['best in bangladesh','বাংলাদেশের সেরা','number 1','#1','cheapest'];
+const SYM = {BDT:'৳',USD:'$',EUR:'€',GBP:'£',INR:'₹'};
+const FIELDS = [['desc','Description',true],['headline','Headline'],['tagline','Tagline'],['button','Button text']];
+const DEMOS = [['empty','Empty'],['generating','Generating'],['ready','Ready'],['attention','Needs attention'],['approved','Approved'],['limit','AI limit reached']];
+
+/* ---------- state ---------- */
+let lang='en', size='fb', tpl=0, zoom=1, sel=null, phase='done', hasPhoto=true, photoUrl=null, approved=false, aiLimit=false, ocrAck=false, demoName='attention';
+let txt = {}, els = {}, hist = [], hi = -1, prog = null, progStep = 0, altIdx = {};
+const feat = ['Cold pressed','No added colour','500 g bottle','Glass bottle'], claims = ['Cold pressed','No added colour'];
+
+const defaults = (l, withClaim) => { const t = TXT[l]; return {headline: withClaim ? t.claim.headline : t.headline, tagline:t.tagline, button:t.button, desc:t.desc}; };
+const digits = s => lang === 'bn' ? String(s).replace(/\d/g, d => '০১২৩৪৫৬৭৮৯'[d]) : String(s);
+const priceStr = () => SYM[$('cur').value] + digits($('price').value.trim());
+function initEls(){ const l=L[size], s=S[size]; els={photo:{x:l.photo[0],y:l.photo[1],w:l.photo[2],h:l.photo[3]}};
+  ['logo','headline','tagline','price','button'].forEach(k => els[k]={x:l[k][0],y:l[k][1],w:l[k][2]||null,fs:s[k]}); }
+const photoSVG = () => photoUrl ? `<img src="${photoUrl}" alt="Your product photo" style="width:100%;height:100%;object-fit:cover">` :
+  `<svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice" style="width:100%;height:100%" role="img" aria-label="Product photo placeholder"><rect width="100" height="100" fill="#e9dfc4"/><rect y="68" width="100" height="32" fill="#cdb98a"/><rect x="40" y="26" width="20" height="46" rx="6" fill="#c8841a"/><rect x="45" y="14" width="10" height="14" rx="2" fill="#8a5a10"/><rect x="42" y="42" width="16" height="18" rx="2" fill="#f6f0e4"/><ellipse cx="50" cy="74" rx="16" ry="3" fill="rgba(0,0,0,.15)"/></svg>`;
+
+/* ---------- history ---------- */
+const snap = () => JSON.stringify({els, txt, size, tpl});
+function commit(){ hist = hist.slice(0, hi+1); hist.push(snap()); hi = hist.length-1; renderTools(); }
+function restore(i){ const s = JSON.parse(hist[i]); els=s.els; txt=s.txt; size=s.size; tpl=s.tpl; hi=i; edited(true); renderAll(); }
+$('undo').onclick = () => hi>0 && restore(hi-1);
+$('redo').onclick = () => hi<hist.length-1 && restore(hi+1);
+function renderTools(){ $('undo').disabled = hi<=0; $('redo').disabled = hi>=hist.length-1; $('zv').textContent = Math.round(zoom*100)+'%'; }
+$('zin').onclick = () => { zoom=Math.min(2,zoom+.25); renderCanvas(); renderTools(); };
+$('zout').onclick = () => { zoom=Math.max(.5,zoom-.25); renderCanvas(); renderTools(); };
+$('ver').onchange = e => toast('Showing “' + e.target.value + '” (mock only)'); // TODO: GET /ads/{id}/versions/{n}
+
+/* ---------- canvas ---------- */
+function renderCanvas(){
+  const c=$('canvas'), s=SZ[size], t=TPL[tpl], r=s.w/s.h;
+  c.style.aspectRatio = s.w+'/'+s.h; c.style.width = `min(${zoom*100}%, ${zoom*68*r}vh)`; c.style.fontFamily = lang==='bn' ? "'Hind Siliguri'" : "'DM Sans'";
+  if (phase==='empty') { c.innerHTML = `<div class="grid h-full place-items-center bg-white/60 p-4 text-center text-sm text-ink dark:bg-[#0c1511] dark:text-[#e8efe9]" style="font-size:14px"><div><b class="block text-base">Add a product photo to start</b><span class="sec">Then press “Create my ad”.</span></div></div>`; return; }
+  if (phase==='generating') { c.innerHTML = `<div class="h-full animate-pulse bg-forest/15 p-[5%]"><div class="h-[55%] w-[40%] rounded bg-forest/20"></div><div class="mt-[3%] h-[8%] w-[60%] rounded bg-forest/20"></div><div class="mt-[2%] h-[5%] w-[45%] rounded bg-forest/20"></div></div>`; return; }
+  const p = els.photo, box = (k, inner, st='') => { const e=els[k], on=sel===k, tx=['headline','tagline','button'].includes(k);
+    return `<div data-el="${k}" tabindex="0" role="button" aria-label="${k}${tx?', '+esc(txt[k]):''}. Arrow keys move it." style="left:${e.x}%;top:${e.y}%;width:${e.w?e.w+'%':'max-content'};font-size:${e.fs}cqw;${st}${on?`outline:2px dashed ${t.ac};outline-offset:5px;`:''}">${inner}${on?`<i class="hd" style="left:-7px;top:-7px"></i><i class="hd" style="right:-7px;top:-7px"></i><i class="hd" style="left:-7px;bottom:-7px"></i>${e.w?`<i class="hd" data-h="1" style="right:-7px;bottom:-7px;pointer-events:auto;cursor:nwse-resize"></i>`:`<i class="hd" style="right:-7px;bottom:-7px"></i>`}`:''}</div>`; };
+  const col = k => els[k].color || t.fg, fnt = k => els[k].font ? `font-family:'${els[k].font}';` : '';
+  c.innerHTML = `<div style="position:absolute;inset:0;background:${t.bg}"></div>
+    <div style="position:absolute;left:${p.x}%;top:${p.y}%;width:${p.w}%;height:${p.h}%;overflow:hidden">${photoSVG()}</div>` +
+    box('logo', `<span style="display:inline-flex;align-items:center;gap:.4em;background:${t.bg};color:${t.fg};padding:.3em .6em .3em .3em;border-radius:.6em;font-weight:700"><b style="background:${t.ac};color:${t.bg};border-radius:.4em;padding:.1em .45em">a.</b>${esc($('brand').value)}</span>`) +
+    box('headline', esc(txt.headline), `color:${col('headline')};${fnt('headline')}font-weight:700;line-height:1.15;`) +
+    box('tagline', esc(txt.tagline), `color:${col('tagline')};${fnt('tagline')}line-height:1.3;`) +
+    box('price', `${$('orig').value.trim()?`<s style="font-size:.6em;opacity:.75;margin-right:.4em">${SYM[$('cur').value]}${digits($('orig').value.trim())}</s>`:''}${priceStr()}<small style="font-size:.5em;margin-left:.4em;font-weight:500">${esc($('unit').value)}</small>`, `background:${t.ac};color:${t.bg};padding:.3em .7em;border-radius:.5em;font-weight:700;`) +
+    box('button', esc(txt.button), `background:${els.button.color||t.ac};color:${t.bg};${fnt('button')}padding:.5em 1.1em;border-radius:.6em;font-weight:700;`);
+  renderPanel();
+}
+function renderPanel(){ const tp=$('tpanel'), tx=['headline','tagline','button'].includes(sel); tp.classList.toggle('hidden', !tx || phase!=='done'); if(!tx) return;
+  const e=els[sel]; if(document.activeElement!==$('tpText')) $('tpText').value=txt[sel]; $('tpFont').value=e.font||(lang==='bn'?'Hind Siliguri':'DM Sans'); $('tpSize').value=e.fs; $('tpColor').value=e.color||TPL[tpl].fg; }
+$('tpText').oninput = e => { txt[sel]=e.target.value; edited(); renderCanvas(); syncFields(); };
+$('tpFont').onchange = e => { els[sel].font=e.target.value; edited(); renderCanvas(); commit(); };
+$('tpSize').oninput = e => { els[sel].fs=+e.target.value; edited(); renderCanvas(); };
+$('tpSize').onchange = commit;
+$('tpColor').oninput = e => { els[sel].color=e.target.value; edited(); renderCanvas(); };
+$('tpColor').onchange = commit;
+
+/* drag, resize, select (mock only) */
+let drag=null;
+$('canvas').addEventListener('pointerdown', e => {
+  if (phase!=='done') return; const el=e.target.closest('[data-el]');
+  if (!el) { sel=null; renderCanvas(); return; }
+  const k=el.dataset.el, r=$('canvas').getBoundingClientRect(); sel=k;
+  drag={k, rs:!!e.target.closest('[data-h]'), sx:e.clientX, sy:e.clientY, ox:els[k].x, oy:els[k].y, ow:els[k].w, r, moved:false};
+  $('canvas').setPointerCapture(e.pointerId); renderCanvas(); e.preventDefault();
+});
+$('canvas').addEventListener('pointermove', e => { if(!drag) return; const k=drag.k, dx=(e.clientX-drag.sx)/drag.r.width*100, dy=(e.clientY-drag.sy)/drag.r.height*100; drag.moved=true;
+  if (drag.rs) els[k].w=Math.max(15,Math.min(100-els[k].x,drag.ow+dx)); else { els[k].x=Math.max(0,Math.min(95,drag.ox+dx)); els[k].y=Math.max(0,Math.min(95,drag.oy+dy)); }
+  const n=$('canvas').querySelector(`[data-el="${k}"]`); n.style.left=els[k].x+'%'; n.style.top=els[k].y+'%'; if(els[k].w) n.style.width=els[k].w+'%'; });
+$('canvas').addEventListener('pointerup', () => { if(drag&&drag.moved){ edited(); commit(); } drag=null; });
+$('canvas').addEventListener('keydown', e => { const el=e.target.closest('[data-el]'); if(!el) return; const k=el.dataset.el, st=e.shiftKey?5:1, m={ArrowLeft:[-st,0],ArrowRight:[st,0],ArrowUp:[0,-st],ArrowDown:[0,st]}[e.key];
+  if (m) { e.preventDefault(); sel=k; els[k].x=Math.max(0,Math.min(95,els[k].x+m[0])); els[k].y=Math.max(0,Math.min(95,els[k].y+m[1])); edited(); renderCanvas(); $('canvas').querySelector(`[data-el="${k}"]`).focus(); commit(); }
+  else if ((e.key==='Enter'||e.key===' ') && sel!==k) { sel=k; renderCanvas(); $('canvas').querySelector(`[data-el="${k}"]`).focus(); } });
+
+/* templates and sizes */
+function renderPickers(){
+  $('tpls').innerHTML = TPL.map((t,i) => `<button type="button" data-t="${i}" aria-pressed="${i===tpl}" aria-label="${t.n} template" class="grid h-11 w-11 place-items-center rounded-lg border-2 ${i===tpl?'border-forest dark:border-sage':'border-transparent'}" style="background:${t.bg}"><b style="background:${t.ac}" class="block h-2 w-5 rounded"></b></button>`).join('');
+  $('sizes').innerHTML = Object.entries(SZ).map(([k,s]) => `<button type="button" class="pill" data-s="${k}" aria-pressed="${k===size}">${s.n} ${s.w}×${s.h}</button>`).join(''); }
+$('tpls').onclick = e => { const b=e.target.closest('[data-t]'); if(!b) return; tpl=+b.dataset.t; Object.values(els).forEach(x=>delete x.color); edited(); renderPickers(); renderCanvas(); commit(); };
+$('sizes').onclick = e => { const b=e.target.closest('[data-s]'); if(!b) return; size=b.dataset.s; initEls(); sel=null; edited(); renderPickers(); renderCanvas(); commit(); };
+
+/* ---------- checks ---------- */
+const findClaim = () => { const all=(txt.headline+' '+txt.tagline+' '+txt.desc).toLowerCase(), ok=claims.map(c=>c.toLowerCase()); return UNSUP.find(u => all.includes(u) && !ok.includes(u)); };
+function stripClaims(){ const re = new RegExp('('+UNSUP.map(u=>u.replace(/[.*+?^${}()|[\]\\#]/g,'\\$&')).join('|')+')[:,.]?\\s*','gi');
+  ['headline','tagline','desc'].forEach(k => { const v=txt[k].replace(re,'').trim(); txt[k]=v.charAt(0).toUpperCase()+v.slice(1); }); }
+function computeChecks(){ const bad=findClaim();
+  return [ {id:'price',s:'pass',t:'Price matches',r:`The ad shows ${priceStr()}, the same as your form.`},
+    {id:'spell',s:'pass',t:'Text spelling',r:'No spelling mistakes found.'},
+    bad ? {id:'claim',s:'attn',t:'Unsupported claim found',r:`“${bad.replace(/^./,c=>c.toUpperCase())}” is not in your allowed claims. Remove it or add it as an allowed claim.`,fix:true}
+        : {id:'claim',s:'pass',t:'Claims',r:'Every claim in the ad is in your allowed list.'},
+    {id:'brand',s:'pass',t:'Brand colors and logo',r:'Your logo and brand colors are used correctly.'},
+    {id:'photo',s:'pass',t:'Photo unchanged',r:'The photo is identical to the one you uploaded.',h:'a3f9…c21'},
+    {id:'ocr',s:'unk',t:'OCR text check',r:'We could not read this text, so we cannot confirm it matches.',ack:true} ]; }
+const ICON = { pass:['text-green-700 dark:text-green-400','Passed','<path d="M5 12l4 4 10-10"/>'], attn:['text-amber-700 dark:text-amber-400','Needs attention','<path d="M12 4l9 16H3z"/><path d="M12 10v4M12 17v.5"/>'], unk:['text-slate-600 dark:text-slate-300','Cannot verify','<circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 114 2c-.9.6-1.5 1-1.5 2M12 17v.5"/>'] };
+const counts = () => { const c=computeChecks(), n=s=>c.filter(x=>x.s===s).length; return {p:n('pass'),a:n('attn'),u:n('unk')}; };
+const canApprove = () => phase==='done' && counts().a===0 && ocrAck;
+function renderChecks(){
+  const box=$('checks'); if(phase!=='done'){ box.innerHTML=`<p class="sec text-sm">${phase==='generating'?'Checking your ad…':'Checks appear after you create your ad.'}</p>`; return; }
+  const n=counts();
+  box.innerHTML = `<p class="rounded-lg bg-forest/10 px-3 py-2 text-sm font-medium dark:bg-white/10">${n.p} passed, ${n.a} needs attention, ${n.u} cannot verify</p><ul class="mt-3 divide-y divide-forest/10 dark:divide-white/10">` +
+   computeChecks().map(c => { const [cl,lb,path]=ICON[c.s]; return `<li class="flex gap-3 py-3"><svg class="mt-0.5 h-5 w-5 shrink-0 ${cl}" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">${path}</svg>
+    <div class="min-w-0 flex-1 text-sm"><p class="font-semibold">${c.t} <span class="${cl} text-xs font-medium">· ${lb}</span></p><p class="sec">${c.r}${c.h?` <code class="rounded bg-forest/10 px-1 dark:bg-white/10">${c.h}</code>`:''}</p>
+    ${c.fix?`<button class="btn btn-o mt-2 !min-h-[44px]" data-fix>Fix it</button>`:''}${c.ack?(ocrAck?`<p class="mt-1 text-xs font-medium">You checked this yourself.</p>`:`<button class="btn btn-o mt-2" data-ack>I checked it myself</button>`):''}</div></li>`; }).join('') + '</ul>'; }
+$('checks').onclick = e => { if(e.target.closest('[data-fix]')){ stripClaims(); edited(); renderAll(); commit(); toast('Claim removed.'); } // TODO: POST /ads/{id}/checks/claim/fix
+  if(e.target.closest('[data-ack]')){ ocrAck=true; edited(true); renderChecks(); renderApprove(); } };
+
+/* ---------- text results ---------- */
+$('texts').innerHTML = FIELDS.map(([k,l,area]) => `<div><div class="mb-1 flex items-center gap-2"><label class="text-sm font-medium" for="f_${k}">${l}</label><span data-badge class="rounded-full bg-forest/10 px-2 py-0.5 text-xs dark:bg-white/10"></span>
+  <button type="button" class="btn btn-o ml-auto !min-h-[44px] !px-3 !text-sm" data-regen="${k}" aria-label="Regenerate ${l}">Regenerate</button></div>
+  ${area?`<textarea id="f_${k}" rows="3" class="fld"></textarea>`:`<input id="f_${k}" class="fld">`}</div>`).join('');
+FIELDS.forEach(([k]) => $('f_'+k).addEventListener('input', e => { txt[k]=e.target.value; edited(); renderCanvas(); }));
+FIELDS.forEach(([k]) => $('f_'+k).addEventListener('change', commit));
+$('texts').onclick = e => { const b=e.target.closest('[data-regen]'); if(!b) return; const k=b.dataset.regen;
+  if (aiLimit) { toast('Free AI limit reached, using basic text.'); return; }
+  const a=ALT[lang][k]; altIdx[k]=((altIdx[k]||0)+1)%(a.length+1); txt[k]= altIdx[k]===0 ? defaults(lang,false)[k] : a[altIdx[k]-1]; // TODO: POST /ads/{id}/text/{field}/regenerate
+  edited(); renderAll(); commit(); };
+function syncFields(){ const dis = phase!=='done'; FIELDS.forEach(([k]) => { const f=$('f_'+k); if(f.value!==(txt[k]||'')&&document.activeElement!==f) f.value = dis?'':txt[k]; f.disabled=dis; f.placeholder=dis?'Appears after you create your ad':''; f.style.fontFamily = lang==='bn'?"'Hind Siliguri'":''; });
+  document.querySelectorAll('[data-badge]').forEach(b => b.textContent = aiLimit ? 'Basic text' : 'Written by AI'); document.querySelectorAll('[data-regen]').forEach(b => b.disabled = dis); }
+
+/* ---------- approval, banners, stepper ---------- */
+function renderApprove(){ const ok=canApprove(); $('approve').disabled = !ok && !approved; $('approve').textContent = approved ? 'Approved ✓' : 'Approve ad'; $('export').disabled = !approved;
+  $('appHint').textContent = approved ? 'Approved. You can export now.' : phase!=='done' ? 'Create your ad first.' : ok ? 'Everything is checked. You can approve now.' : 'Fix or acknowledge every check to approve.'; }
+$('approve').onclick = () => { if(!canApprove()) return; approved=true; renderAll(); toast('Ad approved.'); }; // TODO: POST /ads/{id}/approve
+$('export').onclick = () => toast('Export would start here.'); // TODO: GET /ads/{id}/export?format=png
+function edited(silent){ if(approved){ approved=false; if(!silent) toast('Approval cancelled because you edited the ad.'); } if(phase==='done'){ renderChecks(); renderApprove(); renderBanners(); renderStepper(); } }
+function renderBanners(){ $('banners').innerHTML = (approved?`<div class="rounded-xl border border-green-700/30 bg-green-100 px-4 py-3 text-sm font-medium text-green-900 dark:bg-green-900/30 dark:text-green-200">Approved. Your ad is ready to export.</div>`:'') +
+  (aiLimit?`<div class="rounded-xl border border-amber-700/30 bg-amber-100 px-4 py-3 text-sm text-amber-900 dark:bg-amber-900/30 dark:text-amber-100">Free AI limit reached, using basic text.</div>`:''); }
+function renderStepper(){ const names=['Details','Create','Edit & check','Approve & export'], act = approved?[4]: phase==='empty'?[1]: phase==='generating'?[2]:[2,3];
+  $('stepper').innerHTML = names.map((n,i) => { const s=i+1, on=act.includes(s), done=s<Math.min(...act);
+    return `<li class="flex shrink-0 items-center gap-2" ${on?'aria-current="step"':''}><span class="grid h-8 w-8 place-items-center rounded-full border text-sm font-bold ${on?'border-forest bg-forest text-white dark:border-sage dark:bg-sage dark:text-ink':done?'border-forest bg-forest/15':'border-forest/30'}">${done?'✓':s}</span><span class="${on?'font-semibold':'sec'}">${n}</span>${s<4?'<span class="mx-1 h-px w-6 bg-forest/25 dark:bg-white/25"></span>':''}</li>`; }).join(''); }
+
+/* ---------- states ---------- */
+function startProgress(){ const m=['Reading your details…','Writing your headline…','Writing the description…','Running checks…']; progStep=0; clearInterval(prog); const p=$('progress'); p.classList.remove('hidden'); p.textContent=m[0]+' (1 of 4)';
+  prog=setInterval(() => { progStep=(progStep+1)%4; p.textContent=m[progStep]+` (${progStep+1} of 4)`; }, 650); }
+function demo(n){ demoName=n; clearInterval(prog); sel=null; approved=false; aiLimit=false; ocrAck=false;
+  if(n==='empty'){ hasPhoto=false; photoUrl=null; phase='empty'; txt=defaults(lang,false); }
+  else if(n==='generating'){ hasPhoto=true; phase='generating'; txt=defaults(lang,false); startProgress(); }
+  else { hasPhoto=true; phase='done'; txt=defaults(lang,n==='attention'); if(n!=='attention') ocrAck=true; approved=n==='approved'; aiLimit=n==='limit'; }
+  $('progress').classList.toggle('hidden', n!=='generating'); initEls(); hist=[]; hi=-1; renderAll(); if(phase==='done') commit(); }
+$('demo').innerHTML = DEMOS.map(([k,l]) => `<button type="button" class="pill !min-h-[44px]" data-d="${k}">${l}</button>`).join('');
+$('demo').onclick = e => { const b=e.target.closest('[data-d]'); if(b) demo(b.dataset.d); };
+$('createBtn').onclick = () => { if(!hasPhoto){ toast('Add a product photo first.'); $('photo').focus(); return; }
+  phase='generating'; approved=false; sel=null; demoName=''; startProgress(); renderAll(); // TODO: POST /products/{id}/generate
+  setTimeout(() => { clearInterval(prog); $('progress').classList.add('hidden'); phase='done'; txt=defaults(lang,true); ocrAck=false; initEls(); hist=[]; hi=-1; renderAll(); commit(); toast('Your ad is ready to check.'); }, 2600); };
+
+/* ---------- form ---------- */
+function setThumb(){ $('thumb').innerHTML = hasPhoto ? photoSVG() : `<svg class="m-auto mt-5 h-6 w-6 opacity-60" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M12 16V5M7 9l5-5 5 5M5 19h14"/></svg>`; }
+function takeFile(f){ if(!f||!f.type.startsWith('image/')) return; photoUrl=URL.createObjectURL(f); hasPhoto=true; setThumb(); if(phase==='done'){ edited(); } renderCanvas(); /* TODO: POST /products/{id}/photo */ }
+$('photo').onchange = e => takeFile(e.target.files[0]);
+['dragover','drop'].forEach(ev => $('drop').addEventListener(ev, e => { e.preventDefault(); if(ev==='drop') takeFile(e.dataTransfer.files[0]); }));
+$('form').addEventListener('input', e => { if(['price','cur','orig','unit','brand','pname'].includes(e.target.id)){ edited(); renderCanvas(); } });
+document.querySelectorAll('[data-lang]').forEach(b => b.onclick = () => { const had=!!findClaim(); lang=b.dataset.lang; document.querySelectorAll('[data-lang]').forEach(x=>x.setAttribute('aria-pressed',x===b)); document.documentElement.lang = lang==='bn'?'bn':'en';
+  if(phase==='done'){ txt=defaults(lang,had); edited(); } renderAll(); });
+function chips(id, list, max, input, after){ const w=$(id), inp=$(input);
+  const draw=()=>{ w.querySelectorAll('.chip').forEach(x=>x.remove()); list.forEach((t,i) => { const s=document.createElement('span'); s.className='chip'; s.innerHTML=`${esc(t)}<button type="button" data-i="${i}" aria-label="Remove ${esc(t)}">×</button>`; w.insertBefore(s,inp); }); after(); };
+  inp.addEventListener('keydown', e => { if((e.key==='Enter'||e.key===',')&&inp.value.trim()){ e.preventDefault(); if(list.length>=max){ toast('You can add up to '+max+'.'); return; } list.push(inp.value.trim()); inp.value=''; draw(); }
+    else if(e.key==='Backspace'&&!inp.value&&list.length){ list.pop(); draw(); } });
+  w.addEventListener('click', e => { const b=e.target.closest('[data-i]'); if(b){ list.splice(+b.dataset.i,1); draw(); inp.focus(); } }); draw(); }
+chips('feat', feat, 20, 'featIn', () => $('featCnt').textContent = feat.length+'/20');
+chips('claims', claims, 20, 'clIn', () => { if(phase==='done') edited(); });
+
+/* ---------- tabs, toast, boot ---------- */
+function setTab(t){ $('pDetails').classList.toggle('max-md:hidden', t!=='details'); $('pChecks').classList.toggle('max-md:hidden', t!=='checks');
+  document.querySelectorAll('[data-tab]').forEach(b => { b.setAttribute('aria-selected', b.dataset.tab===t); b.setAttribute('aria-pressed', b.dataset.tab===t); }); }
+document.querySelectorAll('[data-tab]').forEach(b => b.onclick = () => setTab(b.dataset.tab));
+let tt; function toast(m){ const t=$('toast'); t.textContent=m; t.classList.remove('hidden'); clearTimeout(tt); tt=setTimeout(() => t.classList.add('hidden'), 2600); }
+function renderAll(){ renderStepper(); renderBanners(); renderPickers(); renderCanvas(); renderChecks(); syncFields(); renderApprove(); renderTools(); setThumb();
+  document.querySelectorAll('[data-d]').forEach(b => b.setAttribute('aria-pressed', b.dataset.d===demoName)); }
+initEls(); txt=defaults(lang,true); setTab('details'); renderAll(); commit();
+</script>
+</body>
+</html>

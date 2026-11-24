@@ -617,6 +617,7 @@
           <button type="button" class="avatar" id="avatarBtn" aria-haspopup="true" aria-expanded="false" aria-label="Account menu">?</button>
           <div class="avatar-menu" id="avatarMenu" hidden role="menu">
             <div class="who"><b id="avName"></b><span id="avEmail"></span></div>
+            <a href="create.html" id="avCreate" role="menuitem">Create ad</a>
             <a href="profile.html" id="avProfile" role="menuitem">Profile</a>
             <a href="admin.html" id="avAdmin" role="menuitem" hidden>Admin</a>
             <button type="button" id="avOut" role="menuitem">Sign out</button>
@@ -1375,7 +1376,10 @@
     touring = false;
   }
   $('#seeHow').addEventListener('click', tour);
-  $('#trySample').addEventListener('click', () => { loadExample('fashion', { check: true }); scrollToEl($('#stage')); });
+  $('#trySample').addEventListener('click', () => {
+    if (!window.AdBanaoAuth) { location.hash = '#signin'; return; }
+    AdBanaoAuth.me().then(() => { location.href = 'create.html'; }).catch(() => { location.hash = '#signin'; });
+  });
   $('#learnBtn').addEventListener('click', () => scrollToEl($('#faq')));
 
   /* Features: staircase cards with small live previews */
