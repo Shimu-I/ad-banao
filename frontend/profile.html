@@ -1,103 +1,218 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Your profile · AdBanao</title>
+<title>Your profile – AdBanao</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Source+Serif+4:wght@500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com/3.4.17"></script>
+<script>
+  tailwind.config = {
+    darkMode: 'class',
+    theme: { extend: {
+      fontFamily: { sans: ['"DM Sans"', 'sans-serif'], serif: ['"Source Serif 4"', 'Georgia', 'serif'] },
+      colors: { cream: '#f6f0e4', forest: '#1d4a37', sage: '#8cc9a2', ink: '#12221b' }
+    } }
+  }
+  // apply saved theme before paint
+  try { if (localStorage.getItem('theme') === 'dark') document.documentElement.classList.add('dark'); } catch (e) {}
+</script>
 <style>
-  :root{--bg:#F6F1E3;--panel:#FBF8EE;--field:#fff;--fg:#12301F;--soft:#4A5A4E;--line:#E1D8BE;--brand:#1B4D34;--ok-bg:#E2EDD4;--err-bg:#F9DCD4;--err-fg:#8C2B14}
-  @media (prefers-color-scheme:dark){:root{--bg:#0B1510;--panel:#101E16;--field:#0B1510;--fg:#E9EFDB;--soft:#A9B8A8;--line:#22372A;--brand:#8CC79F;--ok-bg:#1d3a28;--err-bg:#3d1f18;--err-fg:#f1b4a4}}
-  *{box-sizing:border-box}
-  body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.5 Inter,"Hind Siliguri",system-ui,sans-serif}
-  main{max-width:560px;margin:0 auto;padding:32px 16px 64px}
-  h1{font-size:1.6rem;margin:0 0 4px} p.sub{color:var(--soft);margin:0 0 24px}
-  section{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px;margin-bottom:20px}
-  h2{font-size:1.05rem;margin:0 0 12px}
-  label{display:block;font-size:.9rem;margin:12px 0 4px}
-  input,select{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--field);color:var(--fg);font:inherit}
-  input[disabled]{opacity:.7}
-  button{margin-top:16px;padding:10px 18px;border:0;border-radius:10px;background:var(--brand);color:#fff;font:inherit;font-weight:600;cursor:pointer}
-  button.ghost{background:transparent;color:var(--fg);border:1px solid var(--line)}
-  @media (prefers-color-scheme:dark){button{color:#0B1510}}
-  button:disabled{opacity:.6;cursor:wait}
-  :focus-visible{outline:3px solid var(--brand);outline-offset:2px}
-  .msg{margin-top:12px;padding:10px 12px;border-radius:10px;display:none}
-  .msg.ok{display:block;background:var(--ok-bg)} .msg.err{display:block;background:var(--err-bg);color:var(--err-fg)}
-  header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
-  a{color:var(--brand)}
+  body { background-image: radial-gradient(ellipse at top right, rgba(214,210,140,.35), transparent 55%); background-attachment: fixed; }
+  .dark body { background-image: none; }
+  .msg{display:none}.msg.ok,.msg.err{display:block}
 </style>
 </head>
-<body>
-<main>
-  <header><a href="/index.html"><strong>AdBanao</strong></a><span style="display:flex;align-items:center;gap:12px"><span id="avatar" title="" style="width:38px;height:38px;border-radius:50%;background:var(--brand);color:#fff;display:none;place-items:center;font-weight:700;text-transform:uppercase"></span><button class="ghost" id="logout" style="margin:0">Sign out</button></span></header>
-  <h1>Your profile</h1>
-  <p class="sub" id="who">Loading…</p>
+<body class="bg-cream text-ink font-sans antialiased dark:bg-[#0c1511] dark:text-[#e8efe9]">
 
-  <section>
-    <h2>Details</h2>
-    <form id="profile" novalidate>
-      <label for="email">Email</label><input id="email" disabled>
-      <label for="display_name">Name</label><input id="display_name" required maxlength="100" autocomplete="name">
-      <label for="business_name">Business name (optional)</label><input id="business_name" maxlength="200" autocomplete="organization">
-      <label for="phone">Phone (optional)</label><input id="phone" maxlength="30" autocomplete="tel" inputmode="tel">
-      <label for="language">Language</label>
-      <select id="language"><option value="en">English</option><option value="bn">বাংলা</option></select>
-      <button type="submit">Save changes</button>
-      <div class="msg" id="profile-msg" role="status"></div>
+<!-- ============ FIXED TOP NAV ============ -->
+<header class="fixed inset-x-0 top-0 z-50 border-b border-forest/10 bg-cream/90 backdrop-blur dark:border-white/10 dark:bg-[#0c1511]/90">
+  <nav class="mx-auto flex h-16 max-w-6xl items-center justify-between px-5">
+    <a href="/index.html" class="flex items-center gap-2.5">
+      <span class="grid h-9 w-9 place-items-center rounded-lg bg-forest text-lg font-bold text-white">a.</span>
+      <span class="font-serif text-2xl font-semibold text-forest dark:text-sage">AdBanao</span>
+    </a>
+
+    <ul class="hidden items-center gap-8 text-[15px] font-medium md:flex">
+      <li><a href="/index.html#features" class="hover:text-forest dark:hover:text-sage">Features</a></li>
+      <li><a href="/index.html#how" class="hover:text-forest dark:hover:text-sage">How it works</a></li>
+      <li><a href="/index.html#examples" class="hover:text-forest dark:hover:text-sage">Examples</a></li>
+      <li><a href="/index.html#faq" class="hover:text-forest dark:hover:text-sage">FAQ</a></li>
+    </ul>
+
+    <div class="flex items-center gap-3">
+      <button class="hidden rounded-full border border-forest/20 px-3 py-1.5 text-sm font-semibold sm:block dark:border-white/20">EN <span class="font-normal opacity-60">/ বাংলা</span></button>
+      <button id="themeBtn" aria-label="Toggle theme" class="grid h-9 w-9 place-items-center rounded-full hover:bg-forest/10 dark:hover:bg-white/10">
+        <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+      </button>
+
+      <!-- Circular profile menu -->
+      <div class="relative" id="menuWrap">
+        <button id="avatarBtn" aria-haspopup="true" aria-expanded="false" aria-label="Open profile menu"
+          class="grid h-10 w-10 place-items-center overflow-hidden rounded-full bg-forest text-sm font-bold text-white ring-2 ring-forest/30 ring-offset-2 ring-offset-cream focus-visible:outline-none focus-visible:ring-sage dark:ring-offset-[#0c1511]">
+          <img id="navAvatar" class="hidden h-full w-full object-cover" alt="">
+          <span id="navInitial">U</span>
+        </button>
+        <div id="menu" class="absolute right-0 mt-3 hidden w-60 rounded-2xl border border-forest/10 bg-white p-2 shadow-xl dark:border-white/10 dark:bg-[#14211a]">
+          <div class="px-3 py-2">
+            <p id="menuName" class="text-sm font-semibold">…</p>
+            <p id="menuEmail" class="truncate text-xs opacity-60"></p>
+          </div>
+          <hr class="my-1 border-forest/10 dark:border-white/10">
+          <a href="/index.html" class="block rounded-lg px-3 py-2 text-sm hover:bg-forest/10 dark:hover:bg-white/10">My ads</a>
+          <a href="/profile.html" class="block rounded-lg bg-forest/10 px-3 py-2 text-sm font-medium dark:bg-white/10">Your profile</a>
+          <button id="logout" class="mt-1 w-full rounded-lg px-3 py-2 text-left text-sm text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-500/10">Sign out</button>
+        </div>
+      </div>
+    </div>
+  </nav>
+</header>
+
+<!-- ============ PAGE ============ -->
+<main class="mx-auto max-w-3xl px-5 pb-20 pt-28">
+
+  <!-- Profile header -->
+  <section class="flex flex-col items-center gap-5 text-center sm:flex-row sm:text-left">
+    <div class="relative">
+      <div class="grid h-28 w-28 place-items-center overflow-hidden rounded-full bg-forest text-4xl font-bold text-white ring-4 ring-white shadow-lg dark:ring-[#14211a]">
+        <img id="bigAvatar" class="hidden h-full w-full object-cover" alt="Profile photo">
+        <span id="bigInitial">U</span>
+      </div>
+      <label for="photo" title="Change photo" class="absolute bottom-0 right-0 grid h-9 w-9 cursor-pointer place-items-center rounded-full bg-sage text-forest shadow ring-2 ring-cream hover:brightness-95 dark:ring-[#0c1511]">
+        <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>
+      </label>
+      <input id="photo" type="file" accept="image/*" class="sr-only">
+    </div>
+    <div>
+      <h1 class="font-serif text-4xl font-semibold text-forest dark:text-sage">Your profile</h1>
+      <p class="mt-1 opacity-70"><span id="who">Loading…</span></p>
+    </div>
+  </section>
+
+  <!-- Details -->
+  <section class="mt-10 rounded-2xl border border-forest/10 bg-white/70 p-6 shadow-sm dark:border-white/10 dark:bg-[#14211a] sm:p-8">
+    <h2 class="font-serif text-2xl font-semibold">Details</h2>
+    <form id="profileForm" novalidate class="mt-6 grid gap-5 sm:grid-cols-2">
+      <div class="sm:col-span-2">
+        <label class="mb-1.5 block text-sm font-medium" for="email">Email</label>
+        <input id="email" type="email" disabled
+          class="w-full cursor-not-allowed rounded-xl border border-forest/15 bg-forest/5 px-4 py-3 text-[15px] opacity-70 dark:border-white/10 dark:bg-white/5">
+      </div>
+      <div>
+        <label class="mb-1.5 block text-sm font-medium" for="name">Name</label>
+        <input id="name" required maxlength="100" autocomplete="name" class="w-full rounded-xl border border-forest/20 bg-white px-4 py-3 text-[15px] outline-none focus:border-forest focus:ring-2 focus:ring-sage/60 dark:border-white/15 dark:bg-[#0c1511]">
+      </div>
+      <div>
+        <label class="mb-1.5 block text-sm font-medium" for="biz">Business name <span class="font-normal opacity-60">(optional)</span></label>
+        <input id="biz" maxlength="200" autocomplete="organization" class="w-full rounded-xl border border-forest/20 bg-white px-4 py-3 text-[15px] outline-none focus:border-forest focus:ring-2 focus:ring-sage/60 dark:border-white/15 dark:bg-[#0c1511]">
+      </div>
+      <div>
+        <label class="mb-1.5 block text-sm font-medium" for="phone">Phone <span class="font-normal opacity-60">(optional)</span></label>
+        <input id="phone" type="tel" maxlength="30" autocomplete="tel" class="w-full rounded-xl border border-forest/20 bg-white px-4 py-3 text-[15px] outline-none focus:border-forest focus:ring-2 focus:ring-sage/60 dark:border-white/15 dark:bg-[#0c1511]">
+      </div>
+      <div>
+        <label class="mb-1.5 block text-sm font-medium" for="lang">Language</label>
+        <select id="lang" class="w-full rounded-xl border border-forest/20 bg-white px-4 py-3 text-[15px] outline-none focus:border-forest focus:ring-2 focus:ring-sage/60 dark:border-white/15 dark:bg-[#0c1511]">
+          <option value="en">English</option><option value="bn">বাংলা</option>
+        </select>
+      </div>
+      <div class="sm:col-span-2">
+        <button id="saveBtn" class="rounded-xl bg-forest px-6 py-3 text-[15px] font-semibold text-white shadow hover:bg-[#163a2b] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sage">Save changes</button>
+        <p id="profile-msg" role="status" class="msg mt-3 rounded-xl px-4 py-2 text-sm"></p>
+      </div>
     </form>
   </section>
 
-  <section>
-    <h2>Change password</h2>
-    <form id="password" novalidate>
-      <label for="current">Current password</label><input id="current" type="password" autocomplete="current-password">
-      <label for="next">New password (8 or more characters)</label><input id="next" type="password" autocomplete="new-password">
-      <button type="submit">Change password</button>
-      <div class="msg" id="password-msg" role="status"></div>
+  <!-- Password -->
+  <section class="mt-6 rounded-2xl border border-forest/10 bg-white/70 p-6 shadow-sm dark:border-white/10 dark:bg-[#14211a] sm:p-8">
+    <h2 class="font-serif text-2xl font-semibold">Change password</h2>
+    <form id="pwForm" novalidate class="mt-6 grid gap-5">
+      <div>
+        <label class="mb-1.5 block text-sm font-medium" for="cur">Current password</label>
+        <input id="cur" type="password" autocomplete="current-password" class="w-full rounded-xl border border-forest/20 bg-white px-4 py-3 text-[15px] outline-none focus:border-forest focus:ring-2 focus:ring-sage/60 dark:border-white/15 dark:bg-[#0c1511]">
+      </div>
+      <div>
+        <label class="mb-1.5 block text-sm font-medium" for="new">New password <span class="font-normal opacity-60">(8 or more characters)</span></label>
+        <input id="new" type="password" minlength="8" autocomplete="new-password" class="w-full rounded-xl border border-forest/20 bg-white px-4 py-3 text-[15px] outline-none focus:border-forest focus:ring-2 focus:ring-sage/60 dark:border-white/15 dark:bg-[#0c1511]">
+      </div>
+      <div>
+        <button id="pwBtn" class="rounded-xl border border-forest px-6 py-3 text-[15px] font-semibold text-forest hover:bg-forest hover:text-white dark:border-sage dark:text-sage dark:hover:bg-sage dark:hover:text-forest">Update password</button>
+        <p id="password-msg" role="status" class="msg mt-3 rounded-xl px-4 py-2 text-sm"></p>
+      </div>
     </form>
   </section>
 </main>
 
 <script src="auth/auth.js"></script>
 <script>
-  var $ = function (id) { return document.getElementById(id); };
-  function show(el, text, ok) { el.textContent = text; el.className = "msg " + (ok ? "ok" : "err"); }
+  const $ = id => document.getElementById(id);
+
+  // profile menu
+  const btn = $('avatarBtn'), menu = $('menu');
+  btn.addEventListener('click', e => {
+    e.stopPropagation();
+    const open = menu.classList.toggle('hidden') === false;
+    btn.setAttribute('aria-expanded', open);
+  });
+  document.addEventListener('click', e => { if (!$('menuWrap').contains(e.target)) { menu.classList.add('hidden'); btn.setAttribute('aria-expanded', false); } });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') menu.classList.add('hidden'); });
+
+  // theme toggle
+  $('themeBtn').addEventListener('click', () => {
+    const dark = document.documentElement.classList.toggle('dark');
+    try { localStorage.setItem('theme', dark ? 'dark' : 'light'); } catch (e) {}
+  });
+
+  const show = (el, t, ok) => { el.textContent = t; el.className = 'msg mt-3 rounded-xl px-4 py-2 text-sm ' + (ok ? 'ok bg-sage/30' : 'err bg-red-100 text-red-800 dark:bg-red-500/15 dark:text-red-300'); };
+  const busy = (b, on) => { b.disabled = on; b.classList.toggle('opacity-60', on); };
+
   function fill(u) {
-    $("who").textContent = "Signed in as " + u.email;
-    var av = $("avatar"); av.textContent = (Array.from(u.display_name || u.email)[0] || "?"); av.title = u.email; av.style.display = "grid";
-    ["email", "display_name", "business_name", "phone", "language"].forEach(function (k) { $(k).value = u[k] || ""; });
+    $('who').textContent = 'Signed in as ' + u.email;
+    $('menuName').textContent = u.display_name || u.email;
+    $('menuEmail').textContent = u.email;
+    const ch = (Array.from(u.display_name || u.email)[0] || 'U').toUpperCase();
+    $('navInitial').textContent = ch; $('bigInitial').textContent = ch;
+    [['email','email'],['name','display_name'],['biz','business_name'],['phone','phone'],['lang','language']]
+      .forEach(([id, k]) => { $(id).value = u[k] || (k === 'language' ? 'en' : ''); });
   }
-  function busy(form, on) { form.querySelector("button").disabled = on; }
+  AdBanaoAuth.requireUser('/index.html#signin').then(fill).catch(() => { $('who').textContent = 'Could not load your profile.'; });
 
-  AdBanaoAuth.requireUser("/index.html#signin").then(fill).catch(function () {});
-
-  $("profile").addEventListener("submit", function (e) {
+  $('profileForm').addEventListener('submit', e => {
     e.preventDefault();
-    var f = e.target, msg = $("profile-msg");
-    if (!$("display_name").value.trim()) { show(msg, "Name is required.", false); return; }
-    busy(f, true);
+    const msg = $('profile-msg'), b = $('saveBtn');
+    if (!$('name').value.trim()) { show(msg, 'Name is required.', false); return; }
+    busy(b, true);
     AdBanaoAuth.updateProfile({
-      display_name: $("display_name").value,
-      business_name: $("business_name").value.trim() || null,
-      phone: $("phone").value.trim() || null,
-      language: $("language").value,
-    }).then(function (u) { fill(u); show(msg, "Saved.", true); })
-      .catch(function (err) { show(msg, err.message, false); })
-      .then(function () { busy(f, false); });
+      display_name: $('name').value,
+      business_name: $('biz').value.trim() || null,
+      phone: $('phone').value.trim() || null,
+      language: $('lang').value,
+    }).then(u => { fill(u); show(msg, 'Saved.', true); })
+      .catch(err => show(msg, err.message, false))
+      .finally(() => busy(b, false));
   });
 
-  $("password").addEventListener("submit", function (e) {
+  $('pwForm').addEventListener('submit', e => {
     e.preventDefault();
-    var f = e.target, msg = $("password-msg");
-    busy(f, true);
-    AdBanaoAuth.changePassword($("current").value, $("next").value)
-      .then(function () { $("current").value = ""; $("next").value = ""; show(msg, "Password changed. Other devices were signed out.", true); })
-      .catch(function (err) { show(msg, err.message, false); })
-      .then(function () { busy(f, false); });
+    const msg = $('password-msg'), b = $('pwBtn');
+    if ($('new').value.length < 8) { show(msg, 'New password must be 8 or more characters.', false); return; }
+    busy(b, true);
+    AdBanaoAuth.changePassword($('cur').value, $('new').value)
+      .then(() => { $('cur').value = ''; $('new').value = ''; show(msg, 'Password changed. Other devices were signed out.', true); })
+      .catch(err => show(msg, err.message, false))
+      .finally(() => busy(b, false));
   });
 
-  $("logout").addEventListener("click", function () {
-    AdBanaoAuth.logout().catch(function () {}).then(function () { window.location.href = "/index.html#signin"; });
+  $('logout').addEventListener('click', () => {
+    AdBanaoAuth.logout().catch(() => {}).finally(() => { window.location.href = '/index.html#signin'; });
+  });
+
+  // photo preview only (no upload endpoint yet)
+  $('photo').addEventListener('change', e => {
+    const f = e.target.files[0]; if (!f || !f.type.startsWith('image/')) return;
+    const url = URL.createObjectURL(f);
+    ['navAvatar', 'bigAvatar'].forEach(id => { $(id).src = url; $(id).classList.remove('hidden'); });
+    $('navInitial').classList.add('hidden'); $('bigInitial').classList.add('hidden');
   });
 </script>
 </body>
