@@ -1724,7 +1724,7 @@ label{display:block;font-family:var(--san);font-weight:600;font-size:.85rem;marg
 .eye{position:absolute;right:.35rem;top:50%;transform:translateY(-50%);width:2rem;height:2rem;border:0;background:none;display:grid;place-items:center}
 .eye svg{width:1.15rem;height:1.15rem;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 .eye .off,.eye.on .shown{display:none}.eye.on .off{display:block}
-.err{font-family:var(--san);color:var(--err);font-size:.78rem;margin-top:.3rem;min-height:0}.err:empty{display:none}
+.err{font-family:var(--san);color:var(--err);font-size:.78rem;line-height:1.2;margin-top:.25rem;min-height:1.2em}
 .fgt{text-align:right;margin:.4rem 0 .8rem;font-size:.78rem}
 .fgt a{text-decoration:underline}
 .btn{width:100%;height:2.6rem;border-radius:.75rem;border:0;background:var(--brand);color:var(--on);font:600 .95rem var(--ser);box-shadow:0 8px 16px -10px var(--brand);transition:transform .15s,filter .15s}
@@ -1863,7 +1863,7 @@ $$('.eye').forEach(b=>b.onclick=()=>{const i=b.parentNode.querySelector('input')
 const ok=(i,x,m)=>{$('#'+i).classList.toggle('bad',!!m);$('#'+x).textContent=m||'';return !m};
 const mail=v=>/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim());
 const api=()=>{try{return parent.AdBanaoAuth}catch(_){return null}};
-async function send(form,errId,call){const A=api(),btn=form.querySelector('button[type=submit]');$('#'+errId).textContent='';if(!A){$('#'+errId).textContent=t('enet');return}btn.disabled=true;try{await call(A);done=true;view();P({type:'ab-authed'})}catch(err){$('#'+errId).textContent=err.status===401?t('ecred'):err.status===409?t('edup'):err.message}finally{btn.disabled=false}}
+async function send(form,errId,call){const A=api(),btn=form.querySelector('button[type=submit]');$('#'+errId).textContent='';if(!A){$('#'+errId).textContent=t('enet');return}btn.disabled=true;try{await call(A);done=true;view();P({type:'ab-authed'})}catch(err){$('#'+errId).textContent=err.status===401?t('ecred'):err.status===409?t('edup'):err.status?err.message:t('enet')}finally{btn.disabled=false}}
 $('#fin').onsubmit=e=>{e.preventDefault();const a=ok('e1','x1',mail($('#e1').value)?'':t('eem')),b=ok('p1','y1',$('#p1').value?'':t('epw'));if(a&&b)send($('#fin'),'y1',A=>A.login($('#e1').value,$('#p1').value));else(a?$('#p1'):$('#e1')).focus()};
 $('#fup').onsubmit=e=>{e.preventDefault();const a=ok('e2','x2',mail($('#e2').value)?'':t('eem'));const p=$('#p2').value.length>=8;$('#p2').classList.toggle('bad',!p);$('#y2').style.color=p?'':'var(--err)';const c=$('#t2').checked;$('#z2').textContent=c?'':t('etm');if(a&&p&&c){const em=$('#e2').value.trim();send($('#fup'),'z2',A=>A.signup(em,$('#p2').value,em.split('@')[0]))}};
 $('#p2').oninput=()=>{if($('#p2').value.length>=8){$('#p2').classList.remove('bad');$('#y2').style.color=''}};

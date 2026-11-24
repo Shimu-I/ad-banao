@@ -6,6 +6,7 @@ versions follow [Semantic Versioning](https://semver.org).
 ## [Unreleased]
 
 ### Fixed
+- Sign-in and sign-up card no longer changes layout when an error message appears: space for the message is reserved. A network failure now shows the short translated message.
 - The database viewer port can be changed with `ADMINER_PORT` when 8080 is already in use.
 
 ### Added
