@@ -46,6 +46,7 @@ Read in this order if you are new. Each file covers one topic.
 | File | What it holds |
 | --- | --- |
 | [TRACKER.md](TRACKER.md) | One-page tracker: mission, scoreboard, what Claude can do alone, what needs a person |
+| [25-ai-and-ad-engine-plan.md](25-ai-and-ad-engine-plan.md) | Proposal: how AI joins the API and the ad engine with free resources. Options, pros and cons, decisions for the owner |
 | [PROGRESS.md](PROGRESS.md) | How far we are, what is tested and by whom, approvals, decisions, history |
 | [FACULTY_SUGGESTIONS.md](FACULTY_SUGGESTIONS.md) | Every faculty suggestion and what we decided |
 | [CONTRIBUTING.md](CONTRIBUTING.md) | Branch, commit and pull request rules |
