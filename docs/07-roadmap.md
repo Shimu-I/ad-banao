@@ -20,6 +20,8 @@ Each goal is one pull request with one purpose. Status: ✅ done and merged, �
 
 ## Milestone M1: Ad engine (A)
 
+Approach decided 2026-11-24 ([ADR 0007](adr/0007-ad-engine-ai-designer.md)): Pillow renders templates, a text AI proposes the design as a scene, our code validates it first. The AI designer is built after A4. Order: F8, A1 to A4, the AI designer, A5 to A7.
+
 | ID | Goal | Done when | Status |
 | --- | --- | --- | --- |
 | A1 | Scene (layers) schema | Scene JSON validated. Bad scenes rejected with clear messages. Content hash function exists | ⬜ |
