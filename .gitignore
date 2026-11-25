@@ -42,3 +42,4 @@ my-test-report.txt
 # Backup copies made by helper scripts
 *.bak
 .env.bak.*
+.run-logs-start.txt
