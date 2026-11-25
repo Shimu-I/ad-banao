@@ -38,3 +38,7 @@ Thumbs.db
 my-test-report.txt
 .check-logs/
 .run-logs/
+
+# Backup copies made by helper scripts
+*.bak
+.env.bak.*

@@ -8,6 +8,9 @@ versions follow [Semantic Versioning](https://semver.org).
 ### Security
 - The local admin login is no longer written in the repository. It is made randomly on first start, saved in the git-ignored `.env`, and `setup_admin.py` refuses to run when `APP_ENV=production`. The old published admin account is switched off on machines that used it. Change that password anywhere it was reused.
 
+### Removed
+- Leftover `*.bak` backup files, the duplicate `files/` folder and `apply.sh` (nothing used them). `*.bak` is now git-ignored.
+
 ### Fixed
 - The Bangla headline on the home page is smaller so it no longer overflows or shifts the hero layout.
 - The home page nav bar stays at the top while scrolling.
