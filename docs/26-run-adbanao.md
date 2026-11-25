@@ -78,15 +78,14 @@ The start script does all of this for you: frees busy ports, checks the database
 | Admin dashboard | http://127.0.0.1:5173/admin.html |
 | API test page | http://127.0.0.1:8000/docs |
 
-**Admin login** (recreated on every start):
+**Admin login** (made for you the first time you start, and kept in `.env`, which is never committed):
 
-| Field | Value |
-| --- | --- |
-| Email | `admin@admin-adbanao.com` |
-| Password | `admin-aa-bb-demo` |
-| Secret word | `nov-25-uuuuu` |
+The first start prints a new email, password and secret word. They are also saved in `.env` as
+`ADBANAO_ADMIN_EMAIL`, `ADBANAO_ADMIN_PASSWORD` and `ADBANAO_ADMIN_SECRET`. Open `.env` any time to see them,
+or change them there and start again. The admin page is http://127.0.0.1:5173/admin-login.html.
 
-To change them, edit `scripts/_admin_creds.py` and start again. These are for development only.
+Never put a real password in a file that is committed: this repository is public. The start script refuses to
+create the admin when `APP_ENV=production`.
 
 **Normal users:** use **Create account** on the app with your own email and an 8+ character password.
 

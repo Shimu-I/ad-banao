@@ -36,8 +36,8 @@ cat <<MSG
 AdBanao is running. Use ONLY these links (127.0.0.1, typed or clicked here):
   App:    http://$HOST:5173/
   Admin:  http://$HOST:5173/admin-login.html
-  Email:  $("$PY" -c "import sys;sys.path.insert(0,'scripts');import _admin_creds as c;print(c.EMAIL)")
-  Password and secret word: see scripts/_admin_creds.py
+  Email:  $("$PY" -c "import sys;sys.path.insert(0,'scripts');import _admin_creds as c;print(c.load()[0])")
+  Password and secret word: in .env (ADBANAO_ADMIN_PASSWORD, ADBANAO_ADMIN_SECRET)
 Logs: .run-logs/api.log and .run-logs/web.log      Stop: Ctrl+C
 MSG
 wait
