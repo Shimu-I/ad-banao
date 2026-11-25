@@ -6,9 +6,19 @@ New-Item -ItemType Directory -Force .run-logs | Out-Null
 $h = "127.0.0.1"
 
 function Free-Port($p) {
-  Get-NetTCPConnection -LocalPort $p -State Listen -ErrorAction SilentlyContinue |
-    ForEach-Object { Write-Host "Port $p was busy, freeing it."; Stop-Process -Id $_.OwningProcess -Force -ErrorAction SilentlyContinue }
+  $ok = $true
+  Get-NetTCPConnection -LocalPort $p -State Listen -ErrorAction SilentlyContinue | ForEach-Object {
+    $cmd = (Get-CimInstance Win32_Process -Filter "ProcessId=$($_.OwningProcess)" -ErrorAction SilentlyContinue).CommandLine
+    if ($cmd -and $cmd.Contains($PSScriptRoot) -and ($cmd -match 'app\.main:app|serve_frontend\.py|multiprocessing')) {
+      Write-Host "Port ${p}: stopping the old AdBanao server."
+      Stop-Process -Id $_.OwningProcess -Force -ErrorAction SilentlyContinue
+    } else {
+      Write-Host "Port $p is used by another program (pid $($_.OwningProcess)). I did not touch it. Close it yourself, then start again."
+      $ok = $false
+    }
+  }
   Start-Sleep -Milliseconds 800
+  return $ok
 }
 function Db-Ok {
   Push-Location backend
@@ -16,7 +26,7 @@ function Db-Ok {
   $ok = ($LASTEXITCODE -eq 0); Pop-Location; return $ok
 }
 
-Free-Port 8000; Free-Port 5173
+if (-not ((Free-Port 8000) -and (Free-Port 5173))) { exit 1 }
 
 if (-not (Db-Ok)) {
   if ((Select-String -Path .env -Pattern '^DATABASE_URL=postgres' -Quiet) -and (Get-Command docker -ErrorAction SilentlyContinue)) {

@@ -6,10 +6,10 @@ ROOT="$PWD"; PY="$ROOT/.venv/bin/python"; HOST=127.0.0.1
 [ -x "$PY" ] || { echo "Run ./apply-fix.sh first."; exit 1; }
 mkdir -p .run-logs
 
-free_port() { "$PY" scripts/free_port.py "$@"; sleep 1; }
+free_port() { "$PY" scripts/free_port.py "$@"; local rc=$?; sleep 1; return $rc; }
 db_ok() { (cd backend && "$PY" -c "from app.db.session import engine; engine.connect().close()" >/dev/null 2>&1); }
 
-free_port 8000 5173
+free_port 8000 5173 || exit 1
 
 if ! db_ok; then
   if grep -q '^DATABASE_URL=postgres' .env && command -v docker >/dev/null; then
