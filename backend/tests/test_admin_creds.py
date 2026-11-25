@@ -40,6 +40,6 @@ def test_old_login_text_is_not_in_the_repository():
         path = ROOT / name
         if path.suffix in {".py", ".md", ".sh", ".ps1", ".txt", ".yml", ".html"} and path.is_file():
             text = path.read_text(errors="ignore")
-            if path.name == "test_admin_creds.py":
+            if path.name in {"test_admin_creds.py", "check_start_scripts.sh"}:  # they name the old text on purpose
                 continue
             assert not any(n in text for n in needles), name
