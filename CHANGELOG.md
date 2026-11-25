@@ -11,6 +11,9 @@ versions follow [Semantic Versioning](https://semver.org).
 ### Changed
 - `start-adbanao` and `stop-adbanao` now only stop AdBanao's own servers on ports 8000 and 5173. If another program uses a port, they say which one and leave it running instead of killing it. They ask it to stop politely first.
 
+### Docs
+- The faculty demo, the PC test guide and the README now say SQLite is the default and PostgreSQL is optional. The demo has two setups (SQLite, PostgreSQL) and uses the admin login from `.env`.
+
 ### Removed
 - Leftover `*.bak` backup files, the duplicate `files/` folder and `apply.sh` (nothing used them). `*.bak` is now git-ignored.
 

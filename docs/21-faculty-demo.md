@@ -15,6 +15,31 @@ A 7 to 10 minute demonstration that shows, live, that what users do on the pages
 
 ## Setup (once, before the demo)
 
+Pick one database. Both run the same app.
+
+| | SQLite (default) | PostgreSQL (shows live tables) |
+| --- | --- | --- |
+| Needs Docker | No | Yes |
+| Setup | `./start-adbanao.sh` | the steps in "Option B" below |
+| Viewing the rows | the `sqlite3` command or the free app "DB Browser for SQLite" | the Adminer web page |
+
+The demo script below says "Adminer" because that is the nicest way to show rows changing. With SQLite, show the same
+thing with `sqlite3 adbanao.db "select id, email, display_name from users;"`.
+
+### Option A: SQLite, no Docker (quickest)
+
+Set up once with [26-run-adbanao.md](26-run-adbanao.md) (`./apply-fix.sh`), then:
+
+```bash
+cd adbanao && git pull
+./start-adbanao.sh                 # terminal 1: migrates, starts the API and the pages (leave running)
+make seed                          # terminal 2: creates the three demo users (needs `source .venv/bin/activate`)
+```
+
+The app is at http://127.0.0.1:5173/. Your own admin login is made on the first start and kept in `.env`.
+
+### Option B: PostgreSQL with Docker
+
 You need Docker and the project set up as in [20-test-on-your-pc.md](20-test-on-your-pc.md).
 
 ```bash
@@ -50,7 +75,7 @@ Password for all three: `Demo-pass-123`
 
 `make seed` can be run again at any time. It restores the three profiles to these values and gives each user one brand and one product of their own (Rina: Rina's Pickles, Mango Pickle 500g. Karim: Karim Fashion House, Classic Panjabi. Nusrat: Nusrat Beauty Corner, Rose Face Lotion).
 
-### Open the database viewer
+### Open the database viewer (Option B)
 
 Open http://localhost:8080 and sign in with (if the start failed with "port 8080 address already in use", run `docker compose down` and then `ADMINER_PORT=8081 make db-viewer`, and open http://localhost:8081 instead; `sudo ss -ltnp | grep 8080` shows what is using the port):
 
@@ -95,7 +120,7 @@ In a private window try Karim's email with a wrong password: "Incorrect email or
 In Adminer open `brands`: three rows, each with a different `user_id`. Open `products`: three rows. Now in Rina's window (signed in) open http://localhost:8000/docs in a new tab. The page shares the sign-in cookie. Open `GET /brands`, click Try it out, Execute: only **Rina's Pickles** comes back. Do the same in Karim's window: only **Karim Fashion House**. Then in Karim's window try `GET /brands/{id}` with Rina's brand id (shown in Adminer): the answer is **404 Brand not found**. "The server answers not found, as if it did not exist, so ids reveal nothing." Try `GET /products` the same way.
 
 **5c. Show the admin console (3 minutes).**
-Start the API with `ADMIN_EMAILS=admin@demo.adbanao.test=banao-demo-secret` in `.env` and run `make seed`. Open http://localhost:5173/admin-login.html and sign in as `admin@demo.adbanao.test` with password `Demo-pass-123` and secret word `banao-demo-secret` (try a wrong secret word first: one general error).  Show the cards and charts, switch Dark and Bangla, and shrink the window to show the phone layout. Open the Users tab and click Karim: the panel shows his counts and recent activity. Click **Suspend account**, confirm, then in another window try to sign in as Karim with the right password: "This account has been suspended". In Adminer open `activity_events`: the suspension is a row with `actor_id` set to the admin. Reactivate him. Then in Rina's window open `/admin.html`: "Admins only". "Only the database role decides who is an admin, and no form can change it."
+Open http://localhost:5173/admin-login.html and sign in with your admin login (the email, password and secret word saved in `.env` as `ADBANAO_ADMIN_*`; try a wrong secret word first: one general error). With Option B and `make run` you can instead put `ADMIN_EMAILS=admin@demo.adbanao.test=banao-demo-secret` in `.env`, restart the API and use `admin@demo.adbanao.test` with password `Demo-pass-123`.  Show the cards and charts, switch Dark and Bangla, and shrink the window to show the phone layout. Open the Users tab and click Karim: the panel shows his counts and recent activity. Click **Suspend account**, confirm, then in another window try to sign in as Karim with the right password: "This account has been suspended". In Adminer open `activity_events`: the suspension is a row with `actor_id` set to the admin. Reactivate him. Then in Rina's window open `/admin.html`: "Admins only". "Only the database role decides who is an admin, and no form can change it."
 
 **6. (Optional) Show the browser side (1 minute).**
 In Chrome press F12, open Application, then Cookies. The `adbanao_session` cookie is marked HttpOnly: page scripts cannot read it. The cookie holds a random token. The database holds only its hash.
@@ -124,5 +149,6 @@ Say these before they ask:
 
 ```bash
 make seed                          # put the three profiles back
-docker compose down -v             # or remove the database completely
+docker compose down -v             # Option B: remove the PostgreSQL data completely
+rm adbanao.db                      # Option A: remove the SQLite file (stop the app first)
 ```
