@@ -48,7 +48,7 @@ with sync_playwright() as p:
     # The home page leaves the sign-up screen when someone is already signed in,
     # so sign out first and only then open the sign-up screen again.
     page.goto(f"{WEB}/index.html", wait_until="domcontentloaded")
-    page.evaluate("fetch('http://localhost:8000/auth/logout',{method:'POST',credentials:'include'})")
+    page.evaluate("fetch('http://localhost:8000/api/v1/auth/logout',{method:'POST',credentials:'include'})")
     page.goto(f"{WEB}/index.html#signup", wait_until="domcontentloaded")
     page.reload()
     page.wait_for_load_state("networkidle")  # let the sign-in frame finish loading before typing into it

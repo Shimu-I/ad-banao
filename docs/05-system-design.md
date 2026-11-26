@@ -124,13 +124,13 @@ Design rules:
 
 | Rule | Detail |
 | --- | --- |
-| Versioned base path | `/api/v1/...` |
-| Resource style | `/brands`, `/products`, `/ads`, `/ads/{id}/versions`, `/ads/{id}/reports` |
-| Errors | One JSON shape: `{ "error": { "code", "message", "details", "request_id" } }` |
+| Versioned base path | `/api/v1/...` (done). Only `/health` and `/health/db` stay at the root, because hosts and monitors probe them |
+| Resource style | `/api/v1/brands`, `/api/v1/products`, `/api/v1/ads`, `/api/v1/ads/{id}/versions`, `/api/v1/ads/{id}/reports` |
+| Errors | One JSON shape on every failure: `{ "detail", "code", "request_id" }` (done, see [28-api-conventions.md](28-api-conventions.md)). `detail` kept its old meaning so existing pages did not change, which is why this is not the nested `error` object first sketched here |
 | Validation | Pydantic. Unknown fields are rejected |
 | Idempotency | Approve and export are safe to repeat |
 | Pagination | `limit` and `cursor` on lists |
-| Authentication | Bearer token. Every query is filtered by the signed-in user |
+| Authentication | httpOnly session cookie (built that way, not a bearer token). Every query is filtered by the signed-in user |
 | Documentation | OpenAPI at `/docs`. The frontend client is generated from it |
 
 Planned endpoint groups:

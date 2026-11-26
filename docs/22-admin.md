@@ -44,6 +44,8 @@ Safeguards (tested): you cannot suspend or demote yourself, and the last active 
 
 ## API
 
+Every address below is under `/api/v1` (for example `GET /api/v1/admin/overview`).
+
 All `/admin` routes need an active admin who signed in on the admin page. Signed out: 401. Not an admin: 403 "Admins only." Admin signed in on the normal page: 403 "Admin sign-in required."
 
 | Route | Purpose |

@@ -193,7 +193,7 @@
   /* API address: same host name as the page, like auth/auth.js, so the sign-in cookie is sent. */
   var host = (window.location && window.location.hostname) || 'localhost';
   if (!/^[\w.\-]+$/.test(host)) host = 'localhost';
-  var API = (window.ADBANAO_API || 'http://' + host + ':8000').replace(/\/$/, '');
+  var API = (window.ADBANAO_API || 'http://' + host + ':8000').replace(/\/$/, '') + '/api/v1';
   function getJSON(path) {
     return fetch(API + path, { credentials: 'include' }).then(function (res) {
       if (res.status === 401) { window.location.href = 'index.html#signin'; throw new Error('401'); }

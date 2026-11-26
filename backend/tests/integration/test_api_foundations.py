@@ -44,16 +44,16 @@ def test_not_found_uses_the_error_format(client):
 
 
 def test_signed_out_and_conflict_keep_their_detail_and_get_a_code(client):
-    r = client.get("/users/me")
+    r = client.get("/api/v1/users/me")
     assert r.status_code == 401 and r.json()["detail"] == "Not signed in" and r.json()["code"] == "not_signed_in"
     user = {"email": "found1@example.com", "password": "Correct-horse-9", "display_name": "Found"}
-    assert client.post("/auth/signup", json=user).status_code == 201
-    dup = client.post("/auth/signup", json=user)
+    assert client.post("/api/v1/auth/signup", json=user).status_code == 201
+    dup = client.post("/api/v1/auth/signup", json=user)
     assert dup.status_code == 409 and dup.json()["code"] == "conflict" and "already exists" in dup.json()["detail"]
 
 
 def test_validation_errors_are_listed_with_a_code(client):
-    r = client.post("/auth/signup", json={"email": "not-an-email"})
+    r = client.post("/api/v1/auth/signup", json={"email": "not-an-email"})
     body = r.json()
     assert r.status_code == 422 and body["code"] == "validation_error"
     assert isinstance(body["detail"], list) and body["request_id"] == r.headers["X-Request-ID"]

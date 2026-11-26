@@ -19,7 +19,7 @@ def client():
 
 
 def _signup(client, **over):
-    return client.post("/auth/signup", json={**GOOD, **over})
+    return client.post("/api/v1/auth/signup", json={**GOOD, **over})
 
 
 def test_signup_signs_in_and_normalizes_email(client):
@@ -28,7 +28,7 @@ def test_signup_signs_in_and_normalizes_email(client):
     body = r.json()
     assert body["email"] == "new1@example.com"
     assert "password" not in body and "password_hash" not in body
-    me = client.get("/users/me")
+    me = client.get("/api/v1/users/me")
     assert me.status_code == 200 and me.json()["display_name"] == "Rina"
     cookie = r.headers["set-cookie"].lower()
     assert "httponly" in cookie and "samesite=lax" in cookie
@@ -55,48 +55,48 @@ def test_signup_validation(client, over):
 
 def test_login_logout_cycle(client):
     _signup(client, email="cycle@example.com")
-    client.post("/auth/logout")
-    assert client.get("/users/me").status_code == 401
+    client.post("/api/v1/auth/logout")
+    assert client.get("/api/v1/users/me").status_code == 401
 
-    bad = client.post("/auth/login", json={"email": "cycle@example.com", "password": "wrong-pass-1"})
+    bad = client.post("/api/v1/auth/login", json={"email": "cycle@example.com", "password": "wrong-pass-1"})
     assert bad.status_code == 401
-    unknown = client.post("/auth/login", json={"email": "ghost@example.com", "password": "x"})
+    unknown = client.post("/api/v1/auth/login", json={"email": "ghost@example.com", "password": "x"})
     assert unknown.status_code == 401
     # does not reveal which emails exist (only the request id may differ)
     assert {k: v for k, v in bad.json().items() if k != "request_id"} == {
         k: v for k, v in unknown.json().items() if k != "request_id"
     }
 
-    ok = client.post("/auth/login", json={"email": " CYCLE@example.com", "password": GOOD["password"]})
+    ok = client.post("/api/v1/auth/login", json={"email": " CYCLE@example.com", "password": GOOD["password"]})
     assert ok.status_code == 200
-    assert client.get("/users/me").status_code == 200
-    assert client.post("/auth/logout").status_code == 204
-    assert client.get("/users/me").status_code == 401
+    assert client.get("/api/v1/users/me").status_code == 200
+    assert client.post("/api/v1/auth/logout").status_code == 204
+    assert client.get("/api/v1/users/me").status_code == 401
 
 
 def test_logout_requires_sign_in(client):
-    assert client.post("/auth/logout").status_code == 401
+    assert client.post("/api/v1/auth/logout").status_code == 401
 
 
 def test_old_token_stops_working_after_logout(client):
     _signup(client, email="tok@example.com")
     token = client.cookies.get("adbanao_session")
-    client.post("/auth/logout")
+    client.post("/api/v1/auth/logout")
     client.cookies.set("adbanao_session", token)
-    assert client.get("/users/me").status_code == 401
+    assert client.get("/api/v1/users/me").status_code == 401
 
 
 def test_profile_update_persists_in_database(client):
     _signup(client, email="prof@example.com")
     r = client.patch(
-        "/users/me",
+        "/api/v1/users/me",
         json={"display_name": "Rina Akter", "business_name": "Rina's Pickles", "phone": "01700000000", "language": "bn"},
     )
     assert r.status_code == 200
     # a fresh sign-in (new session, new request) reads the stored values back
-    client.post("/auth/logout")
-    client.post("/auth/login", json={"email": "prof@example.com", "password": GOOD["password"]})
-    me = client.get("/users/me").json()
+    client.post("/api/v1/auth/logout")
+    client.post("/api/v1/auth/login", json={"email": "prof@example.com", "password": GOOD["password"]})
+    me = client.get("/api/v1/users/me").json()
     assert me["display_name"] == "Rina Akter"
     assert me["business_name"] == "Rina's Pickles"
     assert me["phone"] == "01700000000"
@@ -105,50 +105,50 @@ def test_profile_update_persists_in_database(client):
 
 def test_profile_partial_update_and_clear(client):
     _signup(client, email="part@example.com", business_name="Shop")
-    client.patch("/users/me", json={"phone": "123"})
-    me = client.get("/users/me").json()
+    client.patch("/api/v1/users/me", json={"phone": "123"})
+    me = client.get("/api/v1/users/me").json()
     assert me["business_name"] == "Shop" and me["phone"] == "123"
-    client.patch("/users/me", json={"phone": None})
-    assert client.get("/users/me").json()["phone"] is None
+    client.patch("/api/v1/users/me", json={"phone": None})
+    assert client.get("/api/v1/users/me").json()["phone"] is None
 
 
 def test_profile_rejects_bad_values(client):
     _signup(client, email="bad@example.com")
-    assert client.patch("/users/me", json={"language": "fr"}).status_code == 422
-    assert client.patch("/users/me", json={"display_name": " "}).status_code == 422
-    assert client.patch("/users/me", json={"email": "x@y.com"}).status_code == 200  # ignored field
-    assert client.get("/users/me").json()["email"] == "bad@example.com"
+    assert client.patch("/api/v1/users/me", json={"language": "fr"}).status_code == 422
+    assert client.patch("/api/v1/users/me", json={"display_name": " "}).status_code == 422
+    assert client.patch("/api/v1/users/me", json={"email": "x@y.com"}).status_code == 200  # ignored field
+    assert client.get("/api/v1/users/me").json()["email"] == "bad@example.com"
 
 
 def test_profile_needs_sign_in(client):
     client.cookies.clear()
-    assert client.get("/users/me").status_code == 401
-    assert client.patch("/users/me", json={"phone": "1"}).status_code == 401
+    assert client.get("/api/v1/users/me").status_code == 401
+    assert client.patch("/api/v1/users/me", json={"phone": "1"}).status_code == 401
 
 
 def test_change_password(client):
     _signup(client, email="pw@example.com")
     assert client.post(
-        "/users/me/password", json={"current_password": "wrong", "new_password": "fresh-Pass-77"}
+        "/api/v1/users/me/password", json={"current_password": "wrong", "new_password": "fresh-Pass-77"}
     ).status_code == 400
     assert client.post(
-        "/users/me/password", json={"current_password": GOOD["password"], "new_password": "fresh-Pass-77"}
+        "/api/v1/users/me/password", json={"current_password": GOOD["password"], "new_password": "fresh-Pass-77"}
     ).status_code == 204
-    client.post("/auth/logout")
-    assert client.post("/auth/login", json={"email": "pw@example.com", "password": GOOD["password"]}).status_code == 401
-    assert client.post("/auth/login", json={"email": "pw@example.com", "password": "fresh-Pass-77"}).status_code == 200
+    client.post("/api/v1/auth/logout")
+    assert client.post("/api/v1/auth/login", json={"email": "pw@example.com", "password": GOOD["password"]}).status_code == 401
+    assert client.post("/api/v1/auth/login", json={"email": "pw@example.com", "password": "fresh-Pass-77"}).status_code == 200
 
 
 def test_users_cannot_see_each_other(client):
     _signup(client, email="a1@example.com", display_name="A")
-    client.post("/auth/logout")
+    client.post("/api/v1/auth/logout")
     _signup(client, email="b1@example.com", display_name="B")
-    assert client.get("/users/me").json()["display_name"] == "B"
+    assert client.get("/api/v1/users/me").json()["display_name"] == "B"
 
 
 def test_cors_allows_the_frontend_with_cookies(client):
     r = client.options(
-        "/users/me",
+        "/api/v1/users/me",
         headers={
             "Origin": "http://localhost:5173",
             "Access-Control-Request-Method": "PATCH",

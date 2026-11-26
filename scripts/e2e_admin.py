@@ -49,57 +49,57 @@ def check(label, ok, extra=""):
 SECRET = "banao-demo-secret"
 ADMIN_EMAIL = "admin@demo.adbanao.test"
 admin = client()
-s, _ = call(admin, "POST", "/auth/login", {"email": ADMIN_EMAIL, "password": PW})
+s, _ = call(admin, "POST", "/api/v1/auth/login", {"email": ADMIN_EMAIL, "password": PW})
 if s != 200:
     sys.exit("Cannot sign in as admin@demo.adbanao.test. Run scripts/seed_demo.py first.")
-check("normal sign-in is not enough for the admin area", call(admin, "GET", "/admin/overview")[0] == 403)
+check("normal sign-in is not enough for the admin area", call(admin, "GET", "/api/v1/admin/overview")[0] == 403)
 for label, body in [
     ("wrong secret word is refused", {"email": ADMIN_EMAIL, "password": PW, "secret_word": "not-the-word"}),
     ("wrong password is refused", {"email": ADMIN_EMAIL, "password": "Wrong-pass-1", "secret_word": SECRET}),
     ("a normal user cannot use the admin sign-in", {"email": "rina@demo.adbanao.test", "password": PW, "secret_word": SECRET}),
 ]:
-    check(label, call(client(), "POST", "/auth/admin-login", body)[0] == 401)
-s, me = call(admin, "POST", "/auth/admin-login", {"email": ADMIN_EMAIL, "password": PW, "secret_word": SECRET})
+    check(label, call(client(), "POST", "/api/v1/auth/admin-login", body)[0] == 401)
+s, me = call(admin, "POST", "/api/v1/auth/admin-login", {"email": ADMIN_EMAIL, "password": PW, "secret_word": SECRET})
 if s != 200:
     sys.exit(f"Admin sign-in failed ({s} {me}). Start the API with ADMIN_EMAILS=admin@demo.adbanao.test={SECRET}")
 check("admin signs in with email, password and secret word", me["role"] == "admin")
 
 rina = client()
-call(rina, "POST", "/auth/login", {"email": "rina@demo.adbanao.test", "password": PW})
-check("normal user is refused (403)", call(rina, "GET", "/admin/overview")[0] == 403)
-check("signed-out visitor is refused (401)", call(client(), "GET", "/admin/overview")[0] == 401)
+call(rina, "POST", "/api/v1/auth/login", {"email": "rina@demo.adbanao.test", "password": PW})
+check("normal user is refused (403)", call(rina, "GET", "/api/v1/admin/overview")[0] == 403)
+check("signed-out visitor is refused (401)", call(client(), "GET", "/api/v1/admin/overview")[0] == 401)
 
-s, ov = call(admin, "GET", "/admin/overview?period=30d")
+s, ov = call(admin, "GET", "/api/v1/admin/overview?period=30d")
 check("overview loads with 30 days of points", s == 200 and len(ov["signups_per_day"]) == 30)
 check("overview counts the demo users", s == 200 and ov["total_users"]["value"] >= 4)
 
-s, users = call(admin, "GET", "/admin/users?q=demo.adbanao.test&per_page=100")
+s, users = call(admin, "GET", "/api/v1/admin/users?q=demo.adbanao.test&per_page=100")
 emails = {u["email"] for u in users["items"]} if s == 200 else set()
 check("user list finds the demo users", {"rina@demo.adbanao.test", "karim@demo.adbanao.test"} <= emails)
 check("demo users are flagged", s == 200 and all(u["is_demo"] for u in users["items"]))
 
 victim = client()
 email = f"e2e-{int(time.time())}@example.com"
-s, v = call(victim, "POST", "/auth/signup", {"email": email, "password": PW, "display_name": "E2E Victim"})
+s, v = call(victim, "POST", "/api/v1/auth/signup", {"email": email, "password": PW, "display_name": "E2E Victim"})
 check("throwaway user signs up", s == 201)
-s, row = call(admin, "PATCH", f"/admin/users/{v['id']}", {"is_active": False})
+s, row = call(admin, "PATCH", f"/api/v1/admin/users/{v['id']}", {"is_active": False})
 check("admin suspends the user", s == 200 and row["is_active"] is False, row)
-check("suspended user's session ends", call(victim, "GET", "/users/me")[0] == 401)
-s, body = call(client(), "POST", "/auth/login", {"email": email, "password": PW})
+check("suspended user's session ends", call(victim, "GET", "/api/v1/users/me")[0] == 401)
+s, body = call(client(), "POST", "/api/v1/auth/login", {"email": email, "password": PW})
 check("suspended user cannot sign in (403)", s == 403, body)
-s, row = call(admin, "PATCH", f"/admin/users/{v['id']}", {"is_active": True})
+s, row = call(admin, "PATCH", f"/api/v1/admin/users/{v['id']}", {"is_active": True})
 check("admin reactivates the user", s == 200 and row["is_active"] is True)
-check("reactivated user can sign in", call(client(), "POST", "/auth/login", {"email": email, "password": PW})[0] == 200)
+check("reactivated user can sign in", call(client(), "POST", "/api/v1/auth/login", {"email": email, "password": PW})[0] == 200)
 
 me_id = me["id"]
-check("admin cannot suspend themselves", call(admin, "PATCH", f"/admin/users/{me_id}", {"is_active": False})[0] == 409)
-s, ev = call(admin, "GET", f"/admin/activity?user_id={v['id']}&per_page=50")
+check("admin cannot suspend themselves", call(admin, "PATCH", f"/api/v1/admin/users/{me_id}", {"is_active": False})[0] == 409)
+s, ev = call(admin, "GET", f"/api/v1/admin/activity?user_id={v['id']}&per_page=50")
 types = {e["event_type"] for e in ev["items"]} if s == 200 else set()
 check("activity log shows the suspension", {"signup", "admin_suspended", "admin_reactivated", "login_blocked"} <= types, types)
 
-s, csv_text = call(admin, "GET", "/admin/export/users.csv")
+s, csv_text = call(admin, "GET", "/api/v1/admin/export/users.csv")
 check("users CSV downloads", s == 200 and csv_text.lstrip("﻿").startswith("id,name,email"))
-s, csv_text = call(admin, "GET", "/admin/export/activity.csv?period=30d")
+s, csv_text = call(admin, "GET", "/api/v1/admin/export/activity.csv?period=30d")
 check("activity CSV downloads", s == 200 and "signup" in csv_text)
 
 print()

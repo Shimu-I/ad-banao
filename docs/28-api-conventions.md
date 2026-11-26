@@ -52,6 +52,10 @@ Model names are settings because providers retire models: `gemini-2.0-flash` (th
 
 Without a working provider the text comes from the built-in template (source `basic`), as before.
 
-## Still to do in F8
+## The `/api/v1` prefix
 
-The `/api/v1` path prefix. It changes every address the pages and scripts call, so it is its own pull request.
+Every route except the two health checks is under `/api/v1`: `/api/v1/auth/login`, `/api/v1/users/me`, `/api/v1/brands`, `/api/v1/products`, `/api/v1/admin/...`. The prefix is one constant (`API_PREFIX` in `backend/app/main.py`), so a future version 2 can be added next to it without touching the routes. `/health` and `/health/db` stay at the root because hosting services and monitors probe them. The interactive page is still `/docs`.
+
+The pages and scripts take the address of the API (for example `http://localhost:8000`, or `window.ADBANAO_API` online) and add `/api/v1` themselves, so the address you configure never includes the prefix. `/health/providers` is at the root too.
+
+Old addresses without the prefix (`/auth/login`, `/brands`, ...) no longer exist and answer 404. Anyone with a copy of an older page must reload it.

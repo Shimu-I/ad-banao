@@ -16,13 +16,13 @@ SECRET = "banao-demo-secret"
 
 
 def login(ctx, email):
-    r = ctx.request.post(f"{API}/auth/login", data={"email": email, "password": PW})
+    r = ctx.request.post(f"{API}/api/v1/auth/login", data={"email": email, "password": PW})
     assert r.ok, f"login failed for {email}: {r.status}"
 
 
 def admin_login(ctx):
     r = ctx.request.post(
-        f"{API}/auth/admin-login",
+        f"{API}/api/v1/auth/admin-login",
         data={"email": "admin@demo.adbanao.test", "password": PW, "secret_word": SECRET},
     )
     assert r.ok, f"admin sign-in failed: {r.status}"
