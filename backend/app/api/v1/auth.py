@@ -71,6 +71,7 @@ def _start_session(
         httponly=True,
         samesite="lax",
         secure=get_settings().app_env == "production",
+        domain=get_settings().cookie_domain or None,
         path="/",
     )
 
@@ -164,7 +165,7 @@ def logout(
     activity.record(db, events.LOGOUT, session.user_id)
     db.delete(session)
     db.commit()
-    response.delete_cookie(SESSION_COOKIE, path="/")
+    response.delete_cookie(SESSION_COOKIE, path="/", domain=get_settings().cookie_domain or None)
 
 
 @router.get("/users/me", response_model=UserRead)

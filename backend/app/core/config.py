@@ -27,8 +27,32 @@ class Settings(BaseSettings):
     log_json: bool = False  # set LOG_JSON=true online so a log service can read the lines
     # Comma-separated emails that become admins at sign-up or sign-in. Development and test only.
     admin_emails: str = ""
+    # Online, the page (app.example.com) and the API (api.example.com) share one site, so the sign-in cookie
+    # is sent with both. Set COOKIE_DOMAIN=example.com (leave empty locally).
+    cookie_domain: str = ""
+
+    def production_problems(self) -> list[str]:
+        """Settings that must not stay at their development values online. Empty list = fine."""
+        if self.app_env != "production":
+            return []
+        problems = []
+        if not self.frontend_origin.startswith("https://"):
+            problems.append("FRONTEND_ORIGIN must be an https:// address.")
+        if not self.database_url.startswith(("postgresql://", "postgres://", "postgresql+psycopg://")):
+            problems.append("DATABASE_URL must be a PostgreSQL address.")
+        if "adbanao:adbanao@" in self.database_url:
+            problems.append("DATABASE_URL still uses the development password.")
+        if self.admin_emails:
+            problems.append("ADMIN_EMAILS must be empty (it is ignored online; create admins another way).")
+        return problems
 
 
 @lru_cache
 def get_settings() -> Settings:
     return Settings()
+
+
+def check_production_settings(settings: Settings) -> None:
+    problems = settings.production_problems()
+    if problems:
+        raise RuntimeError("Unsafe production settings:\n- " + "\n- ".join(problems))

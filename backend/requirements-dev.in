@@ -1,0 +1,7 @@
+# Tools for developing and testing. Edit this file, then let CI recompile requirements-dev.txt.
+-r requirements.in
+pytest>=8.0
+httpx>=0.27
+ruff
+mypy
+playwright

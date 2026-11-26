@@ -12,7 +12,8 @@ help:  ## Show this list
 setup:  ## Create .venv and install dependencies and hooks
 	python3 -m venv $(VENV)
 	$(PIP) install --upgrade pip
-	$(PIP) install -r backend/requirements-dev.txt ruff mypy pre-commit
+	$(PIP) install --require-hashes -r backend/requirements-dev.txt
+	$(PIP) install pre-commit
 	$(VENV)/bin/pre-commit install
 	@if [ ! -f .env ]; then cp .env.example .env; echo "Created .env: add your own keys"; fi
 

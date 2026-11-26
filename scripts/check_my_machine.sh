@@ -45,7 +45,7 @@ echo
 PYV=$(python3 -c 'import sys;print("%d.%d"%sys.version_info[:2])' 2>/dev/null || echo none)
 step "Python 3.11 or newer found (you have $PYV)" python.log python3 -c 'import sys;sys.exit(sys.version_info<(3,11))' || { echo "Install Python 3.11+ first."; }
 step "Create virtual environment (.venv)" venv.log bash -c '[ -x .venv/bin/python ] || python3 -m venv .venv'
-step "Install backend packages" pip.log bash -c '.venv/bin/python -m pip install -q --upgrade pip && .venv/bin/pip install -q -r backend/requirements-dev.txt ruff'
+step "Install backend packages" pip.log bash -c '.venv/bin/python -m pip install -q --upgrade pip && .venv/bin/pip install -q -r backend/requirements-dev.txt'
 step "Lint (ruff)" ruff.log "$ROOT/.venv/bin/ruff" check backend
 step "Automated tests (pytest)" pytest.log "$PY" -m pytest -q -ra -p no:cacheprovider
 
