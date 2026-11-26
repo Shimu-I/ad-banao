@@ -51,7 +51,7 @@ The container runs `alembic upgrade head` before it starts serving. Rules so tha
 
 ## What is tested
 
-CI job `docker-image` builds the image and runs it on PostgreSQL 16: migrations apply, `/health` and `/health/db` answer, an error has the standard body and `X-Request-ID`, the process is not root, and an `http://` page address stops the container. Not yet tested: a real host (goal P6), cookies across free host names, a real Cloudflare R2 bucket (the code is tested against MinIO, which speaks the same protocol; R2 differs in small details, so the first live upload is the real test).
+CI job `docker-image` builds the image and runs it on PostgreSQL 16: migrations apply, `/health` and `/health/db` answer, an error has the standard body and `X-Request-ID`, the process is not root, and an `http://` page address stops the container. Not yet tested: a real host (goal P6), cookies across free host names, a real Cloudflare R2 bucket (the code is tested against moto, a fake S3 server; R2 differs in small details, so the first live upload is the real test).
 
 ## Photo storage
 

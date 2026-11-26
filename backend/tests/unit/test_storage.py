@@ -1,4 +1,4 @@
-"""The same behaviour is required of every storage backend. The S3 case runs only when S3_TEST_* is set (CI starts MinIO)."""
+"""The same behaviour is required of every storage backend. The S3 case runs only when S3_TEST_* is set (CI starts a moto S3 server)."""
 
 import os
 import uuid

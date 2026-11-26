@@ -2,7 +2,7 @@ from app.storage.keys import check_key
 
 
 class S3Storage:
-    """Any S3-compatible service: Cloudflare R2, AWS S3, MinIO (used by the CI test)."""
+    """Any S3-compatible service: Cloudflare R2, AWS S3, moto (the fake S3 server the CI test uses)."""
 
     def __init__(
         self,

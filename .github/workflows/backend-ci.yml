@@ -48,22 +48,21 @@ jobs:
         if: matrix.database == 'sqlite'
         run: mypy
         continue-on-error: true
-      - name: Start MinIO (an S3-compatible bucket, to test the real S3 storage code)
+      - name: Start a local S3 server (moto), to test the real S3 storage code
         run: |
-          docker run -d --name minio -p 9000:9000 -e MINIO_ROOT_USER=ci-minio-user -e MINIO_ROOT_PASSWORD=ci-minio-password \
-            minio/minio server /data
-          for i in $(seq 1 30); do curl -fs http://localhost:9000/minio/health/live && break; sleep 1; done
+          nohup moto_server -H 127.0.0.1 -p 9000 > moto.log 2>&1 &
+          for i in $(seq 1 30); do curl -s http://localhost:9000 >/dev/null && break; sleep 1; done
           python - <<'PY'
           import boto3
-          boto3.client("s3", endpoint_url="http://localhost:9000", aws_access_key_id="ci-minio-user",
-                       aws_secret_access_key="ci-minio-password", region_name="us-east-1").create_bucket(Bucket="adbanao-test")
+          boto3.client("s3", endpoint_url="http://localhost:9000", aws_access_key_id="ci-key",
+                       aws_secret_access_key="ci-secret", region_name="us-east-1").create_bucket(Bucket="adbanao-test")
           PY
       - name: Tests
         env:
           S3_TEST_ENDPOINT: http://localhost:9000
           S3_TEST_BUCKET: adbanao-test
-          S3_TEST_KEY: ci-minio-user
-          S3_TEST_SECRET: ci-minio-password
+          S3_TEST_KEY: ci-key
+          S3_TEST_SECRET: ci-secret
         run: python -m pytest -ra
 
   end-to-end:
