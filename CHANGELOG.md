@@ -15,6 +15,7 @@ versions follow [Semantic Versioning](https://semver.org).
 - CI job `start-script` runs `apply-fix.sh`, `start-adbanao.sh` and `stop-adbanao.sh` on a fresh SQLite database: API and pages start, the admin is made and can sign in, stop frees the ports, and another program on a port is left running. Also runnable by hand: `scripts/check_start_scripts.sh` (it replaces `.env`).
 
 ### Docs
+- Production plan: `docs/27-production-plan.md` (React, PostgreSQL and automatic deployment, as the faculty asked), new roadmap milestone M5 (P1 to P11), ADR 0008 (proposed). The old goals S2 and S3 became P4, P6 and P7.
 - The faculty demo, the PC test guide and the README now say SQLite is the default and PostgreSQL is optional. The demo has two setups (SQLite, PostgreSQL) and uses the admin login from `.env`.
 
 ### Removed

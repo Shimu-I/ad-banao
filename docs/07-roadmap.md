@@ -18,6 +18,23 @@ Each goal is one pull request with one purpose. Status: ✅ done and merged, �
 | F8 | API foundations | `/api/v1` prefix, one error format with request IDs, structured logging, Gemini model name and keys as settings, health checks for database and providers | ⬜ |
 | F9 | Authentication and ownership | Sign up and sign in. Every brand and product belongs to a user. A test proves one user cannot see another's data | ✅ Accounts (PR #9) and ownership: every brand belongs to a user, products and ads through the brand, every route is checked, and tests with three users prove nobody can see or change another's data. Password reset by email is not done and moves to a later goal |
 
+## Milestone M5: Production base (P) (next, before the ad engine)
+
+Added 2026-11-25 after the faculty asked for React, PostgreSQL and early deployment. Full reasoning, options and decisions: [27-production-plan.md](27-production-plan.md). Order: F8, P1 to P7, U1, P9, P10. P8 is the existing goal U1. The old goals S2 and S3 became P4, P6 and P7.
+
+| ID | Goal | Done when | Status |
+| --- | --- | --- | --- |
+| P1 | Decisions and ADR 0008 | Owner picks hosting, domain and storage; ADR 0008 accepted | ⬜ |
+| P2 | Default branch `main`, protected | Branch renamed, pull requests required, CI must pass (owner only) | ⬜ |
+| P3 | PostgreSQL everywhere | CI runs the whole suite on a PostgreSQL service, Compose is the default developer database, migrations proven on PostgreSQL | ⬜ |
+| P4 | Make the API deployable | Dockerfile, pinned dependencies with a lock file, settings for the API address and origin, migrations as a release step, production admin command documented, health check | ⬜ |
+| P5 | Object storage for photos | Storage interface with local and S3-compatible (R2) implementations; uploads survive a restart | ⬜ |
+| P6 | First live deployment | Neon, the API container and Cloudflare Pages online with today's features; sign up, sign in, profile and admin work on the live address | ⬜ |
+| P7 | Automatic deployment | Merge to `main` migrates, deploys, publishes and smoke-tests the live address; pull request previews; rollback tried once | ⬜ |
+| P9 | Move the pages to React | Sign in, profile, home, dashboard, create page with guide, admin, one pull request each; old HTML removed; browser tests moved | ⬜ |
+| P10 | Production hardening | Rate limits, password reset by email, security headers, Sentry, request ids, dependency audits, nightly backup with a tried restore | ⬜ |
+| P11 | Staging and tagged releases | Second environment and version tags, started when real users exist | ⬜ |
+
 ## Milestone M1: Ad engine (A)
 
 Approach decided 2026-11-24 ([ADR 0007](adr/0007-ad-engine-ai-designer.md)): Pillow renders templates, a text AI proposes the design as a scene, our code validates it first. The AI designer is built after A4. Order: F8, A1 to A4, the AI designer, A5 to A7.
@@ -47,7 +64,7 @@ Approach decided 2026-11-24 ([ADR 0007](adr/0007-ad-engine-ai-designer.md)): Pil
 
 | ID | Goal | Done when | Status |
 | --- | --- | --- | --- |
-| U1 | Frontend scaffold | Vite, React, TypeScript, Tailwind, shadcn/ui, routing, light and dark theme, English and Bangla switch, generated API client, CI job | ⬜ |
+| U1 | Frontend scaffold (scheduled as P8, after P7) | Vite, React, TypeScript, Tailwind, shadcn/ui, routing, light and dark theme, English and Bangla switch, generated API client, CI job | ⬜ |
 | U2 | **Engaging home page** | Hero with live demo, before and after editing slider, how-it-works, features, trust section, call to action. Fast and accessible (details in section 14) | 🟡 Page added as static HTML in `frontend/index.html` (owner's design, images moved to files). Still to do: speed and accessibility audit, move to React |
 | U3 | Sign-in screens and app shell | Sign up, sign in, dashboard with brands and products | 🟡 Sign-in and sign-up screens work against the real API, plus a profile page. Dashboard not started |
 | U4 | Screen 1: Details | Guided form with examples, draft saving, photo upload, missing-data guidance | ⬜ |
@@ -64,8 +81,6 @@ Approach decided 2026-11-24 ([ADR 0007](adr/0007-ad-engine-ai-designer.md)): Pil
 | ID | Goal | Done when | Status |
 | --- | --- | --- | --- |
 | S1 | Evaluation | 30 to 50 test ads with injected errors. Results table with catches, misses, false alarms, "Cannot verify" rate, review-time comparison | ⬜ |
-| S2 | Production containers and config | Docker images build. Settings per environment. Health checks | ⬜ |
-| S3 | Staging deployment and monitoring | Frontend, backend, database and storage on free tiers. Sentry and logs working | ⬜ |
 | S4 | Security and resilience review | Checklist in [security and legal](11-security-and-legal.md) complete. Rate limits, backups, dependency audit | ⬜ |
 | S5 | Documentation and release | User guide, runbook, demo script, name and domain check, `v1.0.0` tag | ⬜ |
 
@@ -83,8 +98,8 @@ Approach decided 2026-11-24 ([ADR 0007](adr/0007-ad-engine-ai-designer.md)): Pil
 | 11 Reports, approval, export | V5, V6 |
 | 12 Frontend | U1 to U11 |
 | 13 Evaluation | S1 |
-| 14 Deployment and docs | S2 to S5 |
-| New | F5 to F9 (professional foundations) |
+| 14 Deployment and docs | P4, P6, P7 (was S2, S3), S4, S5 |
+| New | F5 to F9 (professional foundations), P1 to P11 (production base) |
 
 ## Dependencies
 
@@ -105,7 +120,10 @@ flowchart LR
     V5 --> U7
     V6 --> U8
     U5 --> U6 --> U7 --> U8 --> U9 --> U10
-    U10 --> S1 --> S2 --> S3 --> S4 --> S5
+    U10 --> S1 --> S4 --> S5
+    F8 --> P4
+    P1 --> P2 --> P3 --> P4 --> P5 --> P6 --> P7 --> U1
+    U1 --> P9 --> P10 --> P11
 ```
 
 Note: U1 and U2 (scaffold and home page) can start right after F5, in parallel with the backend goals. That gives you something visual early, which is good for faculty demos and motivation. The rule "one goal at a time" still holds: we only choose the order.

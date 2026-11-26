@@ -17,6 +17,7 @@ Add every new suggestion here before work on it starts. Each one gets a goal ID 
 
 | Date | Suggestion | Raised by | Decision (accept, change, decline) | Goal ID | Notes |
 | --- | --- | --- | --- | --- | --- |
+| 2026-11-25 | "Use a production ready framework like React and PostgreSQL, not SQL or JavaScript, and deploy it early so when I do new work it is updated in production too" | Owner (from faculty) | Accept | P1 to P11 | React with TypeScript replaces the plain pages, PostgreSQL becomes the default, deployment is automatic on merge. Plan: [27-production-plan.md](27-production-plan.md) |
 | | | | | | |
 
 ## Process

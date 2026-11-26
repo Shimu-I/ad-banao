@@ -13,15 +13,16 @@ The first working version (MVP) is done when one person can: fill one form, get 
 ## Scoreboard
 
 <!-- scoreboard:start -->
-**38 goals in total: 6 done, 5 partly done, 27 not started. About 22% by goal count.**
+**46 goals in total: 6 done, 5 partly done, 35 not started. About 18% by goal count.**
 
 | Milestone | Done | Partly | Not started | Goals |
 | --- | --- | --- | --- | --- |
 | M0 Foundation | 6 | 2 | 1 | 9 |
+| M5 Production base | 0 | 0 | 10 | 10 |
 | M1 Ad engine | 0 | 0 | 7 | 7 |
 | M2 Verification | 0 | 0 | 6 | 6 |
 | M3 Interface | 0 | 3 | 8 | 11 |
-| M4 Ship | 0 | 0 | 5 | 5 |
+| M4 Ship | 0 | 0 | 3 | 3 |
 
 Done: F1, F2, F3, F4, F7, F9
 Partly done: F5, F6, U2, U3, U11
@@ -60,11 +61,12 @@ Goals are not equal in size. The goals still ahead (ad engine, verification, the
 | --- | --- | --- | --- |
 | 1 | Finish the first update | Create the Jira and GitHub boards, add teammates, rename the branch to `main` and protect it ([09-development-process.md](09-development-process.md)) | **A person** (owner) |
 | 2 | Owner runs `./scripts/check_my_machine.sh --postgres --browser` and sends the report | Proves the admin work on a real PC | **A person** |
-| 3 | F8 API foundations, after you decide on [25-ai-and-ad-engine-plan.md](25-ai-and-ad-engine-plan.md) | Small, fixes the shut-down model, everything later depends on it | Claude alone. A person supplies free keys |
-| 4 | A1 to A7 ad engine | The core of the product | Claude writes and tests; a person judges how the ads look |
-| 5 | V1 to V6 verification | The reason the product exists | Claude writes and tests; a person judges accuracy |
-| 6 | U1 and U4 to U10 the React app | Everything a user sees | Claude writes; a person runs and tests (see below) |
-| 7 | S1 to S5 evaluation, deployment, security, release | Ship | Mixed |
+| 3 | Decide the production plan: [27-production-plan.md](27-production-plan.md) section 9 | The faculty asked for React, PostgreSQL and automatic deployment. Five decisions unblock everything | **A person** (owner) |
+| 4 | F8, then P3 to P7 | API foundations, PostgreSQL everywhere, a deployable API, first live deployment, automatic deployment | Claude writes; a person creates the hosting accounts |
+| 5 | U1 (P8), P9, P10 | The React app replaces the old pages one by one; production hardening | Claude writes; a person judges the look and Bangla |
+| 6 | A1 to A7 ad engine | The core of the product, now delivered live from day one | Claude writes and tests; a person judges how the ads look |
+| 7 | V1 to V6 verification | The reason the product exists | Claude writes and tests; a person judges accuracy |
+| 8 | S1, S4, S5 evaluation, security review, release | Ship | Mixed |
 
 One goal at a time, each as a pull request with CI, then merge and pull.
 
@@ -80,7 +82,7 @@ One goal at a time, each as a pull request with CI, then merge and pull.
 | AI text (F6) | Code and fake-provider tests are done | **Get a free Gemini or Groq key**, put it in `.env`, try it, judge the writing quality |
 | Hosted database | Config and docs | **Create the Supabase or Neon account**, give the connection string through `.env` only |
 | GitHub and Jira | Open pull requests, issues, merge, close | **Create boards, add collaborators, rename and protect the branch, accept invitations** |
-| Deployment (S2, S3) | Dockerfiles, config, scripts | Create the hosting account, add secrets, own the domain |
+| Deployment (P4, P6, P7) | Dockerfiles, config, scripts, workflows | Create the hosting account, add secrets, own the domain |
 | Security review (S4) | Check list, fixes, tests | Final sign-off. Rate limiting and password reset need decisions |
 | Name and legal | | **Check the AdBanao name for trademark and domain** |
 | Approvals | | Every approval is yours. A chat "approve" is a direction, not a review of the code |
