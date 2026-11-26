@@ -4,7 +4,6 @@ from sqlalchemy.orm import Session
 
 from app.api.v1.common import image_error, read_upload
 from app.api.v1.deps import get_current_user
-from app.core.config import get_settings
 from app.db import activity
 from app.db.models import Brand, User
 from app.db.session import get_db
@@ -17,6 +16,7 @@ from app.schemas.profiles import (
     BrandUpdate,
     ImageWarningRead,
 )
+from app.storage import get_storage
 
 router = APIRouter(prefix="/brands", tags=["brands"])
 
@@ -142,7 +142,7 @@ def upload_logo(
         info = inspect_image(data, min_side=MIN_SIDE_LOGO)
     except ImageRejected as exc:
         raise image_error(exc) from exc
-    brand.logo_path = save_image(data, info, get_settings().upload_dir, "brands")
+    brand.logo_path = save_image(data, info, get_storage(), "brands")
     db.commit()
     db.refresh(brand)
     return BrandLogoResult(

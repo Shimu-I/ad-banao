@@ -48,7 +48,21 @@ jobs:
         if: matrix.database == 'sqlite'
         run: mypy
         continue-on-error: true
+      - name: Start a local S3 server (moto), to test the real S3 storage code
+        run: |
+          nohup moto_server -H 127.0.0.1 -p 9000 > moto.log 2>&1 &
+          for i in $(seq 1 30); do curl -s http://localhost:9000 >/dev/null && break; sleep 1; done
+          python - <<'PY'
+          import boto3
+          boto3.client("s3", endpoint_url="http://localhost:9000", aws_access_key_id="ci-key",
+                       aws_secret_access_key="ci-secret", region_name="us-east-1").create_bucket(Bucket="adbanao-test")
+          PY
       - name: Tests
+        env:
+          S3_TEST_ENDPOINT: http://localhost:9000
+          S3_TEST_BUCKET: adbanao-test
+          S3_TEST_KEY: ci-key
+          S3_TEST_SECRET: ci-secret
         run: python -m pytest -ra
 
   end-to-end:
@@ -188,6 +202,7 @@ jobs:
           docker run -d --name api --network host \
             -e DATABASE_URL=postgresql://adbanao:ci-only-password@localhost:5432/adbanao \
             -e FRONTEND_ORIGIN=https://app.example.com \
+            -e STORAGE_BACKEND=s3 -e S3_BUCKET=ci -e S3_ACCESS_KEY_ID=ci -e S3_SECRET_ACCESS_KEY=ci \
             -e PORT=8000 adbanao-api
           for i in $(seq 1 30); do curl -fs http://localhost:8000/health >/dev/null && break; sleep 1; done
           docker logs api
@@ -205,6 +220,7 @@ jobs:
       - name: Unsafe production settings stop the container
         run: |
           if docker run --rm -e RUN_MIGRATIONS=false -e FRONTEND_ORIGIN=http://app.example.com \
+              -e STORAGE_BACKEND=s3 -e S3_BUCKET=ci -e S3_ACCESS_KEY_ID=ci -e S3_SECRET_ACCESS_KEY=ci \
               -e DATABASE_URL=postgresql://adbanao:ci-only-password@localhost:5432/adbanao adbanao-api; then
             echo "::error::the container started with an http:// FRONTEND_ORIGIN"; exit 1
           fi

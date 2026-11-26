@@ -28,6 +28,7 @@ from app.schemas.profiles import (
     Readiness,
     ReadinessIssue,
 )
+from app.storage import get_storage
 
 router = APIRouter(prefix="/products", tags=["products"])
 
@@ -190,7 +191,7 @@ def upload_product_image(
         )
 
     # The original bytes are stored untouched; their hash is what integrity checks compare against.
-    product.image_path = save_image(data, info, get_settings().upload_dir, "products")
+    product.image_path = save_image(data, info, get_storage(), "products")
     product.image_sha256 = info.sha256
     db.commit()
     db.refresh(product)

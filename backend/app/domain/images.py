@@ -7,10 +7,7 @@ as-is, and the integrity check compares against this fingerprint.
 
 import hashlib
 import io
-import os
-import tempfile
 from dataclasses import dataclass
-from pathlib import Path
 
 from PIL import Image, UnidentifiedImageError
 
@@ -145,24 +142,17 @@ def inspect_image(
         )
 
 
-def save_image(data: bytes, info: ImageInfo, directory: "str | Path", subdir: str) -> str:
-    """Write the untouched bytes to ``directory/subdir/<sha256><ext>``.
+CONTENT_TYPES = {".jpg": "image/jpeg", ".png": "image/png", ".webp": "image/webp"}
 
-    The name comes from the content hash, never from the user's file name, so
-    there is no path-traversal risk and identical uploads share one file.
-    Returns the path relative to ``directory``, which is what the database stores.
+
+def save_image(data: bytes, info: ImageInfo, storage, subdir: str) -> str:
+    """Store the untouched bytes under the key ``subdir/<sha256><ext>`` and return that key.
+
+    The name comes from the content hash, never from the user's file name, so there is no
+    path-traversal risk and identical uploads share one file. The key is what the database stores.
+    ``storage`` is any object from ``app.storage`` (local disk or a bucket).
     """
-    folder = Path(directory) / subdir
-    folder.mkdir(parents=True, exist_ok=True)
-    name = f"{info.sha256}{info.extension}"
-    target = folder / name
-    if not target.exists():
-        fd, tmp_name = tempfile.mkstemp(dir=folder, suffix=".part")
-        try:
-            with os.fdopen(fd, "wb") as handle:
-                handle.write(data)
-            os.replace(tmp_name, target)  # atomic: readers never see half a file
-        except BaseException:
-            Path(tmp_name).unlink(missing_ok=True)
-            raise
-    return f"{subdir}/{name}"
+    key = f"{subdir}/{info.sha256}{info.extension}"
+    if not storage.exists(key):
+        storage.put(key, data, CONTENT_TYPES[info.extension])
+    return key

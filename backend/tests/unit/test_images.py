@@ -11,6 +11,7 @@ from app.domain.images import (
     inspect_image,
     save_image,
 )
+from app.storage.local import LocalStorage
 
 
 def encode(image, fmt="PNG", **kwargs):
@@ -138,7 +139,7 @@ def test_truncated_file_is_rejected_as_corrupt():
 def test_save_image_writes_the_original_bytes_under_the_hash_name(tmp_path):
     data = encode(Image.new("RGB", (800, 800), (10, 20, 30)), "JPEG")
     info = inspect_image(data)
-    relative = save_image(data, info, tmp_path, "products")
+    relative = save_image(data, info, LocalStorage(tmp_path), "products")
     assert relative == f"products/{info.sha256}.jpg"
     assert (tmp_path / relative).read_bytes() == data  # untouched
 
@@ -146,8 +147,8 @@ def test_save_image_writes_the_original_bytes_under_the_hash_name(tmp_path):
 def test_save_image_is_idempotent_and_leaves_no_temp_files(tmp_path):
     data = encode(Image.new("RGB", (800, 800)), "PNG")
     info = inspect_image(data)
-    first = save_image(data, info, tmp_path, "brands")
-    second = save_image(data, info, tmp_path, "brands")
+    first = save_image(data, info, LocalStorage(tmp_path), "brands")
+    second = save_image(data, info, LocalStorage(tmp_path), "brands")
     assert first == second
     assert sorted(p.name for p in (tmp_path / "brands").iterdir()) == [f"{info.sha256}.png"]
 
@@ -155,6 +156,6 @@ def test_save_image_is_idempotent_and_leaves_no_temp_files(tmp_path):
 def test_different_images_get_different_files(tmp_path):
     a = encode(Image.new("RGB", (800, 800), (1, 1, 1)))
     b = encode(Image.new("RGB", (800, 800), (2, 2, 2)))
-    path_a = save_image(a, inspect_image(a), tmp_path, "products")
-    path_b = save_image(b, inspect_image(b), tmp_path, "products")
+    path_a = save_image(a, inspect_image(a), LocalStorage(tmp_path), "products")
+    path_b = save_image(b, inspect_image(b), LocalStorage(tmp_path), "products")
     assert path_a != path_b
