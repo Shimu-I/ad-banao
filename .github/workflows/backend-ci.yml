@@ -151,6 +151,10 @@ jobs:
         with:
           name: lock-files
           path: /tmp/lock/*.txt
+      - name: Print the compiled files (so they can be read from this log and committed)
+        if: always()
+        run: |
+          for name in requirements requirements-dev; do echo "=====BEGIN $name.txt"; cat "/tmp/lock/$name.txt"; echo "=====END $name.txt"; done
       - name: Check the committed lock files are up to date
         working-directory: backend
         run: |
