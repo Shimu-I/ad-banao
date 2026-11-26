@@ -29,7 +29,7 @@ check "the old published login is not in the repository" "! git grep -q 'admin-a
 get() { grep "^$1=" .env | cut -d= -f2-; }
 EMAIL=$(get ADBANAO_ADMIN_EMAIL); PW=$(get ADBANAO_ADMIN_PASSWORD); SECRET=$(get ADBANAO_ADMIN_SECRET)
 login() {
-  curl -s -o /dev/null -w '%{http_code}' -X POST http://127.0.0.1:8000/auth/admin-login \
+  curl -s -o /dev/null -w '%{http_code}' -X POST http://127.0.0.1:8000/api/v1/auth/admin-login \
     -H 'Content-Type: application/json' -d "{\"email\":\"$EMAIL\",\"password\":\"$PW\",\"secret_word\":\"$1\"}"
 }
 [ "$(login "$SECRET")" = 200 ] && ok "admin can sign in with the saved login" || bad "admin can sign in with the saved login"

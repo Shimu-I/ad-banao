@@ -13,19 +13,19 @@ The first working version (MVP) is done when one person can: fill one form, get 
 ## Scoreboard
 
 <!-- scoreboard:start -->
-**46 goals in total: 7 done, 6 partly done, 33 not started. About 22% by goal count.**
+**46 goals in total: 8 done, 5 partly done, 33 not started. About 23% by goal count.**
 
 | Milestone | Done | Partly | Not started | Goals |
 | --- | --- | --- | --- | --- |
-| M0 Foundation | 6 | 3 | 0 | 9 |
+| M0 Foundation | 7 | 2 | 0 | 9 |
 | M5 Production base | 1 | 0 | 9 | 10 |
 | M1 Ad engine | 0 | 0 | 7 | 7 |
 | M2 Verification | 0 | 0 | 6 | 6 |
 | M3 Interface | 0 | 3 | 8 | 11 |
 | M4 Ship | 0 | 0 | 3 | 3 |
 
-Done: F1, F2, F3, F4, F7, F9, P3
-Partly done: F5, F6, F8, U2, U3, U11
+Done: F1, F2, F3, F4, F7, F8, F9, P3
+Partly done: F5, F6, U2, U3, U11
 <!-- scoreboard:end -->
 
 Goals are not equal in size. The goals still ahead (ad engine, verification, the screens) are the largest, so the real share finished is smaller than the percentage suggests.

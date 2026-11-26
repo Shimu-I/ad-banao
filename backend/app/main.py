@@ -21,6 +21,9 @@ async def lifespan(app: FastAPI):
     yield
 
 
+API_PREFIX = "/api/v1"  # change this, never the individual routes, when the API gets a version 2
+
+
 def create_app() -> FastAPI:
     settings = get_settings()
     configure_logging(settings.log_level, settings.log_json)
@@ -41,11 +44,9 @@ def create_app() -> FastAPI:
     )
     app.add_middleware(RequestIdMiddleware)  # added last = outermost, so even preflight answers carry an id
     install_error_handlers(app)
-    app.include_router(health.router)
-    app.include_router(auth.router)
-    app.include_router(admin.router)
-    app.include_router(brands.router)
-    app.include_router(products.router)
+    app.include_router(health.router)  # /health stays at the root: hosting services and monitors probe it
+    for router in (auth.router, admin.router, brands.router, products.router):
+        app.include_router(router, prefix=API_PREFIX)
     return app
 
 

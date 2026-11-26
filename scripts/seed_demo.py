@@ -37,25 +37,25 @@ def call(opener, method, path, body=None):
 
 for u in USERS:
     opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(http.cookiejar.CookieJar()))
-    status, body = call(opener, "POST", "/auth/signup", {"email": u["email"], "password": PASSWORD, "display_name": u["display_name"]})
+    status, body = call(opener, "POST", "/api/v1/auth/signup", {"email": u["email"], "password": PASSWORD, "display_name": u["display_name"]})
     created = status == 201
     if not created:
-        status, body = call(opener, "POST", "/auth/login", {"email": u["email"], "password": PASSWORD})
+        status, body = call(opener, "POST", "/api/v1/auth/login", {"email": u["email"], "password": PASSWORD})
         if status != 200:
             sys.exit(f"Cannot sign in as {u['email']} ({status} {body}). Delete that user or reset the database.")
-    status, body = call(opener, "PATCH", "/users/me", {k: u[k] for k in ("business_name", "phone", "language")})
+    status, body = call(opener, "PATCH", "/api/v1/users/me", {k: u[k] for k in ("business_name", "phone", "language")})
     if status != 200:
         sys.exit(f"Profile update failed for {u['email']}: {status} {body}")
     # one brand and one product each, so ownership can be shown
-    status, brands = call(opener, "GET", "/brands")
+    status, brands = call(opener, "GET", "/api/v1/brands")
     brand = next((b for b in brands if b["name"] == u["brand"]), None) if status == 200 else None
     if brand is None:
-        status, brand = call(opener, "POST", "/brands", {"name": u["brand"]})
+        status, brand = call(opener, "POST", "/api/v1/brands", {"name": u["brand"]})
         if status != 201:
             sys.exit(f"Brand failed for {u['email']}: {status} {brand}")
-    status, products = call(opener, "GET", f"/products?brand_id={brand['id']}")
+    status, products = call(opener, "GET", f"/api/v1/products?brand_id={brand['id']}")
     if status == 200 and not any(p["name"] == u["product"]["name"] for p in products):
-        status, body = call(opener, "POST", "/products", {"brand_id": brand["id"], **u["product"]})
+        status, body = call(opener, "POST", "/api/v1/products", {"brand_id": brand["id"], **u["product"]})
         if status != 201:
             sys.exit(f"Product failed for {u['email']}: {status} {body}")
     print(("created " if created else "updated ") + u["email"] + f"  (brand: {u['brand']}, product: {u['product']['name']})")
@@ -64,9 +64,9 @@ for u in USERS:
 # ADMIN_EMAILS=admin@demo.adbanao.test=banao-demo-secret (development only), or after: make admin EMAIL=admin@demo.adbanao.test
 ADMIN = {"email": "admin@demo.adbanao.test", "display_name": "Demo Admin"}
 opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(http.cookiejar.CookieJar()))
-status, me = call(opener, "POST", "/auth/signup", {"email": ADMIN["email"], "password": PASSWORD, "display_name": ADMIN["display_name"]})
+status, me = call(opener, "POST", "/api/v1/auth/signup", {"email": ADMIN["email"], "password": PASSWORD, "display_name": ADMIN["display_name"]})
 if status != 201:
-    status, me = call(opener, "POST", "/auth/login", {"email": ADMIN["email"], "password": PASSWORD})
+    status, me = call(opener, "POST", "/api/v1/auth/login", {"email": ADMIN["email"], "password": PASSWORD})
     if status != 200:
         sys.exit(f"Cannot sign in as {ADMIN['email']} ({status} {me}).")
 role = me.get("role") if isinstance(me, dict) else None

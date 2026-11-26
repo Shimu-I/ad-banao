@@ -72,59 +72,59 @@ def main():
 
     email = f"smoke{int(time.time())}@example.com"
     pw = "blue-River-42"
-    s, b = call("POST", "/auth/signup", {"email": email, "password": pw, "display_name": "Smoke"})
+    s, b = call("POST", "/api/v1/auth/signup", {"email": email, "password": pw, "display_name": "Smoke"})
     check("sign up", s == 201, f"{s} {b}")
-    s, b = call("GET", "/users/me")
+    s, b = call("GET", "/api/v1/users/me")
     check("signed in after sign up (cookie works)", s == 200 and b and b["email"] == email, f"{s} {b}")
-    s, b = call("PATCH", "/users/me", {"business_name": "Smoke Shop", "phone": "01700000000", "language": "bn"})
+    s, b = call("PATCH", "/api/v1/users/me", {"business_name": "Smoke Shop", "phone": "01700000000", "language": "bn"})
     check("update profile", s == 200, f"{s} {b}")
-    s, b = call("POST", "/auth/logout")
+    s, b = call("POST", "/api/v1/auth/logout")
     check("sign out", s == 204, f"{s} {b}")
-    s, _ = call("GET", "/users/me")
+    s, _ = call("GET", "/api/v1/users/me")
     check("profile is closed after sign out", s == 401, str(s))
-    s, _ = call("POST", "/auth/login", {"email": email, "password": "wrong-pass-1"})
+    s, _ = call("POST", "/api/v1/auth/login", {"email": email, "password": "wrong-pass-1"})
     check("wrong password is refused", s == 401, str(s))
-    s, b = call("POST", "/auth/login", {"email": email, "password": pw})
+    s, b = call("POST", "/api/v1/auth/login", {"email": email, "password": pw})
     check("sign in", s == 200, f"{s} {b}")
-    s, b = call("GET", "/users/me")
+    s, b = call("GET", "/api/v1/users/me")
     ok = s == 200 and b["business_name"] == "Smoke Shop" and b["phone"] == "01700000000" and b["language"] == "bn"
     check("profile changes were saved in the database", ok, f"{s} {b}")
 
-    s, brand = call("POST", "/brands", {"name": "Smoke Brand", "primary_colors": ["#1B4D34"]})
+    s, brand = call("POST", "/api/v1/brands", {"name": "Smoke Brand", "primary_colors": ["#1B4D34"]})
     check("create brand", s == 201, f"{s} {brand}")
     if s != 201:
         return
-    s, p = call("POST", "/products", {"brand_id": brand["id"], "name": "Classic Panjabi", "price": "৳1,299", "unit": "0.5kg", "key_features": ["Premium cotton"]})
+    s, p = call("POST", "/api/v1/products", {"brand_id": brand["id"], "name": "Classic Panjabi", "price": "৳1,299", "unit": "0.5kg", "key_features": ["Premium cotton"]})
     check("create product", s == 201, f"{s} {p}")
     if s == 201:
         check("price ৳1,299 becomes 1299.00", p["price"] in ("1299.00", "1299"), p["price"])
         check("unit 0.5kg becomes 500 g", p["unit"] == "500 g", p["unit"])
-        s, r = call("GET", f"/products/{p['id']}/readiness")
+        s, r = call("GET", f"/api/v1/products/{p['id']}/readiness")
         check("readiness report", s == 200, f"{s} {r}")
         body, ct = multipart("shirt.png", png_bytes(900), "image/png")
-        s, r = call("POST", f"/products/{p['id']}/image", raw=body, ctype=ct)
+        s, r = call("POST", f"/api/v1/products/{p['id']}/image", raw=body, ctype=ct)
         check("upload a product photo", s in (200, 201), f"{s} {r}")
         body, ct = multipart("fake.png", b"%PDF-1.4 not an image", "image/png")
-        s, r = call("POST", f"/products/{p['id']}/image", raw=body, ctype=ct)
+        s, r = call("POST", f"/api/v1/products/{p['id']}/image", raw=body, ctype=ct)
         check("a PDF disguised as a photo is refused", 400 <= s < 500, f"{s} {r}")
-    s, _ = call("POST", "/products", {"brand_id": brand["id"], "name": "X", "price": "12,99"})
+    s, _ = call("POST", "/api/v1/products", {"brand_id": brand["id"], "name": "X", "price": "12,99"})
     check("ambiguous price 12,99 is refused", s == 422, str(s))
 
     # a second person must see none of it
     other = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(http.cookiejar.CookieJar()))
     global opener
     mine, opener = opener, other
-    s, _ = call("POST", "/auth/signup", {"email": f"other{int(time.time())}@example.com", "password": pw, "display_name": "Other"})
+    s, _ = call("POST", "/api/v1/auth/signup", {"email": f"other{int(time.time())}@example.com", "password": pw, "display_name": "Other"})
     check("second user signs up", s == 201, str(s))
-    s, b = call("GET", "/brands")
+    s, b = call("GET", "/api/v1/brands")
     check("second user sees no brands", s == 200 and b == [], f"{s} {b}")
-    s, _ = call("GET", f"/brands/{brand['id']}")
+    s, _ = call("GET", f"/api/v1/brands/{brand['id']}")
     check("second user cannot open the first user's brand", s == 404, str(s))
     if p:
-        s, _ = call("GET", f"/products/{p['id']}")
+        s, _ = call("GET", f"/api/v1/products/{p['id']}")
         check("second user cannot open the first user's product", s == 404, str(s))
     opener = mine
-    s, _ = call("GET", "/users/me")
+    s, _ = call("GET", "/api/v1/users/me")
     check("first user is still signed in", s == 200, str(s))
 
 

@@ -9,6 +9,7 @@ versions follow [Semantic Versioning](https://semver.org).
 - The local admin login is no longer written in the repository. It is made randomly on first start, saved in the git-ignored `.env`, and `setup_admin.py` refuses to run when `APP_ENV=production`. The old published admin account is switched off on machines that used it. Change that password anywhere it was reused.
 
 ### Changed
+- **Breaking for old pages and scripts:** the API now lives under `/api/v1` (`/api/v1/auth/login`, `/api/v1/brands`, ...). `/health` and `/health/db` stay at the root. The pages and scripts were updated; reload any open page. Old addresses answer 404.
 - `start-adbanao` and `stop-adbanao` now only stop AdBanao's own servers on ports 8000 and 5173. If another program uses a port, they say which one and leave it running instead of killing it. They ask it to stop politely first.
 - PostgreSQL in Docker is now the default database for a new setup (`.env.example`, `apply-fix`, the start scripts, the settings default). The start script starts the container, waits for it and explains Docker problems. SQLite remains an optional quick start: `./apply-fix.sh --sqlite`. To switch an existing SQLite setup: `./apply-fix.sh --postgres`, then `make seed`. Goal P3 done.
 
