@@ -215,6 +215,11 @@ These are the honest gaps a senior reviewer would raise, each with the goal that
 
 | Date | What happened |
 | --- | --- |
+| 2026-11-26 | F8 done (PRs #74, #75): request ids, one error format (`detail`, `code`, `request_id`), structured logs, AI model names as settings, `/health/providers`, and the API under `/api/v1`. All five CI checks passed. Not run on the owner's PC yet. |
+| 2026-11-26 | P3 done (PRs #72, #73): CI runs the suite, migrations, browser tests and the start script on PostgreSQL 16; PostgreSQL in Docker is the default for a new setup; SQLite is an optional quick start. Not run on the owner's PC yet. |
+| 2026-11-25 | Production plan written and merged ([27](27-production-plan.md), PR #71): React, PostgreSQL and automatic deployment as the faculty asked. Roadmap milestone M5 (P1 to P11), ADR 0008 proposed. |
+| 2026-11-25 | Security and cleanup after reading the owner's commits (PRs #66 to #70): the admin login removed from the public repo (random, in `.env`), leftover files removed, `free_port.py` only stops AdBanao's own servers, docs flipped to SQLite then PostgreSQL, CI job for the start scripts. |
+| 2026-11-25 | How-to-start guide on the create page, smaller Bangla headline, sticky navigation, run guide moved to docs (PR #65). |
 | 2026-11-24 | Owner accepted option B for the ad engine (the AI proposes the design, our code validates, renders and checks it). Recorded as ADR 0007. Docs only. |
 | 2026-11-24 | AI and ad engine plan written ([25](25-ai-and-ad-engine-plan.md)): four options with pros and cons, free-tier facts checked against provider pages, recommendation and six decisions for the owner. Found that our default Gemini model is shut down. Docs only, no code. |
 | 2026-11-24 | Project tracker added ([TRACKER.md](TRACKER.md)) with a script, `scripts/update_tracker.py`, that recomputes the scoreboard from the roadmap. This page's top section brought up to date. Docs only. |
