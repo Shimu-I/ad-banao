@@ -126,3 +126,34 @@ jobs:
           python-version: "3.12"
       - name: Run the start-script check
         run: ./scripts/check_start_scripts.sh ${{ matrix.database }}
+
+  lock:
+    # Pins every package (and its dependencies, with hashes) so two installs are identical.
+    # Fails if requirements.in changed but requirements.txt was not recompiled. The compiled files are
+    # uploaded as an artifact on every run, so the fix is: download, commit.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install uv
+        run: pip install uv
+      - name: Compile the lock files (existing pins are kept; only new needs are resolved)
+        working-directory: backend
+        run: |
+          mkdir -p /tmp/lock
+          for name in requirements requirements-dev; do
+            if grep -q -- '--hash=' "$name.txt" 2>/dev/null; then cp "$name.txt" "/tmp/lock/$name.txt"; fi
+            uv pip compile "$name.in" --universal --generate-hashes --python-version 3.12 --no-header -o "/tmp/lock/$name.txt"
+          done
+      - uses: actions/upload-artifact@v4
+        with:
+          name: lock-files
+          path: /tmp/lock/*.txt
+      - name: Check the committed lock files are up to date
+        working-directory: backend
+        run: |
+          for name in requirements requirements-dev; do
+            diff -u "$name.txt" "/tmp/lock/$name.txt" || { echo "::error::backend/$name.txt is not the compiled form of $name.in. Download the lock-files artifact from this run and commit it."; exit 1; }
+          done

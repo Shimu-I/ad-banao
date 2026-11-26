@@ -1,0 +1,9 @@
+# What the app needs, as ranges. Edit this file, then let CI recompile requirements.txt (see docs/29-deploying-the-api.md).
+fastapi>=0.110
+uvicorn[standard]>=0.29
+sqlalchemy>=2.0
+psycopg[binary]>=3.1
+pydantic-settings>=2.2
+alembic>=1.13
+python-multipart>=0.0.9
+Pillow>=10.0
