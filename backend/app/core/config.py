@@ -16,7 +16,14 @@ class Settings(BaseSettings):
     # PostgreSQL is the default everywhere. Locally: `docker compose up -d db` (the start script does it).
     database_url: str = "postgresql://adbanao:adbanao@localhost:5432/adbanao"
     frontend_origin: str = "http://localhost:5173"
+    # Photos: "local" (a folder, development) or "s3" (Cloudflare R2 or any S3-compatible bucket, online).
+    storage_backend: str = "local"
     upload_dir: str = "./uploads"
+    s3_bucket: str = ""
+    s3_endpoint_url: str = ""  # R2: https://<account id>.r2.cloudflarestorage.com
+    s3_access_key_id: str = ""
+    s3_secret_access_key: str = ""
+    s3_region: str = "auto"
     gemini_api_key: str = ""
     groq_api_key: str = ""
     # Model names are settings because providers retire models (gemini-2.0-flash shut down on 2026-06-01).
@@ -42,6 +49,12 @@ class Settings(BaseSettings):
             problems.append("DATABASE_URL must be a PostgreSQL address.")
         if "adbanao:adbanao@" in self.database_url:
             problems.append("DATABASE_URL still uses the development password.")
+        if self.storage_backend != "s3":
+            problems.append("STORAGE_BACKEND must be s3 online (a container's disk is erased on every deploy).")
+        elif not (self.s3_bucket and self.s3_access_key_id and self.s3_secret_access_key):
+            problems.append(
+                "S3_BUCKET, S3_ACCESS_KEY_ID and S3_SECRET_ACCESS_KEY are required with STORAGE_BACKEND=s3."
+            )
         if self.admin_emails:
             problems.append("ADMIN_EMAILS must be empty (it is ignored online; create admins another way).")
         return problems

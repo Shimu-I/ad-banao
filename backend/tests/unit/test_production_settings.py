@@ -5,6 +5,10 @@ from app.core.config import Settings, check_production_settings
 GOOD = dict(
     app_env="production",
     admin_emails="",
+    storage_backend="s3",
+    s3_bucket="b",
+    s3_access_key_id="k",
+    s3_secret_access_key="s",
     frontend_origin="https://app.example.com",
     database_url="postgresql://u:strongpass@db.example.com/adbanao",
 )

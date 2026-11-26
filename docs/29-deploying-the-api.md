@@ -29,11 +29,14 @@ The image starts in production mode, so it refuses the development database pass
 | `PORT` | no (hosts set it) | Port to listen on, default 8000 |
 | `WEB_CONCURRENCY` | no | Worker processes, default 1 |
 | `RUN_MIGRATIONS` | no | `false` to skip migrations at start |
-| `UPLOAD_DIR` | no | Photos go here (`/data/uploads`) until object storage, goal P5 |
+| `STORAGE_BACKEND` | `s3` online | `local` (folder `UPLOAD_DIR`, development) or `s3` (bucket). A container's disk is erased on each deploy, so online it must be `s3` |
+| `S3_BUCKET`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY` | with `s3` | Bucket name and its keys (Cloudflare R2: create an API token limited to that bucket) |
+| `S3_ENDPOINT_URL`, `S3_REGION` | R2: yes / `auto` | R2: `https://<account id>.r2.cloudflarestorage.com`. Empty for AWS S3 |
+| `UPLOAD_DIR` | with `local` | Folder for photos in development |
 
 ## Safety checks at start
 
-With `APP_ENV=production` the API refuses to start (and says why) if `FRONTEND_ORIGIN` is not `https://`, `DATABASE_URL` is not PostgreSQL or still has the development password, or `ADMIN_EMAILS` is set.
+With `APP_ENV=production` the API refuses to start (and says why) if `FRONTEND_ORIGIN` is not `https://`, `DATABASE_URL` is not PostgreSQL or still has the development password, or `STORAGE_BACKEND` is not `s3` (or its bucket settings are missing), or `ADMIN_EMAILS` is set.
 
 ## Migrations
 
@@ -48,4 +51,8 @@ The container runs `alembic upgrade head` before it starts serving. Rules so tha
 
 ## What is tested
 
-CI job `docker-image` builds the image and runs it on PostgreSQL 16: migrations apply, `/health` and `/health/db` answer, an error has the standard body and `X-Request-ID`, the process is not root, and an `http://` page address stops the container. Not yet tested: a real host (goal P6), cookies across free host names, uploads surviving a restart (goal P5).
+CI job `docker-image` builds the image and runs it on PostgreSQL 16: migrations apply, `/health` and `/health/db` answer, an error has the standard body and `X-Request-ID`, the process is not root, and an `http://` page address stops the container. Not yet tested: a real host (goal P6), cookies across free host names, a real Cloudflare R2 bucket (the code is tested against MinIO, which speaks the same protocol; R2 differs in small details, so the first live upload is the real test).
+
+## Photo storage
+
+The database keeps a key such as `products/<sha256>.jpg`; `app/storage` turns it into a file or a bucket object, so moving from disk to a bucket changes no database rows. There is no route that serves photos back yet (goal A5, the ad renderer, reads them through the same storage).
