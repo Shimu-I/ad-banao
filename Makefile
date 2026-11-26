@@ -4,7 +4,7 @@ PY      := $(VENV)/bin/python
 PIP     := $(VENV)/bin/pip
 
 .DEFAULT_GOAL := help
-.PHONY: help setup test lint fix run db-up db-viewer admin admin-secret seed db-down clean
+.PHONY: help setup test test-pg lint fix run db-up db-viewer admin admin-secret seed db-down clean
 
 help:  ## Show this list
 	@grep -E '^[a-zA-Z_-]+:.*##' $(MAKEFILE_LIST) | awk -F':.*## ' '{printf "  %-10s %s\n", $$1, $$2}'
@@ -28,6 +28,10 @@ fix:  ## Auto-fix what ruff can fix
 
 run:  ## Start the API at http://localhost:8000 (docs at /docs)
 	cd backend && ../$(VENV)/bin/uvicorn app.main:app --reload
+
+test-pg: db-up  ## Run all tests on PostgreSQL (Docker). Creates the adbanao_test database if needed
+	@docker compose exec -T db psql -U adbanao -d postgres -c "create database adbanao_test" >/dev/null 2>&1 || true
+	TEST_DATABASE_URL=postgresql://adbanao:adbanao@localhost:5432/adbanao_test $(PY) -m pytest -ra
 
 db-up:  ## Start local PostgreSQL with Docker
 	docker compose up -d db

@@ -7,7 +7,29 @@ on:
 
 jobs:
   test:
+    # The whole suite runs twice: on SQLite (quick) and on a real PostgreSQL 16 (what production uses).
+    name: test (${{ matrix.database }})
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        database: [sqlite, postgres]
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: adbanao
+          POSTGRES_PASSWORD: adbanao
+          POSTGRES_DB: adbanao_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U adbanao"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      TEST_DATABASE_URL: ${{ matrix.database == 'postgres' && 'postgresql://adbanao:adbanao@localhost:5432/adbanao_test' || '' }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -20,16 +42,34 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r backend/requirements-dev.txt ruff mypy
       - name: Lint
+        if: matrix.database == 'sqlite'
         run: ruff check backend
       - name: Type check (reported, not blocking yet)
+        if: matrix.database == 'sqlite'
         run: mypy
         continue-on-error: true
       - name: Tests
         run: python -m pytest -ra
 
   end-to-end:
-    # Starts the real API and the pages, then drives them like a user (API checks and a browser).
+    # Starts the real API (on PostgreSQL) and the pages, then drives them like a user (API checks and a browser).
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: adbanao
+          POSTGRES_PASSWORD: adbanao
+          POSTGRES_DB: adbanao
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U adbanao"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgresql://adbanao:adbanao@localhost:5432/adbanao
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -44,13 +84,10 @@ jobs:
           playwright install --with-deps chromium
       - name: Create the tables with migrations
         working-directory: backend
-        env:
-          DATABASE_URL: sqlite:///./e2e.db
         run: alembic upgrade head
       - name: Start the API and the pages
         working-directory: backend
         env:
-          DATABASE_URL: sqlite:///./e2e.db
           UPLOAD_DIR: ./e2e-uploads
           ADMIN_EMAILS: admin@demo.adbanao.test=banao-demo-secret
         run: |
