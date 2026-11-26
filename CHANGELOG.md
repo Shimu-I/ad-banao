@@ -14,6 +14,7 @@ versions follow [Semantic Versioning](https://semver.org).
 - PostgreSQL in Docker is now the default database for a new setup (`.env.example`, `apply-fix`, the start scripts, the settings default). The start script starts the container, waits for it and explains Docker problems. SQLite remains an optional quick start: `./apply-fix.sh --sqlite`. To switch an existing SQLite setup: `./apply-fix.sh --postgres`, then `make seed`. Goal P3 done.
 
 ### Added
+- Goal P4: the API has a Dockerfile (non-root, health check, migrations at start), exact hash-pinned packages (`requirements.in` compiled to `requirements.txt` by the CI job `lock`), `COOKIE_DOMAIN`, and refuses unsafe production settings. CI job `docker-image` runs the image. See `docs/29-deploying-the-api.md`. Install now uses `pip install --require-hashes -r backend/requirements-dev.txt`.
 - API foundations (F8): every answer has an `X-Request-ID`; every error has `detail`, `code` and `request_id` (existing pages keep working); one log line per event with the request id, JSON with `LOG_JSON=true`; AI model names are settings (`GEMINI_MODEL`, now `gemini-3.5-flash-lite`, and `GROQ_MODEL`); `GET /health/providers`. See `docs/28-api-conventions.md`.
 - CI job `start-script` now runs twice: PostgreSQL in Docker and SQLite.
 - CI runs the whole test suite and every migration on PostgreSQL 16 as well as SQLite, and the end-to-end job runs the real API on PostgreSQL. `make test-pg` does the same on the Docker database. First step of goal P3.

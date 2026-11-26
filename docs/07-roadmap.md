@@ -27,7 +27,7 @@ Added 2026-11-25 after the faculty asked for React, PostgreSQL and early deploym
 | P1 | Decisions and ADR 0008 | Owner picks hosting, domain and storage; ADR 0008 accepted | ⬜ |
 | P2 | Default branch `main`, protected | Branch renamed, pull requests required, CI must pass (owner only) | ⬜ |
 | P3 | PostgreSQL everywhere | CI runs the whole suite on a PostgreSQL service, Compose is the default developer database, migrations proven on PostgreSQL | ✅ (PRs #72 and the default-database PR: suite, migrations, browser tests and start script all pass on PostgreSQL 16 in CI. Not yet run by the owner on their PC) |
-| P4 | Make the API deployable | Dockerfile, pinned dependencies with a lock file, settings for the API address and origin, migrations as a release step, production admin command documented, health check | ⬜ |
+| P4 | Make the API deployable | Dockerfile, pinned dependencies with a lock file, settings for the API address and origin, migrations as a release step, production admin command documented, health check | ✅ ([29](29-deploying-the-api.md)); production admin command still to document |
 | P5 | Object storage for photos | Storage interface with local and S3-compatible (R2) implementations; uploads survive a restart | ⬜ |
 | P6 | First live deployment | Neon, the API container and Cloudflare Pages online with today's features; sign up, sign in, profile and admin work on the live address | ⬜ |
 | P7 | Automatic deployment | Merge to `main` migrates, deploys, publishes and smoke-tests the live address; pull request previews; rollback tried once | ⬜ |

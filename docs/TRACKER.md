@@ -13,18 +13,18 @@ The first working version (MVP) is done when one person can: fill one form, get 
 ## Scoreboard
 
 <!-- scoreboard:start -->
-**46 goals in total: 8 done, 5 partly done, 33 not started. About 23% by goal count.**
+**46 goals in total: 9 done, 5 partly done, 32 not started. About 25% by goal count.**
 
 | Milestone | Done | Partly | Not started | Goals |
 | --- | --- | --- | --- | --- |
 | M0 Foundation | 7 | 2 | 0 | 9 |
-| M5 Production base | 1 | 0 | 9 | 10 |
+| M5 Production base | 2 | 0 | 8 | 10 |
 | M1 Ad engine | 0 | 0 | 7 | 7 |
 | M2 Verification | 0 | 0 | 6 | 6 |
 | M3 Interface | 0 | 3 | 8 | 11 |
 | M4 Ship | 0 | 0 | 3 | 3 |
 
-Done: F1, F2, F3, F4, F7, F8, F9, P3
+Done: F1, F2, F3, F4, F7, F8, F9, P3, P4
 Partly done: F5, F6, U2, U3, U11
 <!-- scoreboard:end -->
 
@@ -78,7 +78,7 @@ This is the record of every request to run something or decide something. "Pendi
 | 1 | Finish the first update | Create the Jira and GitHub boards and add teammates ([09-development-process.md](09-development-process.md)). The branch rename and protection were declined on 2026-11-26 | **A person** (owner) |
 | 2 | Owner runs `./scripts/check_my_machine.sh --postgres --browser` and sends the report | Proves the admin work on a real PC | **A person** |
 | 3 | Decide the production plan: [27-production-plan.md](27-production-plan.md) section 9 | The faculty asked for React, PostgreSQL and automatic deployment. Five decisions unblock everything | **A person** (owner) |
-| 4 | P4 to P7 (F8 and P3 are done) | A deployable API, object storage, first live deployment, automatic deployment | Claude writes; a person creates the hosting accounts |
+| 4 | P5 to P7 (F8, P3 and P4 are done) | Object storage, first live deployment, automatic deployment | Claude writes; a person creates the hosting accounts |
 | 5 | U1 (P8), P9, P10 | The React app replaces the old pages one by one; production hardening | Claude writes; a person judges the look and Bangla |
 | 6 | A1 to A7 ad engine | The core of the product, now delivered live from day one | Claude writes and tests; a person judges how the ads look |
 | 7 | V1 to V6 verification | The reason the product exists | Claude writes and tests; a person judges accuracy |

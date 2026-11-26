@@ -4,7 +4,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.v1 import admin, auth, brands, health, products
-from app.core.config import get_settings
+from app.core.config import check_production_settings, get_settings
 from app.core.errors import install_error_handlers
 from app.core.logging import configure_logging
 from app.core.middleware import RequestIdMiddleware
@@ -26,6 +26,7 @@ API_PREFIX = "/api/v1"  # change this, never the individual routes, when the API
 
 def create_app() -> FastAPI:
     settings = get_settings()
+    check_production_settings(settings)
     configure_logging(settings.log_level, settings.log_json)
     app = FastAPI(title="AdBanao", version="0.1.0", lifespan=lifespan)
     app.add_middleware(
