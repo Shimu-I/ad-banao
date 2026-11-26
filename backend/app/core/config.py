@@ -19,6 +19,12 @@ class Settings(BaseSettings):
     upload_dir: str = "./uploads"
     gemini_api_key: str = ""
     groq_api_key: str = ""
+    # Model names are settings because providers retire models (gemini-2.0-flash shut down on 2026-06-01).
+    # Defaults were taken from the providers' pages on 2026-11-26 and not yet tried with a real key.
+    gemini_model: str = "gemini-3.5-flash-lite"
+    groq_model: str = "llama-3.3-70b-versatile"
+    log_level: str = "INFO"
+    log_json: bool = False  # set LOG_JSON=true online so a log service can read the lines
     # Comma-separated emails that become admins at sign-up or sign-in. Development and test only.
     admin_emails: str = ""
 

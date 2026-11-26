@@ -31,7 +31,7 @@ def _post_json(url: str, *, headers: dict, body: dict, timeout: float = 30.0) ->
 class GeminiProvider:
     name = "gemini"
 
-    def __init__(self, api_key: str, model: str = "gemini-2.0-flash"):
+    def __init__(self, api_key: str, model: str):
         self.api_key, self.model = api_key, model
 
     def complete(self, prompt: str) -> str:
@@ -49,7 +49,7 @@ class GeminiProvider:
 class GroqProvider:
     name = "groq"
 
-    def __init__(self, api_key: str, model: str = "llama-3.3-70b-versatile"):
+    def __init__(self, api_key: str, model: str):
         self.api_key, self.model = api_key, model
 
     def complete(self, prompt: str) -> str:
@@ -68,7 +68,7 @@ def providers_from_settings(settings) -> list[Provider]:
     """Providers that have a key, in the order they are tried."""
     found: list[Provider] = []
     if settings.gemini_api_key:
-        found.append(GeminiProvider(settings.gemini_api_key))
+        found.append(GeminiProvider(settings.gemini_api_key, settings.gemini_model))
     if settings.groq_api_key:
-        found.append(GroqProvider(settings.groq_api_key))
+        found.append(GroqProvider(settings.groq_api_key, settings.groq_model))
     return found
