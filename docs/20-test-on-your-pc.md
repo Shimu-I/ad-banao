@@ -2,7 +2,7 @@
 
 Goal: run the checks on your Linux machine and send the result back, so the project status rests on a real run and not on guesses.
 
-The automated checks in GitHub (see [PROGRESS.md](PROGRESS.md)) already pass. They run on a GitHub machine with SQLite. What nobody has done yet is run it **on your machine** and **against a real PostgreSQL**. This guide does that. (To just run the app with no Docker, use [26-run-adbanao.md](26-run-adbanao.md); SQLite is its default.)
+The automated checks in GitHub (see [PROGRESS.md](PROGRESS.md)) already pass. They run on a GitHub machine, on SQLite and on PostgreSQL 16. What nobody has done yet is run it **on your machine** and **against a real PostgreSQL**. This guide does that. (To just run the app with no Docker, use [26-run-adbanao.md](26-run-adbanao.md); SQLite is its default.)
 
 ## The short way: one command
 

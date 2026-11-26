@@ -13,8 +13,8 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=ENV_FILE, extra="ignore")
 
     app_env: str = "development"
-    # SQLite fallback lets the app start without PostgreSQL during early development.
-    database_url: str = "sqlite:///./adbanao.db"
+    # PostgreSQL is the default everywhere. Locally: `docker compose up -d db` (the start script does it).
+    database_url: str = "postgresql://adbanao:adbanao@localhost:5432/adbanao"
     frontend_origin: str = "http://localhost:5173"
     upload_dir: str = "./uploads"
     gemini_api_key: str = ""

@@ -13,18 +13,18 @@ The first working version (MVP) is done when one person can: fill one form, get 
 ## Scoreboard
 
 <!-- scoreboard:start -->
-**46 goals in total: 6 done, 5 partly done, 35 not started. About 18% by goal count.**
+**46 goals in total: 7 done, 5 partly done, 34 not started. About 21% by goal count.**
 
 | Milestone | Done | Partly | Not started | Goals |
 | --- | --- | --- | --- | --- |
 | M0 Foundation | 6 | 2 | 1 | 9 |
-| M5 Production base | 0 | 0 | 10 | 10 |
+| M5 Production base | 1 | 0 | 9 | 10 |
 | M1 Ad engine | 0 | 0 | 7 | 7 |
 | M2 Verification | 0 | 0 | 6 | 6 |
 | M3 Interface | 0 | 3 | 8 | 11 |
 | M4 Ship | 0 | 0 | 3 | 3 |
 
-Done: F1, F2, F3, F4, F7, F9
+Done: F1, F2, F3, F4, F7, F9, P3
 Partly done: F5, F6, U2, U3, U11
 <!-- scoreboard:end -->
 
@@ -37,7 +37,7 @@ Goals are not equal in size. The goals still ahead (ad engine, verification, the
 | Requirement | State | Evidence |
 | --- | --- | --- |
 | Repository setup | Done | GitHub repo, short README, `docs/`, CI, templates, every change a merged pull request |
-| Database setup | Done | 8 tables, migrations 0001 to 0004, passed on SQLite and PostgreSQL on the owner's PC (before the admin migrations) |
+| Database setup | Done | 8 tables, migrations 0001 to 0004. PostgreSQL 16 is the default, and CI runs everything on it (and on SQLite). The owner has not yet run the new default on their PC |
 | User sign-up, sign-in and profile | Done | Pages, API and database, passed on the owner's PC (2026-11-22) and in GitHub Actions |
 | Project management setup | **Half done** | 38 goals and 5 milestones on GitHub. Jira board and GitHub Projects board not created, teammates not added |
 
@@ -47,7 +47,7 @@ Goals are not equal in size. The goals still ahead (ad engine, verification, the
 | --- | --- | --- | --- |
 | Backend logic and API (366 tests) | Passes | Passed 2026-11-22 (before the admin work) | |
 | Migrations 0001 to 0002 on PostgreSQL | | Passed 2026-11-22 | |
-| Migrations 0003 and 0004 (admin) | Pass on SQLite | **Not run yet** | PostgreSQL |
+| Migrations 0003 and 0004 (admin) | Pass on SQLite and PostgreSQL 16 in CI | Not run on the owner PC yet | PostgreSQL |
 | Sign-up, sign-in, profile in a real browser | Passes | Passed 2026-11-22 | Phones, Safari, Firefox |
 | Admin console and admin sign-in (API and browser) | Pass | **Not run yet** | |
 | Gemini or Groq with a real key | | | **Never tried** |

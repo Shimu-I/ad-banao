@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Run once from the project folder:  ./apply-fix.sh        (or ./apply-fix.sh --sqlite for no Docker)
+# Run once from the project folder:  ./apply-fix.sh        (or --sqlite for the optional no-Docker quick start, --postgres to switch to PostgreSQL)
 cd "$(dirname "${BASH_SOURCE[0]}")" || exit 1
 [ -f Makefile ] && [ -d backend ] || { echo "Run this inside the adbanao project folder."; exit 1; }
 chmod +x start-adbanao.sh stop-adbanao.sh

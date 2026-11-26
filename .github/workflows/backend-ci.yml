@@ -111,12 +111,18 @@ jobs:
         run: cat api.log
 
   start-script:
-    # The one-command start the owner uses (apply-fix.sh, start-adbanao.sh, stop-adbanao.sh) on a fresh SQLite database.
+    # The one-command start the owner uses (apply-fix.sh, start-adbanao.sh, stop-adbanao.sh) on a fresh database:
+    # PostgreSQL in Docker (the default) and the optional SQLite quick start.
+    name: start-script (${{ matrix.database }})
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        database: [postgres, sqlite]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
       - name: Run the start-script check
-        run: ./scripts/check_start_scripts.sh
+        run: ./scripts/check_start_scripts.sh ${{ matrix.database }}

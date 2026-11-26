@@ -12,11 +12,13 @@ db_ok() { (cd backend && "$PY" -c "from app.db.session import engine; engine.con
 free_port 8000 5173 || exit 1
 
 if ! db_ok; then
-  if grep -q '^DATABASE_URL=postgres' .env && command -v docker >/dev/null; then
-    echo "Starting the database container..."; docker compose up -d db >/dev/null 2>&1
-    for _ in $(seq 1 30); do db_ok && break; sleep 1; done
+  if grep -q '^DATABASE_URL=postgres' .env; then
+    command -v docker >/dev/null || { echo "ERROR: PostgreSQL needs Docker, and Docker is not installed or not on the PATH. Install it, or use the no-Docker quick start: ./apply-fix.sh --sqlite"; exit 1; }
+    echo "Starting the PostgreSQL container..."
+    docker compose up -d db || { echo "ERROR: Docker could not start the database. Is Docker running? (Docker Desktop on Windows and Mac, 'sudo systemctl start docker' on Linux)"; exit 1; }
+    for _ in $(seq 1 60); do db_ok && break; sleep 1; done
   fi
-  db_ok || { echo "ERROR: cannot reach the database. For a no-Docker setup run: ./apply-fix.sh --sqlite"; exit 1; }
+  db_ok || { echo "ERROR: cannot reach the database. Check the DATABASE_URL line in .env, or use the no-Docker quick start: ./apply-fix.sh --sqlite"; exit 1; }
 fi
 
 (cd backend && "$PY" -m alembic upgrade head >/dev/null) || { echo "ERROR: migration failed."; exit 1; }

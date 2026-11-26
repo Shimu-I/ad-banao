@@ -1,4 +1,4 @@
-# Local PostgreSQL for development. The app also runs on SQLite without it.
+# Local PostgreSQL for development. This is the default database; SQLite is only an optional quick start.
 # Use in .env:  DATABASE_URL=postgresql://adbanao:adbanao@localhost:5432/adbanao
 services:
   db:

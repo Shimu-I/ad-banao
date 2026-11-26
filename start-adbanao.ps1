@@ -29,11 +29,14 @@ function Db-Ok {
 if (-not ((Free-Port 8000) -and (Free-Port 5173))) { exit 1 }
 
 if (-not (Db-Ok)) {
-  if ((Select-String -Path .env -Pattern '^DATABASE_URL=postgres' -Quiet) -and (Get-Command docker -ErrorAction SilentlyContinue)) {
-    Write-Host "Starting the database container..."; docker compose up -d db 2>$null | Out-Null
-    1..30 | ForEach-Object { if (-not (Db-Ok)) { Start-Sleep 1 } }
+  if (Select-String -Path .env -Pattern '^DATABASE_URL=postgres' -Quiet) {
+    if (-not (Get-Command docker -ErrorAction SilentlyContinue)) { Write-Host "ERROR: PostgreSQL needs Docker, and Docker is not installed. Install Docker Desktop, or use the no-Docker quick start: .\apply-fix.ps1 -Sqlite"; exit 1 }
+    Write-Host "Starting the PostgreSQL container..."
+    docker compose up -d db
+    if ($LASTEXITCODE -ne 0) { Write-Host "ERROR: Docker could not start the database. Is Docker Desktop running?"; exit 1 }
+    1..60 | ForEach-Object { if (-not (Db-Ok)) { Start-Sleep 1 } }
   }
-  if (-not (Db-Ok)) { Write-Host "ERROR: cannot reach the database. For a no-Docker setup run: .\apply-fix.ps1 -Sqlite"; exit 1 }
+  if (-not (Db-Ok)) { Write-Host "ERROR: cannot reach the database. Check the DATABASE_URL line in .env, or use the no-Docker quick start: .\apply-fix.ps1 -Sqlite"; exit 1 }
 }
 
 Push-Location backend; & $py -m alembic upgrade head | Out-Null; $m = $LASTEXITCODE; Pop-Location

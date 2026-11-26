@@ -17,7 +17,7 @@ uvicorn app.main:app --reload
 
 Open http://localhost:8000/docs for the interactive API.
 
-If `DATABASE_URL` is not set, the app falls back to a local SQLite file so it still starts. For PostgreSQL, paste the connection string from Supabase or Neon; `postgresql://` and `postgres://` URLs are converted to the psycopg driver automatically.
+If `DATABASE_URL` is not set, the app expects the local Docker PostgreSQL (`make db-up`). For a hosted database, paste the connection string from Neon or Supabase; SQLite (`sqlite:///./adbanao.db`) still works as an optional quick start; `postgresql://` and `postgres://` URLs are converted to the psycopg driver automatically.
 
 Uploaded photos and logos are saved under `UPLOAD_DIR` (default `./uploads`, relative to where you start the server).
 
