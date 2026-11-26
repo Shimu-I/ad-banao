@@ -6,6 +6,8 @@ pytest.importorskip("sqlalchemy")
 pytest.importorskip("alembic")
 pytest.importorskip("pydantic_settings")
 
+import os  # noqa: E402
+import uuid  # noqa: E402
 from pathlib import Path  # noqa: E402
 
 from alembic.autogenerate import compare_metadata  # noqa: E402
@@ -27,8 +29,37 @@ def _config(url: str) -> Config:
     return cfg
 
 
-def test_upgrade_matches_models_and_downgrades(tmp_path):
-    url = f"sqlite:///{tmp_path / 'm.db'}"
+_PG = os.environ.get("TEST_DATABASE_URL", "").strip()
+
+
+@pytest.fixture(params=["sqlite", "postgres"])
+def db_url(request, tmp_path):
+    """An empty database for one test: a SQLite file, or a throwaway PostgreSQL database."""
+    if request.param == "sqlite":
+        yield f"sqlite:///{tmp_path / 'm.db'}"
+        return
+    if not _PG.startswith("postgres"):
+        pytest.skip("set TEST_DATABASE_URL to a PostgreSQL URL to run this on PostgreSQL")
+    from sqlalchemy import text
+    from sqlalchemy.engine import make_url
+
+    from app.db.url import normalize_database_url
+
+    admin_url = make_url(normalize_database_url(_PG))
+    name = "migtest_" + uuid.uuid4().hex[:10]
+    admin = create_engine(admin_url, isolation_level="AUTOCOMMIT")
+    with admin.connect() as conn:
+        conn.execute(text(f'create database "{name}"'))
+    try:
+        yield admin_url.set(database=name).render_as_string(hide_password=False)
+    finally:
+        with admin.connect() as conn:
+            conn.execute(text(f'drop database if exists "{name}" with (force)'))
+        admin.dispose()
+
+
+def test_upgrade_matches_models_and_downgrades(db_url):
+    url = db_url
     command.upgrade(_config(url), "head")
 
     engine = create_engine(url)
@@ -48,7 +79,7 @@ def test_upgrade_matches_models_and_downgrades(tmp_path):
 
 _BRAND = (
     "insert into brands (name, primary_colors, secondary_colors, fonts, is_archived, created_at, updated_at) "
-    "values ('Old Brand', '[]', '[]', '[]', 0, '2026-01-01', '2026-01-01')"
+    "values ('Old Brand', '[]', '[]', '[]', false, '2026-01-01', '2026-01-01')"
 )
 _USER = (
     "insert into users (email, password_hash, display_name, language, created_at, updated_at) "
@@ -56,10 +87,10 @@ _USER = (
 )
 
 
-def test_old_brands_are_given_to_the_oldest_user(tmp_path):
+def test_old_brands_are_given_to_the_oldest_user(db_url):
     from sqlalchemy import text
 
-    url = f"sqlite:///{tmp_path / 'o.db'}"
+    url = db_url
     command.upgrade(_config(url), "0001")
     engine = create_engine(url)
     with engine.begin() as conn:
@@ -73,10 +104,10 @@ def test_old_brands_are_given_to_the_oldest_user(tmp_path):
     engine.dispose()
 
 
-def test_old_brands_without_any_user_stop_the_migration(tmp_path):
+def test_old_brands_without_any_user_stop_the_migration(db_url):
     from sqlalchemy import text
 
-    url = f"sqlite:///{tmp_path / 'n.db'}"
+    url = db_url
     command.upgrade(_config(url), "0001")
     engine = create_engine(url)
     with engine.begin() as conn:
@@ -86,10 +117,10 @@ def test_old_brands_without_any_user_stop_the_migration(tmp_path):
     engine.dispose()
 
 
-def test_0004_adds_secret_word_columns_and_unverifies_old_sessions(tmp_path):
+def test_0004_adds_secret_word_columns_and_unverifies_old_sessions(db_url):
     from sqlalchemy import text
 
-    url = f"sqlite:///{tmp_path / 'b.db'}"
+    url = db_url
     command.upgrade(_config(url), "0003")
     engine = create_engine(url)
     with engine.begin() as conn:
@@ -108,10 +139,10 @@ def test_0004_adds_secret_word_columns_and_unverifies_old_sessions(tmp_path):
     engine.dispose()
 
 
-def test_0003_keeps_existing_users_and_logs_their_signup(tmp_path):
+def test_0003_keeps_existing_users_and_logs_their_signup(db_url):
     from sqlalchemy import text
 
-    url = f"sqlite:///{tmp_path / 'a.db'}"
+    url = db_url
     command.upgrade(_config(url), "0002")
     engine = create_engine(url)
     with engine.begin() as conn:

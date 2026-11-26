@@ -12,6 +12,7 @@ versions follow [Semantic Versioning](https://semver.org).
 - `start-adbanao` and `stop-adbanao` now only stop AdBanao's own servers on ports 8000 and 5173. If another program uses a port, they say which one and leave it running instead of killing it. They ask it to stop politely first.
 
 ### Added
+- CI runs the whole test suite and every migration on PostgreSQL 16 as well as SQLite, and the end-to-end job runs the real API on PostgreSQL. `make test-pg` does the same on the Docker database. First step of goal P3.
 - CI job `start-script` runs `apply-fix.sh`, `start-adbanao.sh` and `stop-adbanao.sh` on a fresh SQLite database: API and pages start, the admin is made and can sign in, stop frees the ports, and another program on a port is left running. Also runnable by hand: `scripts/check_start_scripts.sh` (it replaces `.env`).
 
 ### Docs
