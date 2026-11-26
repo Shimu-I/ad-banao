@@ -62,7 +62,10 @@ def test_login_logout_cycle(client):
     assert bad.status_code == 401
     unknown = client.post("/auth/login", json={"email": "ghost@example.com", "password": "x"})
     assert unknown.status_code == 401
-    assert bad.json() == unknown.json()  # does not reveal which emails exist
+    # does not reveal which emails exist (only the request id may differ)
+    assert {k: v for k, v in bad.json().items() if k != "request_id"} == {
+        k: v for k, v in unknown.json().items() if k != "request_id"
+    }
 
     ok = client.post("/auth/login", json={"email": " CYCLE@example.com", "password": GOOD["password"]})
     assert ok.status_code == 200

@@ -13,6 +13,7 @@ versions follow [Semantic Versioning](https://semver.org).
 - PostgreSQL in Docker is now the default database for a new setup (`.env.example`, `apply-fix`, the start scripts, the settings default). The start script starts the container, waits for it and explains Docker problems. SQLite remains an optional quick start: `./apply-fix.sh --sqlite`. To switch an existing SQLite setup: `./apply-fix.sh --postgres`, then `make seed`. Goal P3 done.
 
 ### Added
+- API foundations (F8): every answer has an `X-Request-ID`; every error has `detail`, `code` and `request_id` (existing pages keep working); one log line per event with the request id, JSON with `LOG_JSON=true`; AI model names are settings (`GEMINI_MODEL`, now `gemini-3.5-flash-lite`, and `GROQ_MODEL`); `GET /health/providers`. See `docs/28-api-conventions.md`.
 - CI job `start-script` now runs twice: PostgreSQL in Docker and SQLite.
 - CI runs the whole test suite and every migration on PostgreSQL 16 as well as SQLite, and the end-to-end job runs the real API on PostgreSQL. `make test-pg` does the same on the Docker database. First step of goal P3.
 - CI job `start-script` runs `apply-fix.sh`, `start-adbanao.sh` and `stop-adbanao.sh` on a fresh SQLite database: API and pages start, the admin is made and can sign in, stop frees the ports, and another program on a port is left running. Also runnable by hand: `scripts/check_start_scripts.sh` (it replaces `.env`).
