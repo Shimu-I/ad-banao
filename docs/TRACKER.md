@@ -2,7 +2,7 @@
 
 The one-page view: what we are building, how far we are, what is next, what Claude can do alone and what needs a person. The detailed log, test reports and decisions are in [PROGRESS.md](PROGRESS.md). The goals themselves are in [07-roadmap.md](07-roadmap.md). Who does what in the team: [23-team-roles.md](23-team-roles.md).
 
-Last updated: 2026-11-24 (Asia/Dhaka)
+Last updated: 2026-11-26 (Asia/Dhaka)
 
 ## Mission
 
@@ -55,14 +55,30 @@ Goals are not equal in size. The goals still ahead (ad engine, verification, the
 | Photo upload from a browser | API only | API only | Through a page (no page yet) |
 | Bangla text on screen | Looked at in screenshots | | Read by a native speaker |
 
+## What I asked you to do, and what happened
+
+This is the record of every request to run something or decide something. "Pending" means I have not heard back.
+
+| Date asked | What I asked | Result |
+| --- | --- | --- |
+| 2026-11-22 | Run the first update on your PC (database, API, pages, demo users) with the run guide | Done. Sign-up, sign-in and profile passed on your PC. Along the way: port 8080 clash (fixed, PR #62), `.env` URL fix, sign-in card jump (PR #63) |
+| 2026-11-22 | Put the admin lines in `.env`, open the admin page | You asked how to reach the admin page and I added it to the guide. No result reported from the admin console itself. **Pending** |
+| 2026-11-24 | Run `./scripts/check_my_machine.sh --postgres --browser` and send `my-test-report.txt` | **Pending** |
+| 2026-11-24 | Decide the AI plan | Done: option B accepted (ADR 0007) |
+| 2026-11-24 | Provide free Groq and Gemini keys | **Pending** (needed only for the real-key check, F8.1) |
+| 2026-11-25 | Answer the five decisions in [27-production-plan.md](27-production-plan.md) section 9 | Decided 2026-11-26: keep the default branch as it is (no rename, no protection); use Docker for PostgreSQL. **Pending:** API host (Render free or paid), domain, Cloudflare Pages + Neon + R2, automatic deploy on every merge |
+| 2026-11-26 | On your Ubuntu PC: `git pull`, `./apply-fix.sh --postgres`, `./start-adbanao.sh`, `make seed`, two `curl` checks, sign in as Karim, open the admin login. Send errors or say "works" | **Pending** |
+| Not yet asked | Create the hosting accounts (Cloudflare, Neon, Render or Fly.io) and the domain | Needed from P6 |
+| Not yet asked | Jira and GitHub Projects boards, teammates as collaborators | Owner and project manager. Still not done |
+
 ## Next up, in order
 
 | # | Goal | Why this one | Who can do it |
 | --- | --- | --- | --- |
-| 1 | Finish the first update | Create the Jira and GitHub boards, add teammates, rename the branch to `main` and protect it ([09-development-process.md](09-development-process.md)) | **A person** (owner) |
+| 1 | Finish the first update | Create the Jira and GitHub boards and add teammates ([09-development-process.md](09-development-process.md)). The branch rename and protection were declined on 2026-11-26 | **A person** (owner) |
 | 2 | Owner runs `./scripts/check_my_machine.sh --postgres --browser` and sends the report | Proves the admin work on a real PC | **A person** |
 | 3 | Decide the production plan: [27-production-plan.md](27-production-plan.md) section 9 | The faculty asked for React, PostgreSQL and automatic deployment. Five decisions unblock everything | **A person** (owner) |
-| 4 | F8, then P3 to P7 | API foundations, PostgreSQL everywhere, a deployable API, first live deployment, automatic deployment | Claude writes; a person creates the hosting accounts |
+| 4 | P4 to P7 (F8 and P3 are done) | A deployable API, object storage, first live deployment, automatic deployment | Claude writes; a person creates the hosting accounts |
 | 5 | U1 (P8), P9, P10 | The React app replaces the old pages one by one; production hardening | Claude writes; a person judges the look and Bangla |
 | 6 | A1 to A7 ad engine | The core of the product, now delivered live from day one | Claude writes and tests; a person judges how the ads look |
 | 7 | V1 to V6 verification | The reason the product exists | Claude writes and tests; a person judges accuracy |
@@ -104,13 +120,13 @@ One goal at a time, each as a pull request with CI, then merge and pull.
 | --- | --- |
 | Jira board, GitHub Projects board | Owner and the project manager |
 | Teammates as collaborators | Owner |
-| Default branch rename and protection | Owner (GitHub settings) |
+| Default branch rename and protection | Declined by the owner on 2026-11-26. The automatic deploy will run from `step-01-repo-setup` |
 | Real AI key, hosted database | Owner |
 | Trademark and domain check for AdBanao | Owner |
 
 ## Known gaps
 
-No limit on wrong sign-in guesses. No password reset by email. No consistent error format or request IDs (F8). The default Gemini model in code (`gemini-2.0-flash`) was shut down by Google on 2026-06-01, so a real Gemini call would fail until F8.1. Details and the goal that closes each one: "Known gaps" in [PROGRESS.md](PROGRESS.md).
+No limit on wrong sign-in guesses. No password reset by email. The AI model names are settings now (F8) with new defaults, but they have never been tried with a real key (F8.1); some Gemini models were reported to stop answering before their announced date. Details and the goal that closes each one: "Known gaps" in [PROGRESS.md](PROGRESS.md).
 
 ## Activity log
 
