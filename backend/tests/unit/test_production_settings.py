@@ -4,6 +4,7 @@ from app.core.config import Settings, check_production_settings
 
 GOOD = dict(
     app_env="production",
+    admin_emails="",
     frontend_origin="https://app.example.com",
     database_url="postgresql://u:strongpass@db.example.com/adbanao",
 )
