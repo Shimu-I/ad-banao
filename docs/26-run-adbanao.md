@@ -18,7 +18,7 @@ One script starts everything. No multiple terminals.
 | **Ubuntu / Linux** | Python 3 and venv: `sudo apt install python3 python3-venv` |
 | **Windows** | Python 3 from python.org. Tick **"Add python.exe to PATH"** in the installer |
 
-Docker is **not** needed. The app uses a local SQLite database by default.
+You also need **Docker** (Docker Desktop on Windows and Mac; on Linux install Docker and start it). The start script uses it to run PostgreSQL for you. Without Docker there is an optional quick start: `./apply-fix.sh --sqlite` (Windows: `.\apply-fix.ps1 -Sqlite`).
 
 ### 2. Get the code
 
@@ -132,7 +132,8 @@ create the admin when `APP_ENV=production`.
 | Sign-in works but you land back on the login page | Use a private window (`Ctrl+Shift+P`) or `Ctrl+Shift+R` |
 | Port busy | Nothing to do. The start script frees ports 8000 and 5173. Or run the stop script |
 | `Run ./apply-fix.sh first` | Run the one-time setup from section A |
-| `cannot reach the database` | Run `./apply-fix.sh --sqlite` (Windows: `.\apply-fix.ps1 -Sqlite`) |
+| `Docker could not start the database` | Start Docker (Docker Desktop, or `sudo systemctl start docker`) and run the start script again |
+| `cannot reach the database` | Check Docker is running and `DATABASE_URL` in `.env` is `postgresql://adbanao:adbanao@localhost:5432/adbanao`. No Docker? Use `./apply-fix.sh --sqlite` |
 | API will not start | Read `.run-logs/api.log` (Windows: `.run-logs\api.err`) and send the last lines |
 
 ---
@@ -157,6 +158,10 @@ Sign in (not Create account) with password `Demo-pass-123`: `rina@demo.adbanao.t
 
 **Several users at once.** One browser holds one signed-in user. Use a normal window, a private window, and a different browser.
 
-**PostgreSQL with Docker (optional).** Set `DATABASE_URL=postgresql://adbanao:adbanao@localhost:5432/adbanao` in `.env`. The start script then starts the database container for you. Never use `docker compose down -v`, because it deletes the data.
+**The database.** PostgreSQL runs in a Docker container that the start script starts for you. Data is kept between runs. Never use `docker compose down -v`, because it deletes the data. To look at the tables, run `ADMINER_PORT=8081 make db-viewer` and open http://localhost:8081 (System PostgreSQL, Server `db`, user, password and database all `adbanao`).
+
+**Switching an existing SQLite setup to PostgreSQL.** Run `./apply-fix.sh --postgres` (Windows: `.\apply-fix.ps1 -Postgres`), then the start script, then `make seed` for demo users. Users in the old SQLite file are not copied.
+
+**No Docker (optional quick start).** `./apply-fix.sh --sqlite` keeps everything in the file `adbanao.db`.
 
 **Database viewer (PostgreSQL only).** `ADMINER_PORT=8081 make db-viewer`, then open http://localhost:8081 with System `PostgreSQL`, Server `db`, Username `adbanao`, Password `adbanao`, Database `adbanao`.

@@ -1,8 +1,11 @@
 #!/usr/bin/env bash
-# Checks the one-command start on a fresh SQLite database, the way the owner uses it.
-# Used by CI (job "start-script"); you can also run it on your PC from the project folder.
-# It writes a new .env, so do not run it on a folder whose .env you want to keep.
+# Checks the one-command start on a fresh database, the way the owner uses it.
+#   scripts/check_start_scripts.sh            PostgreSQL in Docker (the default setup)
+#   scripts/check_start_scripts.sh sqlite     the optional no-Docker quick start
+# Used by CI (job "start-script"). It REPLACES .env and adbanao.db, and in PostgreSQL mode it deletes the
+# Docker database volume at the end, so do not run it in a folder whose data you want to keep.
 set -u
+MODE="${1:-postgres}"
 cd "$(dirname "${BASH_SOURCE[0]}")/.." || exit 1
 fail=0
 ok()  { echo "PASS  $1"; }
@@ -10,13 +13,15 @@ bad() { echo "FAIL  $1"; fail=1; }
 check() { if eval "$2" >/dev/null 2>&1; then ok "$1"; else bad "$1"; fi; }
 
 rm -f .env adbanao.db
-./apply-fix.sh --sqlite >/dev/null 2>&1; check "apply-fix.sh finishes" "[ -x .venv/bin/python ]"
-check ".env uses SQLite" "grep -q '^DATABASE_URL=sqlite' .env"
+if [ "$MODE" = sqlite ]; then ./apply-fix.sh --sqlite >/dev/null 2>&1; else ./apply-fix.sh >/dev/null 2>&1; fi
+check "apply-fix.sh finishes" "[ -x .venv/bin/python ]"
+check ".env uses $MODE" "grep -q '^DATABASE_URL=$MODE' .env"
 
 ./start-adbanao.sh > .run-logs-start.txt 2>&1 &
 START=$!
 for _ in $(seq 1 90); do curl -fs http://127.0.0.1:8000/health >/dev/null 2>&1 && break; sleep 1; done
 check "API answers /health" "curl -fs http://127.0.0.1:8000/health"
+[ "$MODE" = postgres ] && check "PostgreSQL container is running" "docker compose ps --status running db | grep -q db"
 check "pages are served" "curl -fs http://127.0.0.1:5173/ | grep -qi adbanao"
 check "admin login was made and saved in .env" "grep -q '^ADBANAO_ADMIN_PASSWORD=.' .env"
 check "the old published login is not in the repository" "! git grep -q 'admin-aa-bb-demo' -- ':!backend/tests/test_admin_creds.py' ':!scripts/check_start_scripts.sh'"
@@ -43,4 +48,5 @@ OTHER=$!; sleep 1
 check "the other program is still running" "kill -0 $OTHER"
 kill "$OTHER" 2>/dev/null
 
+[ "$MODE" = postgres ] && docker compose down -v >/dev/null 2>&1
 [ "$fail" = 0 ] && echo "ALL PASSED" || { echo "SOME FAILED"; cat .run-logs-start.txt .run-logs/api.log 2>/dev/null | tail -40; exit 1; }

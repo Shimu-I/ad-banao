@@ -6,7 +6,7 @@ How the database is designed, how it is built, and how to change it. Everything 
 
 | Question | Answer |
 | --- | --- |
-| Which database? | PostgreSQL for real use (Supabase or Neon free tier, or Docker on your machine). SQLite for quick local runs and for automated tests |
+| Which database? | PostgreSQL everywhere: Docker on your machine, Neon or similar online, and a PostgreSQL 16 in every CI run. SQLite is an optional no-Docker quick start and runs the quick half of the tests |
 | How is it accessed? | SQLAlchemy 2 (the models), never hand-written SQL in routes |
 | How is the schema created? | Alembic migrations (`make migrate`). In development and tests, the app also creates missing tables at startup. In production it does not |
 | How many tables? | 8 |
@@ -249,7 +249,7 @@ DATABASE_URL=postgresql://adbanao:adbanao@localhost:5432/adbanao
 Look inside the database:
 
 ```bash
-# SQLite (the default, file adbanao.db in backend/ or where you started the server)
+# SQLite (only if you chose the quick start: file adbanao.db in the project folder)
 sqlite3 adbanao.db ".tables"
 sqlite3 adbanao.db "select id, email, display_name from users;"
 

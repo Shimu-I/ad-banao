@@ -10,7 +10,7 @@ The tools chosen, the reasons, and the alternatives rejected. Decisions are also
 | Backend framework | **FastAPI** | Typed, fast, automatic OpenAPI documentation, which also generates the frontend's API client | Django: heavier, and its strengths (admin, templates) are not what we need. Flask: fewer built-in guarantees |
 | Data validation | **Pydantic v2** | Already used. Same models for API and settings | |
 | Database access | **SQLAlchemy 2.0 with Alembic migrations** | Standard, typed, migrations are essential for a shipped product | Raw SQL, Django ORM |
-| Database | **PostgreSQL** (Supabase or Neon free tier). SQLite only for quick local tests | Reliable, JSON support, free hosted tiers | MySQL |
+| Database | **PostgreSQL** (Supabase or Neon free tier). SQLite only as an optional quick start and for fast tests | Reliable, JSON support, free hosted tiers | MySQL |
 | Image rendering | **Pillow with Raqm text layout** (see risk R-04) | Deterministic server render is the final, verified image | HTML to image: harder to verify and slower |
 | OCR | **Tesseract** (English and Bangla packs) | Free, runs on the server | Cloud OCR (better Bangla, paid, kept as upgrade) |
 | Vision checks | **OpenCV** for colors and layout, **CLIP** later and optional | Free. Photo integrity relies on hashes, not CLIP | |

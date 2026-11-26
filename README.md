@@ -33,7 +33,7 @@ AdBanao turns the details and photo a business enters once into a finished **ima
 | Part | Technology |
 | --- | --- |
 | Backend | Python, FastAPI, SQLAlchemy, Pydantic |
-| Database | SQLite by default for local use (no install); PostgreSQL with Docker is optional and is what production will use |
+| Database | PostgreSQL 16 (Docker locally; Neon or similar online). SQLite is an optional no-Docker quick start |
 | Ad rendering and checks | Pillow, Tesseract OCR, OpenCV |
 | AI writing | Gemini and Groq free tiers, with a basic-text fallback |
 | Frontend (planned) | React, TypeScript, Vite, Tailwind CSS, shadcn/ui, Konva |

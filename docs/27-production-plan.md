@@ -23,7 +23,7 @@ This does not change the product plan. [ADR 0005](adr/0005-vite-spa-frontend.md)
 | --- | --- | --- |
 | Frontend | 7 plain HTML pages (home, sign in iframe, profile, dashboard, create prototype, admin login, admin) with inline JavaScript. The pages call the API at `http://<page host>:8000` | Not React. The API address is built into the code. No build step, no tests of the pages themselves |
 | Backend | FastAPI, SQLAlchemy 2, Alembic. 8 tables, 4 migrations | No Dockerfile. Dependencies are `>=` ranges, so two installs can differ. No `/api/v1` prefix yet (goal F8) |
-| Database | SQLite by default. PostgreSQL works in Docker | CI tests SQLite only. PostgreSQL was checked by hand on the owner's PC (before migrations 0003 and 0004) |
+| Database | Was SQLite by default. **Done in P3:** PostgreSQL is now the default, and CI runs the suite, the migrations, the browser tests and the start script on PostgreSQL 16 | SQLite remains an optional quick start |
 | Sessions | httpOnly cookie, `SameSite=Lax`, `Secure` when `APP_ENV=production` | Works only if the page and the API are on the **same site** (section 6, D5) |
 | Uploads | Saved to a local folder (`UPLOAD_DIR`) | Free hosts wipe local files on restart, so photos would vanish |
 | CI | Three jobs on every pull request: tests, browser end-to-end, start scripts | Nothing deploys. Default branch is `step-01-repo-setup`, unprotected |
@@ -152,7 +152,7 @@ Migrations run automatically on deploy. Rule from now on: **a migration must wor
 
 ### D8. Developer database without Docker
 
-The owner moved to SQLite because Docker is awkward on their machine. Options once PostgreSQL is the default: (a) Docker Compose (the standard), (b) a free **Neon development branch** as the database, which needs only an internet connection, (c) SQLite as a clearly labelled fallback for the quickest start. Recommendation: (a) or (b) as the normal route, (c) kept so the faculty demo never depends on Docker.
+**Decided 2026-11-26: Docker.** (My earlier note that Docker was awkward for the owner was an assumption, and wrong.) Options that were considered: (a) Docker Compose (the standard), (b) a free **Neon development branch** as the database, which needs only an internet connection, (c) SQLite as a clearly labelled fallback for the quickest start. Recommendation: (a) or (b) as the normal route, (c) kept so the faculty demo never depends on Docker.
 
 ## 7. Continuous integration and deployment, in plain words
 

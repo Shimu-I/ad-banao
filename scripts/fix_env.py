@@ -1,7 +1,8 @@
 """Repairs .env once so every tool uses the same database and the same admin.
 
-    python scripts/fix_env.py            keep the current database
-    python scripts/fix_env.py --sqlite   switch to a local SQLite file (no Docker needed)
+    python scripts/fix_env.py             keep the current database (a new .env gets PostgreSQL)
+    python scripts/fix_env.py --postgres  use PostgreSQL in Docker (the default for a new setup)
+    python scripts/fix_env.py --sqlite    switch to a local SQLite file (optional quick start, no Docker)
 """
 import shutil
 import sys
@@ -41,13 +42,15 @@ def put(key, value):
 
 abs_sqlite = "sqlite:///" + (ROOT / "adbanao.db").as_posix()
 cur = get("DATABASE_URL")
-if "--sqlite" in sys.argv or not cur or cur.startswith(("sqlite:///./", "sqlite:///adbanao")):
+if "--sqlite" in sys.argv or cur.startswith(("sqlite:///./", "sqlite:///adbanao")):
     put("DATABASE_URL", abs_sqlite)  # absolute: same file whatever folder a command runs from
     old = ROOT / "backend" / "adbanao.db"
     if old.exists() and not (ROOT / "adbanao.db").exists():
         shutil.copy(old, ROOT / "adbanao.db")  # keep users created earlier
-elif "user:password@" in cur:
-    put("DATABASE_URL", PG)  # the placeholder from .env.example never works
+elif "--postgres" in sys.argv or not cur or "user:password@" in cur:
+    if cur.startswith("sqlite"):
+        print("NOTE  switching to PostgreSQL. Users created in the SQLite file are not copied; run `make seed` for demo users.")
+    put("DATABASE_URL", PG)  # also replaces the placeholder from an old .env.example
 
 put("APP_ENV", "development")
 put("FRONTEND_ORIGIN", "http://localhost:5173")
